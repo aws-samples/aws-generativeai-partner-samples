@@ -24,12 +24,12 @@ This directory is subdivided into two sub directories samples and solutions.
 
 ### Samples
 
+
 | Sample | Language |
 | --- | --- |
-| [RAG With Langchain, Bedrock, Claude 3 and Titan embeddings](./.ipynb) | Python |
-| [Retrieval Strategies](./AAD_Integration/aad_integration_example_sdk.ipynb) | Python |
-| [Distance Similarity Algorithms](./AAD_Integration/aad_integration_example_sdk.ipynb) | Python |
-| [Customize Query](./AAD_Integration/aad_integration_example_sdk.ipynb) | Python |
-| [Geo Distance](./AAD_Integration/aad_integration_example_sdk.ipynb) | Python |
-
-https://medium.com/@antunesleo/geoqueries-with-elasticsearch-5684f165455d
+| [RAG using Elastic and Amazon Bedrock](./samples/elastic-bedrock-claude-langchain-rag.ipynb) | Python |
+| [RAG with hybrid search using Elastic and Amazon Bedrock](./samples/elastic-bedrock-claude-langchain-rag-hybrid-search.ipynb) | Python |
+| [RAG with exact search using Elastic and Amazon Bedrock](./samples/elastic-bedrock-claude-langchain-rag-brute-force.ipynb) | Python |
+| [RAG with euclidean distance retrieval using Elastic and Amazon Bedrock](./samples/elastic-bedrock-claude-langchain-rag-euclidean.ipynb) | Python |
+| [RAG with dot product retrieval using Elastic and Amazon Bedrock](./samples/elastic-bedrock-claude-langchain-rag-dot-product.ipynb) | Python |
+| [RAG with sparse retrieval using Elastic and Amazon Bedrock](./samples/elastic-bedrock-claude-langchain-rag-sparse.ipynb) | Python |
