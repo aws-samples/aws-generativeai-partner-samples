@@ -27,9 +27,13 @@ This directory is subdivided into two sub directories samples and solutions.
 | Sample | Language |
 | --- | --- |
 | [Text Generation with Anthropic Claude 3 using Amazon Bedrock and boto3](./samples/claude-bedrock-boto3-text.ipynb) | Python |
-| [Multimodal capabilities of Anthropic Claude using Amazon Bedrock and boto3](./samples/claude-bedrock-boto3-multimodal.ipynb) | Python |
+| [Multimodal capabilities of Anthropic Claude 3 using Amazon Bedrock and boto3](./samples/claude-bedrock-boto3-multimodal.ipynb) | Python |
 | [Text Generation with Anthropic Claude 3 using Amazon Bedrock and Langchain](./samples/claude-bedrock-langchain-text.ipynb) | Python |
+| [String Criteria Evaluation with Anthropic Claude 3 using Amazon Bedrock and Langchain](./samples/claude-bedrock-langchain-eval-string-criteria.ipynb) | Python |
 | [Streaming Text Generation with Anthropic Claude 3 using Amazon Bedrock and Langchain](./samples/claude-bedrock-langchain-text-streaming.ipynb) | Python |
-| [Ethical AI with Anthropic Claude using Amazon Bedrock and Langchain](./samples/claude-bedrock-langchain-text-ethical-response.ipynb) | Python |
-| [Multimodal capabilities of Anthropic Claude using Amazon Bedrock and Langchain](./samples/claude-bedrock-langchain-multimodal.ipynb) | Python |
-| [RAG with Anthropic Claude using Knowledge Base for Amazon Bedrock and Langchain](./samples/claude-bedrock-langchain-rag.ipynb) | Python |
+| [Ethical AI and Evaluation with Anthropic Claude 3 using Amazon Bedrock and Langchain](./samples/claude-bedrock-langchain-text-ethical-response.ipynb) | Python |
+| [Multimodal capabilities of Anthropic Claude 3 using Amazon Bedrock and Langchain](./samples/claude-bedrock-langchain-multimodal.ipynb) | Python |
+| [RAG with Anthropic Claude 3 using Knowledge Base for Amazon Bedrock and Langchain](./samples/claude-bedrock-langchain-rag.ipynb) | Python |
+| [RAG Evaluation with Anthropic Claude 3 using Knowledge Base for Amazon Bedrock, Langchain and RAGAS](./samples/claude-bedrock-langchain-rag-eval.ipynb) | Python |
+| [Text Generation with Anthropic Claude 3 using Amazon Bedrock and Llama-index](./samples/claude-bedrock-llama-index-text.ipynb) | Python |
+| [Streaming Text Generation with Anthropic Claude 3 using Amazon Bedrock and Llama-index](./samples/claude-bedrock-llama-index-text-streaming.ipynb) | Python |
