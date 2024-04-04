@@ -33,3 +33,4 @@ This directory is subdivided into two sub directories samples and solutions.
 | [RAG with euclidean distance retrieval using Elastic and Amazon Bedrock](./samples/elastic-bedrock-claude-langchain-rag-euclidean.ipynb) | Python |
 | [RAG with dot product retrieval using Elastic and Amazon Bedrock](./samples/elastic-bedrock-claude-langchain-rag-dot-product.ipynb) | Python |
 | [RAG with sparse retrieval using Elastic and Amazon Bedrock](./samples/elastic-bedrock-claude-langchain-rag-sparse.ipynb) | Python |
+| [RAG with Evaluation using Elastic and Amazon Bedrock](./samples/elastic-bedrock-claude-langchain-rag-eval.ipynb) | Python |
