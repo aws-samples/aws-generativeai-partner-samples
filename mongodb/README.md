@@ -1,3 +1,3 @@
 ## Code Samples For MongoDB
 
-This folder contains sub-projects with code samples related to MongoDB>
+This folder contains sub-projects with code samples related to MongoDB.
