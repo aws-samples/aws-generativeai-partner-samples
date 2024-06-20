@@ -111,3 +111,13 @@ For additional logs, including the model "thinking" process, use teh --verbose f
 ```
 python main.py --verbose eval --project-directory ./terraform
 ```
+
+
+## Clean up
+
+To avoid incurring additional charges, terminate the EC2 instance and delete VPC
+
+```
+cd ./terraform
+terraform destroy --auto-approve
+```
