@@ -1,2 +1,6 @@
 .env
 .vscode
+/terraform/.terraform*
+/terraform/main.tf-e
+/terraform/plan.txt
+/terraform/terraform*
