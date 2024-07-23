@@ -4,7 +4,7 @@ import markdown_to_json
 from utils import logger
 
 session = boto3.Session()
-aws_region = 'us-west-2'
+aws_region = 'us-east-1'
 ec2_client = session.client(service_name='ec2',region_name=aws_region)
 
 class GetECSAmisReleases:
