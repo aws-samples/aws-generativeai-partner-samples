@@ -6,8 +6,8 @@ session = boto3.session.Session()
 region = session.region_name
 bedrock = boto3.client(service_name="bedrock", region_name = region)
 
-# retrieve the modelArn of the fine-tuned model
-custom_model_name = 'XXX' # replace with your custom model name, get the custom model-name from the Bedrock console
+# retrieve the modelArn of the fine-tuned model using model name
+custom_model_name = 'titan-text-lite-v1-fine-tuned-2024-07-23-16-12-46' # replace with your custom model name, get the custom model-name from the Bedrock console
 
 
 fine_tune_job = bedrock.get_custom_model(modelIdentifier=custom_model_name)
@@ -18,7 +18,7 @@ custom_model_id = fine_tune_job['modelArn']
 provisioned_model_arn = bedrock.create_provisioned_model_throughput(
      modelUnits=1,
     # create a name for your provisioned throughput model
-     provisionedModelName='test-model-v1-001', 
+     provisionedModelName='prov-model-v1', 
      modelId=custom_model_id
     )['provisionedModelArn']  
 

@@ -29,11 +29,6 @@ bedrock_runtime = boto3.client(service_name="bedrock-runtime", region_name = reg
 def flatten_dict(d, parent_key='', sep='_'):
     items = []
     for k, v in d.items():
-        #if key contains poster/fullplot, skip it
-        if "poster" in k:
-            continue
-        if "fullplot" in k:
-            continue
         new_key = parent_key + sep + k if parent_key else k
         if isinstance(v, dict):
             items.extend(flatten_dict(v, new_key, sep).items())
@@ -55,6 +50,15 @@ def flatten_list(l, parent_key, sep):
         else:
             flattened[new_key] = item
     return flattened
+
+def jsonl_converter(dataset,file_name):
+     with jsonlines.open(file_name, 'w') as writer:
+        for line in dataset:
+            # Convert the line to a JSON string to check its length. 
+            #refer details here https://docs.aws.amazon.com/bedrock/latest/userguide/quotas.html#quotas-model-customization
+            json_string = json.dumps(line)
+            if len(json_string) < 3000:
+                 writer.write(line)
 
 
 for model in bedrock.list_foundation_models(
@@ -78,8 +82,8 @@ collection = db["movies"]
 count = collection.count_documents({})
 print(count)
 
-#for the lab we will use only 1000 documents to train
-documents = collection.find().limit(1000)
+#for the lab we will use only 100 documents to train
+documents = collection.find().limit(100)
 
 #flatten the documents
 flattened_documents = []
@@ -101,8 +105,9 @@ except Exception as e:
     print(e)
 
 #split the dataset between train, test and validation
-train_test_split = data["train"].train_test_split(test_size=0.2)
-#80 percent of the data for training
+#95 percent of the data for training
+train_test_split = data["train"].train_test_split(test_size=0.05)
+
 train_data = train_test_split["train"]
 #split the remaining 50-50 between test and validation.
 test_data = train_test_split["test"]
@@ -111,41 +116,36 @@ validation_data = test_data.train_test_split(test_size=0.5)["test"]
 #Prepare the datasets train, test and valid in the format required for fine tuning
 #Format to be used:{"prompt": "<prompt1>", "completion": "<expected generated text>"}
 
-
-def jsonl_converter(dataset,file_name):
-     with jsonlines.open(file_name, 'w') as writer:
-        for line in dataset:
-            # Convert the line to a JSON string to check its length. Sum of input and output tokens for batch size 1 is 4096.
-            #refer details here https://docs.aws.amazon.com/bedrock/latest/userguide/quotas.html#quotas-model-customization
-            json_string = json.dumps(line)
-            # if len(json_string) < 2048:
-            #     # If so, write the line to the file
-            writer.write(line)
+instruction='''You have detailed information on movies. Given a movie title please share the full plot of the movie: '''
 
 
 dataset_train_format=[]
 for dp in train_data:
     temp_dict={}
     #get title  from the dataset
-    temp_dict['prompt']= dp['title']
-    dp= str(dp)
-    temp_dict['completion']= dp
+    temp_dict['prompt']= instruction + str(dp['title'])
+    #if dp['fullplot'] is null, change to N/A
+    if not dp['fullplot']:
+        dp['fullplot']='N/A'
+    temp_dict['completion']= dp['fullplot']
     dataset_train_format.append(temp_dict)
     
 dataset_test_format=[]
 for dp in test_data:
     temp_dict={}
-    temp_dict['prompt']= dp['title']
-    dp= str(dp)
-    temp_dict['completion']= dp
+    temp_dict['prompt']= instruction + str(dp['title'])
+    if not dp['fullplot']:
+        dp['fullplot']='N/A'
+    temp_dict['completion']= dp['fullplot']
     dataset_test_format.append(temp_dict)
 
 dataset_valid_format=[]
 for dp in validation_data:
     temp_dict={}
-    temp_dict['prompt']= dp['title']
-    dp= str(dp)
-    temp_dict['completion']= dp
+    temp_dict['prompt']= instruction + str(dp['title'])
+    if not dp['fullplot']:
+        dp['fullplot']='N/A'
+    temp_dict['completion']= dp['fullplot']
     dataset_valid_format.append(temp_dict)
     
 
@@ -153,8 +153,6 @@ for dp in validation_data:
 jsonl_converter(dataset_test_format, 'dataset_test.jsonl')
 jsonl_converter(dataset_train_format, 'dataset_train.jsonl')
 jsonl_converter(dataset_valid_format, 'dataset_valid.jsonl')
-
-
 
 
 # Create S3 bucket for storing the datasets 

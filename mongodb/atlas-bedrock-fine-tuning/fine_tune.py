@@ -68,50 +68,60 @@ ACCESS_POLICY_DOC = f"""{{
     ]
 }}"""
 
-response_role = iam.create_role(
-    RoleName=role_name,
-    AssumeRolePolicyDocument=ROLE_DOC,
-    Description="Role for Bedrock to access S3 for training",
-)
+#check role exists providing role arn else create the role
 
-response_policy = iam.create_policy(
-    PolicyName=s3_bedrock_finetuning_access_policy,
-    PolicyDocument=ACCESS_POLICY_DOC,
-)
-policy_arn = response_policy["Policy"]["Arn"]
+try:
+    response = iam.get_role(RoleName=role_name)
+    pprint.pp(response)
+    finetune_role_arn = response["Role"]["Arn"]
+    pprint.pp(finetune_role_arn)
+    print("Role already exists")
+    print(finetune_role_arn)
+#if role does not exist create the role
+except Exception as e:
+    print(e)
+    response_role = iam.create_role(
+        RoleName=role_name,
+        AssumeRolePolicyDocument=ROLE_DOC,
+        Description="Role for Bedrock to access S3 for training",
+    )
+    response_policy = iam.create_policy(
+        PolicyName=s3_bedrock_finetuning_access_policy,
+        PolicyDocument=ACCESS_POLICY_DOC,
+    )
+    policy_arn = response_policy["Policy"]["Arn"]
+    iam.attach_role_policy(
+        RoleName=role_name,
+        PolicyArn=policy_arn,
+    )
+    #wait for role to be created
+    time.sleep(10)
 
-iam.attach_role_policy(
-    RoleName=role_name,
-    PolicyArn=policy_arn,
-)
-
-#wait for role to be created
-time.sleep(10)
-
-finetune_role_arn = response_role["Role"]["Arn"]
-pprint.pp(finetune_role_arn)
+    finetune_role_arn = response_role["Role"]["Arn"]
+    pprint.pp("New Role Created.")
+    pprint.pp(finetune_role_arn)
 
 from datetime import datetime
 ts = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
 # Choose the foundation model you want to customize and provide ModelId(find more about model reference at https://docs.aws.amazon.com/bedrock/latest/userguide/bedrock-reference.html)
 # using the titan embedding model for fine-tuning
-base_model_id = "amazon.titan-text-express-v1:0:8k"
+base_model_id = "amazon.titan-text-lite-v1:0:4k"
 
 # Select the customization type of "FINE_TUNING".
 customization_type = "FINE_TUNING"
 
 # Create a customization job name
-customization_job_name = f"amazon-titan-text-express-tuned-model-{ts}"
+customization_job_name = f"titan-text-lite-v1-fine-tuned-model-{ts}"
 
 # Create a customized model name for your fine-tuned model
-custom_model_name = f"amazon-titan-text-express-fine-tuned-{ts}"
+custom_model_name = f"titan-text-lite-v1-fine-tuned-{ts}"
 
 # Define the hyperparameters for fine-tuning model
 hyper_parameters = {
-        "epochCount": "1",
+        "epochCount": "2",
         "batchSize": "1",
-        "learningRate": "0.005"
+        "learningRate": "0.0001"
     }
 
 # Specify your data path for training, validation(optional) and output

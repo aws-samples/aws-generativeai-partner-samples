@@ -22,26 +22,34 @@ s3_bedrock_finetuning_access_policy="AmazonBedrockCustomizationPolicy_FineTuning
 customization_role = f"arn:aws:iam::{account_id}:role/{role_name}"
 
 
-
-
-#delete the role and role policy
+#detach policy
 try:
     #detach policy from role
     iam.detach_role_policy(RoleName=role_name, PolicyArn=f"arn:aws:iam::{account_id}:policy/{s3_bedrock_finetuning_access_policy}")
+    print(f"Detach Policy")
+except Exception as e:
+    print(e)
+    print("Cleanup complete") 
+
+#detach policy
+try:
     #delete role
     iam.delete_role(RoleName=role_name)
     #sleep for 10 seconds to allow role to be deleted
     time.sleep(10)
     print(f"Deleted role {role_name}")
-    #delete policy
-    iam.delete_policy(PolicyArn=f"arn:aws:iam::{account_id}:policy/{s3_bedrock_finetuning_access_policy}")
-    
-    
 except Exception as e:
     print(e)
     print("Cleanup complete") 
     
-
+#delete the policy
+try:
+    #delete policy
+    iam.delete_policy(PolicyArn=f"arn:aws:iam::{account_id}:policy/{s3_bedrock_finetuning_access_policy}")
+    print(f"Deleted policy")
+except Exception as e:
+    print(e)
+    print("Cleanup complete") 
 
 #delete all files in the s3 bucket 
 
@@ -65,6 +73,6 @@ except Exception as e:
 
 #delete provisioned model
 
-provisioned_model_arn = 'XXX' #replace with provisional model arn
+provisioned_model_arn = 'arn:aws:bedrock:us-east-1:448407886166:provisioned-model/c6g3gpgbgav8' #replace with provisional model arn
 bedrock.delete_provisioned_model_throughput(provisionedModelId=provisioned_model_arn)
 print(f"Deleted provisioned model {provisioned_model_arn}")
