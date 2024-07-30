@@ -6,8 +6,7 @@ session = boto3.session.Session()
 #get region from session
 region = session.region_name
 bedrock_runtime = boto3.client(service_name="bedrock-runtime", region_name = region )
-# provisioned_model_arn = 'arn:aws:bedrock:us-east-1:448407886166:provisioned-model/5rfgfhsnoh1m' # get the provisioned model arn from the console and replace here
-#provisioned_model_arn = 'amazon.titan-text-lite-v1' #original model to compare results.
+provisioned_model_arn = '' #Replace with provisioned model arn.
 
 prompt_data = 'Write in less than 200 words the plot of the movie: Where Eagles Dare'
 
