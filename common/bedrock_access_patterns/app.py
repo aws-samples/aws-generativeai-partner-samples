@@ -222,14 +222,14 @@ def page():
           label="Access Key",
           style=_STYLE_INPUT_WIDTH,
           on_input=on_access_key_change,
-          value=state.access_key,
+          value=config.get("access_key"),
         )
         me.input(
           label="Secret Access Key",
           style=_STYLE_INPUT_WIDTH,
           type="password",
           on_input=on_secret_key_change,
-          value=state.secret_access_key,
+          value=config.get("secret_access_key")
         )
       elif "ISV LLM Gateway" in state.selected_option:
         me.input(
@@ -370,6 +370,9 @@ def on_option_select(e: me.SelectSelectionChangeEvent):
   """Event to select integration option."""
   state = me.state(State)
   state.selected_option = e.value
+  if state.selected_option == "IAM User":
+      state.access_key = config.get("access_key")
+      state.secret_access_key = config.get("secret_access_key")
   
 def on_role_change(e: me.SelectSelectionChangeEvent):
   """Event to select integration option."""
@@ -547,8 +550,8 @@ def transform(input: str):
                       ],
                   }
       message_list.append(user_message)
-      
       credentials = client.get_session_token(state.access_key, state.secret_access_key)
+
       # if isinstance(assume_role, str):
       #     yield assume_role
       #     return
