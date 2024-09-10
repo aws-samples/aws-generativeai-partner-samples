@@ -1,0 +1,12 @@
+# AWS Config
+selected_option: "Customer LLM Gateway"
+access_key: "YOUR_ACCESS_KEY"
+secret_access_key: "YOUR_SECRET_ACCESS_KEY"
+bedrock_iam_role: "YOUR_BEDROCK_IAM_ROLE"
+customer_account_id: "YOUR_CUSTOMER_ACCOUNT_ID"
+external_id: "YOUR_EXTERNAL_ID"
+
+# Model configs
+selected_model: "anthropic.claude-3-sonnet-20240229-v1:0"
+api_endpoint: "YOUR_API_ENDPOINT"
+api_key: "YOUR_API_KEY"
