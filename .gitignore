@@ -1,0 +1,3 @@
+common/bedrock_access_patterns/config.local.yaml
+*/*/__pycache__
+*/__pycache__
