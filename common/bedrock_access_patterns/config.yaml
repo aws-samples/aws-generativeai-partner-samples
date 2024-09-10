@@ -1,5 +1,4 @@
 # AWS Config
-selected_option: "Customer LLM Gateway"
 access_key: "YOUR_ACCESS_KEY"
 secret_access_key: "YOUR_SECRET_ACCESS_KEY"
 bedrock_iam_role: "YOUR_BEDROCK_IAM_ROLE"
