@@ -1,6 +1,6 @@
 # Bedrock Access Patterns
 
-This project demonstrates various ways to access Bedrock models from your application.
+This project demonstrates various ways to access Bedrock models from your application. Especially if you are an ISV/SaaS provider who want to enable your customers to access models hosted in their own account or local or elsewhere, the patterns in this application helps you understand the setup and security best practices.
 
 ## Architecture
 ![Bedrock Access Patterns](bedrock-access-patterns.png)
