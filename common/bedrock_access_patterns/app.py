@@ -76,6 +76,48 @@ def page():
             # temperature=state.temperature,
           )
         )
+    elif "Cross Account Role" or "ISV LLM Gateway" in state.selected_option:
+      me.text(
+        "Use the following code in your application to request a model response."
+      )
+      with me.box(style=_STYLE_CODE_BOX):
+        me.markdown(
+          _CROSS_ACCCOUNT_CODE_TEXT.format(
+            # content=state.input.replace('"', '\\"'),
+            selected_model=state.selected_model,
+            # access_key=state.access_key,
+            # secret_access_key=state.secret_access_key,
+            bedrock_iam_role=state.bedrock_iam_role,
+            customer_account_id=state.customer_account_id,
+            external_id=state.external_id,
+            input = state.input,
+            final_response = "",
+            assistant_message = ""
+            # api_endpoint= state.api_endpoint,
+            # api_key=state.api_key,
+            # region=state.selected_region,
+            # stop_sequences=make_stop_sequence_str(state.stop_sequences),
+            # token_limit=state.token_limit,
+            # temperature=state.temperature,
+          )
+        )
+    elif "IAM User" in state.selected_option:
+      me.text(
+        "Use the following code in your application to request a model response."
+      )
+      with me.box(style=_STYLE_CODE_BOX):
+        me.markdown(
+          _IAM_CODE_TEXT.format(
+            content=state.input.replace('"', '\\"'),
+            selected_model=state.selected_model,
+            api_endpoint= state.api_endpoint,
+            api_key=state.api_key,
+            # region=state.selected_region,
+            # stop_sequences=make_stop_sequence_str(state.stop_sequences),
+            # token_limit=state.token_limit,
+            # temperature=state.temperature,
+          )
+        )
     else:
       me.text(
         "You can use the following code to start integrating your current prompt and settings into your application."
@@ -549,44 +591,119 @@ def transform(input: str):
 
 # HELPERS
 
-_GEMINI_CODE_TEXT = """
+_CROSS_ACCCOUNT_CODE_TEXT = """
 ```python
-import base64
-import vertexai
-from vertexai.generative_models import GenerativeModel, Part, FinishReason
-import vertexai.preview.generative_models as generative_models
+from bedrock_saas_client import BedrockSaaSClient
 
-def generate():
-  vertexai.init(project="<YOUR-PROJECT-ID>", location="{region}")
-  model = GenerativeModel("{model}")
-  responses = model.generate_content(
-      [\"\"\"{content}\"\"\"],
-      generation_config=generation_config,
-      safety_settings=safety_settings,
-      stream=True,
-  )
+customer_role_arn = f"arn:aws:iam::{customer_account_id}:role/{bedrock_iam_role}"
 
-  for response in responses:
-    print(response.text, end="")
+client = BedrockSaaSClient(customer_role_arn, external_id={external_id})
+model_id = "{selected_model}"
+stream = True
+message_list = []
 
+user_message = {{
+                "role": "user",
+                "content": [
+                    "text": input,
+                ],
+            }}
+message_list.append(user_message)
 
-generation_config = {{
-    "max_output_tokens": {token_limit},
-    "stop_sequences": [{stop_sequences}],
-    "temperature": {temperature},
-    "top_p": 0.95,
-}}
-
-safety_settings = {{
-    generative_models.HarmCategory.HARM_CATEGORY_HATE_SPEECH: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-    generative_models.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-    generative_models.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-    generative_models.HarmCategory.HARM_CATEGORY_HARASSMENT: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-}}
-
-generate()
+credentials = client.assume_role()
+try:
+    result, message_list = client.invoke_bedrock_model(model_id, input, stream, credentials, message_list)
+except ClientError as e:
+    yield str(e)
+    return      
+if not stream:
+    final_response = result['output']['message']["content"][0]["text"]
+    assistant_message = {{
+        "role": "assistant",
+        "content": [
+                "text": final_response
+            ],
+    }}
+    message_list.append(assistant_message)
+    # print("Assistant: " + final_response)
+    yield final_response
+else:
+    # print("Assistant: ")
+    if result == 'output':
+    yield 'Failed to Assume the role'
+    assistant_message = ""
+    for chunk in result["stream"]:
+        if "contentBlockDelta" in chunk:
+            text = chunk["contentBlockDelta"]["delta"]["text"]
+            yield text
+            assistant_message += text
+            # print(text, end="", flush=True)
+    assistant_message = {{
+        "role": "assistant",
+        "content": [
+                "text": assistant_message
+            ],
+    }}
+    message_list.append(assistant_message)
 ```
 """.strip()
+
+
+_IAM_CODE_TEXT = """
+```python
+from bedrock_saas_client import BedrockSaaSClient
+
+client = BedrockSaaSClient()
+model_id = "{selected_model}"
+stream = True
+message_list = []
+
+user_message = {{
+                "role": "user",
+                "content": [
+                    "text": input,
+                ],
+            }}
+message_list.append(user_message)
+
+credentials = client.get_session_token(access_key, secret_access_key)
+try:
+    result, message_list = client.invoke_bedrock_model(model_id, input, stream, credentials, message_list)
+except ClientError as e:
+    yield str(e)
+    return
+if not stream:
+    final_response = result['output']['message']["content"][0]["text"]
+    assistant_message = {{
+        "role": "assistant",
+        "content": [
+                "text": final_response
+            ],
+    }}
+    message_list.append(assistant_message)
+    # print("Assistant: " + final_response)
+    yield final_response
+else:
+    # print("Assistant: ")
+    if result == 'output':
+    yield 'Failed to Assume the role'
+    assistant_message = ""
+    for chunk in result["stream"]:
+        if "contentBlockDelta" in chunk:
+            text = chunk["contentBlockDelta"]["delta"]["text"]
+            yield text
+            assistant_message += text
+            # print(text, end="", flush=True)
+    assistant_message = {{
+        "role": "assistant",
+        "content": [
+                "text": assistant_message
+            ],
+    }}
+    message_list.append(assistant_message)
+```
+""".strip()
+
 
 _GPT_CODE_TEXT = """
 ```python
