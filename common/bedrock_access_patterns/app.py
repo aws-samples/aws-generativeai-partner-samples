@@ -473,7 +473,7 @@ def transform(input: str):
       )
       yield completion.choices[0].message.content
     
-    elif state.selected_option == "Cross Account Role":
+    elif state.selected_option == "Cross Account Role" or state.selected_option == "ISV LLM Gateway":
       from bedrock_saas_client import BedrockSaaSClient
       
       customer_role_arn = f"arn:aws:iam::{state.customer_account_id}:role/{state.bedrock_iam_role}"
