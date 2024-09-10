@@ -2,6 +2,9 @@
 
 This project demonstrates various ways to access Bedrock models from your application.
 
+## Architecture
+![Bedrock Access Patterns](bedrock-access-patterns.png)
+
 ## Prerequisites
 
 To use the "Customer LLM Gateway" or "ISV LLM Gateway" integration options, you must first deploy the `bedrock-access-gateway` from the following repository:
@@ -92,6 +95,15 @@ To run the application, execute the following comman
 
 `mesop app.py`
 
+## Using Local/OpenAI API compatible Models
+
+This project supports using Local/OpenAI API compatible Models. To use a local model, follow these steps:
+
+1. Install and set up Ollama or similar on your local machine.
+2. Deploy your desired model.
+3. (optional for default endpoint when you load the app) In the `config.local.yaml` file, set `selected_option` to `"Customer LLM Gateway"`.
+4. Set `api_endpoint` to `http://localhost:11434/v1` for local model
+5. You can leave the `api_key` value empty for local models.
 
 ## Contributing
 If you'd like to contribute to this project, please follow these steps:
@@ -102,3 +114,5 @@ If you'd like to contribute to this project, please follow these steps:
 4. Create a pull request
 
 Please make sure to update the config.yaml file with any new configuration values needed for your changes. modifications in the config.local.yaml file, will remain untracked for each user's local configuration.
+
+
