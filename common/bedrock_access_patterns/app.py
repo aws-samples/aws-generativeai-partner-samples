@@ -33,7 +33,6 @@ class State:
   
   # Model configs
   selected_model: str = config.get("selected_model")
-  # selected_region: str = "us-east4"
   api_endpoint: str = config.get("api_endpoint")
   api_key: str = config.get("api_key")
   
@@ -146,7 +145,7 @@ def page():
       # Prompt Tab
       with tab_box(header="Prompt", key="prompt_tab"):
         me.textarea(
-          label="Write your prompt here, insert media and then click Submit",
+          label="Write your prompt here and then click Submit",
           # Workaround: update key to clear input.
           key=f"prompt-{state.clear_prompt_count}",
           on_input=on_prompt_input,
@@ -449,11 +448,15 @@ def on_click_submit(e: me.ClickEvent):
   would call APIs against the given configuration.
   """
   state = me.state(State)
+  
+  if not state.input.strip():
+      state.response = "Please enter a prompt."
+      yield
+      return
   state.response =""
   for line in transform(state.input):
     state.response += line
     yield
-
 
 def transform(input: str):
   """Transform function that returns canned responses."""
