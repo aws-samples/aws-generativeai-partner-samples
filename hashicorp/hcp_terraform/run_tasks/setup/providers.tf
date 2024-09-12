@@ -5,7 +5,6 @@ terraform {
       source  = "hashicorp/aws"
       version = "5.56.1"
     }
-
     tfe = {
       source  = "hashicorp/tfe"
       version = "~>0.38.0"
