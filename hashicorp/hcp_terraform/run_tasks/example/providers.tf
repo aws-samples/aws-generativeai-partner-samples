@@ -1,7 +1,7 @@
 terraform {
   cloud {
-    # TODO: Change this to your Terraform Cloud org name.
-    organization = "ENTER_YOUR_TERRAFORM_CLOUD_REGION"
+    # TODO: Change this to your HCP Terraform org name.
+    organization = "ENTER_YOUR_HCP_TERRAFORM_ORG_NAME"
     workspaces {
       name = "my-aws-workspace"
     }

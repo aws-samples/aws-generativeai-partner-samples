@@ -1,13 +1,23 @@
-## Runtask Terraform Plan Analyzer
+## Terraform plan analyzer run task
 
-Integrate Amazon Bedrock to your HashiCorp Cloud Platform Terraform (Terraform Cloud) Run Tasks for:
+Integrate Amazon Bedrock with HCP Terraform (previously Terraform Cloud) workflows using run tasks to:
 
-* Analyzing Terraform plan and generate short-summary
-* Function calling for other API-based analysis (e.g AMI analysis)
+* Analyze Terraform plan and generate summary
+* Function call for other API-based analysis (e.g AMI analysis)
 
-How to use it:
+Getting started:
 
-1. First run the [setup](./setup/) module to deploy the pre-requisite infrastructure
-2. Then run the [example](./example/) module that will demonstrate the Terraform plan analysis using Amazon Bedrock
+1. Run the Terraform in [setup](./setup/) folder to deploy the pre-requisite infrastructure
+    ```
+    cd setup/
+    terraform init
+    terraform apply
+    ```
+2. Then run the Terraform in [example](./example/) folder that demonstrates the Terraform plan analysis for an example configuration using Amazon Bedrock
+    ```
+    cd example/
+    terraform init
+    terraform apply
+    ```
 
-Check the complete Terraform module in the [Terraform registry](https://registry.terraform.io/modules/aws-ia/runtask-tf-plan-analyzer/aws/latest)
+To explore the complete list of available configuration options checkout the Terraform module in the [Terraform registry](https://registry.terraform.io/modules/aws-ia/runtask-tf-plan-analyzer/aws/latest)
