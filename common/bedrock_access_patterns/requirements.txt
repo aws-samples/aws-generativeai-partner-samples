@@ -1,5 +1,5 @@
 boto3==1.34.144
 botocore==1.34.144
-mesop==0.12.3
+mesop==0.12.4
 openai==1.44.1
 PyYAML==6.0.2
