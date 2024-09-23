@@ -7,7 +7,7 @@ This directory contains pre-built samples to help customers get started with the
 
 ### Prerequisites
 
-Follow these [steps](https://aerospike.com/docs/vector/quickstart) to setup Aerospike Vector Store cluster.
+Follow these [steps](https://aerospike.com/docs/vector/install) to setup Aerospike Vector Store cluster.
 
 ### Project setup
 
