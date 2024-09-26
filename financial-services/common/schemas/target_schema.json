@@ -1,0 +1,126 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Insurance Data Model",
+  "type": "object",
+  "properties": {
+    "insurance_products": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "product_name": {
+            "type": "string"
+          },
+          "product_details": {
+            "type": "object"
+          }
+        },
+        "required": ["product_name", "product_details"]
+      }
+    },
+    "customers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "dob": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "required": ["first_name", "last_name", "dob"]
+      }
+    },
+    "payment_methods": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "payment_type": {
+            "type": "string",
+            "enum": ["credit_card", "bank_transfer", "digital_wallet"]
+          },
+          "payment_details": {
+            "type": "object"
+          }
+        },
+        "required": ["payment_type", "payment_details"]
+      }
+    },
+    "policies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "policy_id": {
+            "type": "string"
+          },
+          "product_id": {
+            "type": "string"
+          },
+          "customer_id": {
+            "type": "string"
+          },
+          "payment_method_id": {
+            "type": "string"
+          },
+          "premium_amount": {
+            "type": "number"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "branch_id": {
+            "type": "string"
+          }
+        },
+        "required": ["policy_id", "product_id", "customer_id", "payment_method_id", "premium_amount", "start_date", "end_date", "branch_id"]
+      }
+    },
+    "branches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "branch_id": {
+            "type": "string"
+          },
+          "branch_name": {
+            "type": "string"
+          },
+          "address": {
+            "type": "object",
+            "properties": {
+              "street": {
+                "type": "string"
+              },
+              "city": {
+                "type": "string"
+              },
+              "state": {
+                "type": "string"
+              },
+              "zip": {
+                "type": "string"
+              }
+            },
+            "required": ["street", "city", "state", "zip"]
+          }
+        },
+        "required": ["branch_id", "branch_name", "address"]
+      }
+    }
+  },
+  "required": ["insurance_products", "customers", "payment_methods", "policies", "branches"]
+}
