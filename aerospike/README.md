@@ -7,7 +7,7 @@ This directory contains pre-built samples to help customers get started with the
 
 ### Prerequisites
 
-Follow these [steps](https://aerospike.com/docs/vector/install) to setup Aerospike Vector Store cluster.
+If you have a license key, follow these [steps](https://aerospike.com/docs/vector/install) to setup Aerospike Vector Store cluster in your account, or you can [request a free trial](https://aerospike.com/lp/aerospike-vector-search-preview-access/) experience which provides a cloud hosted Aerospike Vector Search endpoint (AVS_HOST below). 
 
 ### Project setup
 
