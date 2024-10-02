@@ -18,7 +18,7 @@ Follow these [steps](https://docs.aws.amazon.com/cli/latest/userguide/getting-st
 
 ### Environment variables setup
 
-You can set the environment variables in the Jupyter Notebook.
+You can set the environment variables in the Jupyter Notebook. Setup your access key and secret key and provide below where it says `YOUR_AWS_ACCESS_KEY` and `YOUR_AWS_SECRET_KEY`
 
 ```jupyter
 % env AVS_HOST="YOUR_AVS_HOST"
