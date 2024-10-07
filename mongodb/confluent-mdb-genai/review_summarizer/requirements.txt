@@ -1,0 +1,4 @@
+requests
+pymongo
+boto3
+kafka-python

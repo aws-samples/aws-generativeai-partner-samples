@@ -1,0 +1,7 @@
+requests
+pymongo
+boto3
+langchain
+langchain-community
+wheel
+kafka-python
