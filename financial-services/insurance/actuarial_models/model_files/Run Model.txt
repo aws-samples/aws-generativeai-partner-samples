@@ -1,0 +1,22 @@
+Excel Tab, Sheet Name: Run Model
+
+
+Cell C6: Valuation Date:, 	Cell C8: 5 year projection:, 	Cell C10: Sandbox Regime, 	Cell C11: In Sandbox:, 	Cell C12: Duration:, 	Cell C13: Target Capital Level:, 	Cell C15: BMA , 	Cell C16: MSM - Minimum Capital ($):, 	Cell C17: FX Rate:, 	Cell C20: Scenarios Included, 	Cell C21: Scenario Name, 	
+Cell D8: No, 	Cell D11: Yes, 	Cell D17: =1/42265.19, 	Cell D19: Scenario 0, 	Cell D20: Yes, 	Cell D21: =IF(D20="Yes",'Model Calibration'!E6,"na"), 	
+Cell E13: <- Target capital level in Sandbox; 120% once out of Sandbox, 	Cell E19: Scenario 1, 	Cell E20: Yes, 	Cell E21: =IF(E20="Yes",'Model Calibration'!F6,"na"), 	
+Cell F15: Net Amount at Risk, 	Cell F16: Include Minimum, 	Cell F17: Manual NAR, 	Cell F19: Scenario 2, 	Cell F20: Yes, 	Cell F21: =IF(F20="Yes",'Model Calibration'!G6,"na"), 	Cell F28: Password:, 	
+Cell G16: Yes, 	Cell G19: Scenario 3, 	Cell G20: Yes, 	Cell G21: =IF(G20="Yes",'Model Calibration'!H6,"na"), 	
+Cell H19: Scenario 4, 	Cell H20: Yes, 	Cell H21: =IF(H20="Yes",'Model Calibration'!I6,"na"), 	
+Cell I19: Scenario 5, 	Cell I20: Yes, 	Cell I21: =IF(I20="Yes",'Model Calibration'!J6,"na"), 	
+Cell J19: Scenario 6, 	Cell J20: Yes, 	Cell J21: =IF(J20="Yes",'Model Calibration'!K6,"na"), 	
+Cell K19: Scenario 7, 	Cell K20: No, 	Cell K21: =IF(K20="Yes",'Model Calibration'!L6,"na"), 	
+Cell L19: Scenario 8, 	Cell L20: No, 	Cell L21: =IF(L20="Yes",'Model Calibration'!M6,"na"), 	
+Cell M19: Scenario 9, 	Cell M20: No, 	Cell M21: =IF(M20="Yes",'Model Calibration'!N6,"na"), 	
+
+
+
+
+
+
+
+

@@ -1,0 +1,15 @@
+Excel Tab, Sheet Name: Response
+
+Cell B1: RISK RESPONSE, 	Cell B2: ='Company Information'!C7, 	Cell B3: ='Company Information'!C3, 	Cell B5: The insurer is to answer the following question.  If the answer to the question is "No" then the insurer does not have to complete the matrix/grid.  If the answer to the question is "Yes" then the insurer is to identify the stage of progression of each Operational Risk Area based upon the Dimension descriptor.  The insurer is then to input an “X” in the grid corresponding to the stage in the matrix table under the relevant Operational Risk Area., 	Cell B7: Has your company taken steps to control and/or mitigate material risks arising from the Operational Risk Areas identified below? (Y/N), 	Cell B9: If "Y", identify the stage of each Operational Risk Area and input an "X" in the appropriate grid under each area., 	Cell B11: Risk Response processes are:, 	Cell B13: Progression, 	Cell B14: Stage, 	Cell B21: Comments (optionally, the insurer may provide comments in the box below to support its responses above):, 	Cell B22: Responses and management actions are in place as so far as risks are being identified.   A GRC system to ensure compliance is being put in place to manage risks identified.   The Company is a startup.  Next annual review is expected Q4 2023., 	
+Cell C14: Scoring, 	
+Cell D13: Dimension, 	Cell D15: “ad hoc”, 	Cell D16: Implemented but not standardized across the organization, 	Cell D17: Implemented, well documented policies and procedures that are understood by relevant staff, and standardized across the entire organization, 	Cell D18: In addition to Stage 3, processes are reviewed at least annually with the view to assessing effectiveness and introducing improvements, 	
+Cell E13: Operational Risk Areas, 	Cell E14: Fraud, 	Cell E16: x, 	Cell E19: =IF(E15="X",50,IF(E16="X",100,IF(E17="X",150,IF(E18="X",200,0)))), 	
+Cell F14: Human Resources, 	Cell F15: x, 	Cell F19: =IF(F15="X",50,IF(F16="X",100,IF(F17="X",150,IF(F18="X",200,0)))), 	
+Cell G14: Outsourcing, 	Cell G17: x, 	Cell G19: =IF(G15="X",50,IF(G16="X",100,IF(G17="X",150,IF(G18="X",200,0)))), 	
+Cell H14: Distribution Channels, 	Cell H15: x, 	Cell H19: =IF(H15="X",50,IF(H16="X",100,IF(H17="X",150,IF(H18="X",200,0)))), 	
+Cell I14: Business Processes, 	Cell I15: x, 	Cell I19: =IF(I15="X",50,IF(I16="X",100,IF(I17="X",150,IF(I18="X",200,0)))), 	
+Cell J14: Business Continuity, 	Cell J15: x, 	Cell J19: =IF(J15="X",50,IF(J16="X",100,IF(J17="X",150,IF(J18="X",200,0)))), 	
+Cell K14: Information Systems, 	Cell K15: x, 	Cell K19: =IF(K15="X",50,IF(K16="X",100,IF(K17="X",150,IF(K18="X",200,0)))), 	
+Cell L14: Compliance, 	Cell L16: x, 	Cell L19: =IF(L15="X",50,IF(L16="X",100,IF(L17="X",150,IF(L18="X",200,0)))), 	
+Cell M14: Total (Si), 	Cell M19: =SUM(E19:L19), 	
+Cell N19: =IF(M19>1600, "ERR", "OK"), 	
