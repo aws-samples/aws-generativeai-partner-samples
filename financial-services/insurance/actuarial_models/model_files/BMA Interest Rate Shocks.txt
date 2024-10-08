@@ -1,0 +1,27 @@
+Excel Tab, Sheet Name: BMA Interest Rate Shocks
+
+Cell B2: Interest Rate Shocks for BSCR Shock-Based interest rate risk approach for YE2022 filing, 	Cell B4: These shocks are to be applied when using the shock-based approach to interest rate risk in BSCR (Schedule XXIII)., 	Cell B5: The shocks are absolute shocks and are to be added to the valuation date spot curve., 	Cell B6: Note these rates are consistent with the rates published for the YE2021 filing, 	Cell B8: Currency, 	Cell B9: Shock, 	Cell B10: Tenor, 	Cell B12: =B11+1, 	Cell B13: =B12+1, 	Cell B14: =B13+1, 	Cell B15: =B14+1, 	Cell B16: =B15+1, 	Cell B17: =B16+1, 	Cell B18: =B17+1, 	Cell B19: =B18+1, 	Cell B20: =B19+1, 	Cell B21: =B20+1, 	Cell B22: =B21+1, 	Cell B23: =B22+1, 	Cell B24: =B23+1, 	Cell B25: =B24+1, 	Cell B26: =B25+1, 	Cell B27: =B26+1, 	Cell B28: =B27+1, 	Cell B29: =B28+1, 	Cell B30: =B29+1, 	Cell B31: =B30+1, 	Cell B32: =B31+1, 	Cell B33: =B32+1, 	Cell B34: =B33+1, 	Cell B35: =B34+1, 	Cell B36: =B35+1, 	Cell B37: =B36+1, 	Cell B38: =B37+1, 	Cell B39: =B38+1, 	Cell B40: =B39+1, 	Cell B41: =B40+1, 	Cell B42: =B41+1, 	Cell B43: =B42+1, 	Cell B44: =B43+1, 	Cell B45: =B44+1, 	Cell B46: =B45+1, 	Cell B47: =B46+1, 	Cell B48: =B47+1, 	Cell B49: =B48+1, 	Cell B50: =B49+1, 	Cell B51: =B50+1, 	Cell B52: =B51+1, 	Cell B53: =B52+1, 	Cell B54: =B53+1, 	Cell B55: =B54+1, 	Cell B56: =B55+1, 	Cell B57: =B56+1, 	Cell B58: =B57+1, 	Cell B59: =B58+1, 	Cell B60: =B59+1, 	Cell B61: =B60+1, 	Cell B62: =B61+1, 	Cell B63: =B62+1, 	Cell B64: =B63+1, 	Cell B65: =B64+1, 	Cell B66: =B65+1, 	Cell B67: =B66+1, 	Cell B68: =B67+1, 	Cell B69: =B68+1, 	Cell B70: =B69+1, 	Cell B71: =B70+1, 	Cell B72: =B71+1, 	Cell B73: =B72+1, 	Cell B74: =B73+1, 	Cell B75: =B74+1, 	Cell B76: =B75+1, 	Cell B77: =B76+1, 	Cell B78: =B77+1, 	Cell B79: =B78+1, 	Cell B80: =B79+1, 	Cell B81: =B80+1, 	Cell B82: =B81+1, 	Cell B83: =B82+1, 	Cell B84: =B83+1, 	Cell B85: =B84+1, 	Cell B86: =B85+1, 	Cell B87: =B86+1, 	Cell B88: =B87+1, 	Cell B89: =B88+1, 	Cell B90: =B89+1, 	Cell B91: =B90+1, 	Cell B92: =B91+1, 	Cell B93: =B92+1, 	Cell B94: =B93+1, 	Cell B95: =B94+1, 	Cell B96: =B95+1, 	Cell B97: =B96+1, 	Cell B98: =B97+1, 	Cell B99: =B98+1, 	Cell B100: =B99+1, 	Cell B101: =B100+1, 	Cell B102: =B101+1, 	Cell B103: =B102+1, 	Cell B104: =B103+1, 	Cell B105: =B104+1, 	Cell B106: =B105+1, 	Cell B107: =B106+1, 	Cell B108: =B107+1, 	Cell B109: =B108+1, 	
+
+Cell D8: USD, 	Cell D9: Up, 	Cell D10: =D$8&"_"&D$9, 	
+Cell E8: USD, 	Cell E9: Down, 	Cell E10: =E$8&"_"&E$9, 	
+
+Cell G8: EUR, 	Cell G9: Up, 	Cell G10: =G$8&"_"&G$9, 	
+Cell H8: EUR, 	Cell H9: Down, 	Cell H10: =H$8&"_"&H$9, 	
+
+Cell J8: GBP, 	Cell J9: Up, 	Cell J10: =J$8&"_"&J$9, 	
+Cell K8: GBP, 	Cell K9: Down, 	Cell K10: =K$8&"_"&K$9, 	
+
+Cell M8: JPY, 	Cell M9: Up, 	Cell M10: =M$8&"_"&M$9, 	
+Cell N8: JPY, 	Cell N9: Down, 	Cell N10: =N$8&"_"&N$9, 	
+
+Cell P8: CHF, 	Cell P9: Up, 	Cell P10: =P$8&"_"&P$9, 	
+Cell Q8: CHF, 	Cell Q9: Down, 	Cell Q10: =Q$8&"_"&Q$9, 	
+
+Cell S8: CAD, 	Cell S9: Up, 	Cell S10: =S$8&"_"&S$9, 	
+Cell T8: CAD, 	Cell T9: Down, 	Cell T10: =T$8&"_"&T$9, 	
+
+Cell V8: AUD, 	Cell V9: Up, 	Cell V10: =V$8&"_"&V$9, 	
+Cell W8: AUD, 	Cell W9: Down, 	Cell W10: =W$8&"_"&W$9, 	
+
+Cell Y8: NZD, 	Cell Y9: Up, 	Cell Y10: =Y$8&"_"&Y$9, 	
+Cell Z8: NZD, 	Cell Z9: Down, 	Cell Z10: =Z$8&"_"&Z$9, 	

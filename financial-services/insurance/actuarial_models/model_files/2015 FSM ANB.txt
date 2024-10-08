@@ -1,0 +1,29 @@
+Excel Tab, Sheet Name: 2015 FSM ANB
+Cell A1: 2015 VBT Female Smoker ANB Mortality Rates per 1000, 	Cell A3: Iss. Age, 	
+Cell B2: Duration, 	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Cell AA3: Ult., 	
+Cell AB3: Att. Age, 	

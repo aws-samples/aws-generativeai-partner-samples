@@ -1,0 +1,32 @@
+Excel Tab, Sheet Name: 2015 MNS ANB
+Cell A1: 2015 VBT Male Nonsmoker ANB Mortality Rates per 1000, 	Cell A4: Iss. Age, 	
+Cell B3: Duration, 	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Cell AA4: Ult., 	
+Cell AB4: Att. Age, 	
+
+
+
