@@ -14,8 +14,9 @@ aws_bedrock_model_id = "anthropic.claude-3-sonnet-20240229-v1:0"
 
 # This is just to automate the testing of the PAIG integration. In a real-world scenario,
 # this should be done in a secure way.
-login_url = "http://127.0.0.1:4545/account-service/api/login"
-config_url = "http://127.0.0.1:4545/governance-service/api/ai/application/1/config/json/download"
+paig_url = "http://127.0.0.1:4545"
+login_url = f"{paig_url}/account-service/api/login"
+config_url = f"{paig_url}/governance-service/api/ai/application/1/config/json/download"
 username = "admin"
 password = "welcome1"
 
@@ -113,13 +114,11 @@ init_paig()
 
 
 user_prompts = ["Who was the first President of USA", "Where did the first President of USA was born",
-                "Give me some popular 800 phone numbers", "That guy crossing the road is a moron"]
-
-user_prompts = ["What is 800-555-1212 phone number used for?",]
+                "What is 800-555-1212 phone number used for?", "That guy crossing the road is a moron"]
 
 for user_message in user_prompts:
     print(f"User: {user_message}")
-    PROMPT = f"""Use the following pieces of context to answer the question at the end.
+    PROMPT = f"""Use the following pieces of context to answer the question at the end. Keep it very short and simple.
             {user_message}
             ANSWER:
             """
@@ -127,3 +126,6 @@ for user_message in user_prompts:
     response = invoke_llm(PROMPT)
     print(f"PAIG: {response}")
     print("--------------------\n")
+
+print(f"You can go to PAIG UI {paig_url}#/audits_security to see the logs and the results. The admin credentials are "
+      f"{username}/{password}")
