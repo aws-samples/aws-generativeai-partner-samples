@@ -85,7 +85,7 @@ If the property type is mentioned anything like Condomonium or Condo or condos e
 If the property type value is not determinable always default the value as "Single Family Residence".
 
 The radius component may be expressed in miles or in kilometers. Output should in the format like 5mi or 5km depending upon the unit of measure used - miles or kilometers. If no radius component is found, default it to 6mi.
-If property features are not found, return it as 'Nil'.
+If property features are not found, return it as 'at least 1 bedroom'.
 Return these entities in a JSON output format as a python JSON variable I can use. Do not output any other verbose.
 
 Here is the user’s question: <question> {question} </question>
@@ -190,24 +190,38 @@ def invoke_aws_loc_service(address, index_name='explore.place.Esri'):
 # that existing within a distance radius of user prefered location. We will also pass the search property type 
 # (like townhome, single family residence etc) to the query so that we find the exact property that the user is looking for.
 
-def run_elastic_geospatial_query (geo_coded_lat, geo_coded_long, search_property_radius,search_property_type, index_name):
-    resp = els_client.search (
+def run_elastic_geospatial_query (geo_coded_lat, geo_coded_long, search_property_radius,search_property_type,search_property_features,index_name):
+    resp = els_client.search(
         index=index_name,
-        query= {
+        query={
             "bool": {
-                "must": [
-                    { "match": { "propertyType": search_property_type }}
-                ],
-                "filter": [
-                    {
-                        "geo_distance" : {
-                            "distance": search_property_radius, "propertyCoordinates": {"lat": geo_coded_lat, "lon": geo_coded_long }
+                "must": {
+                    "multi_match": {
+                        "fields": ["propertyType"],
+                        "query": search_property_type,
+                        "boost": 1.5,
+                    }
+                },
+                "should": {
+                    "semantic": {
+                        "field": "propertyFeatures_v",
+                        "query": search_property_features,
+                        "boost": 3.0,
+                    }
+                },
+                "filter": {
+                    "geo_distance" : {
+                        "distance": "15mi", 
+                        "propertyCoordinates": {
+                            "lat": geo_coded_lat, 
+                            "lon": geo_coded_long
                         }
                     }
-                ]
+                },
             }
         }
-    )
+    )    
+    
     return resp
 
 #Geospatial RAG in action
@@ -387,9 +401,9 @@ def get_ai_response(callback, prompt):
     placeholder.subheader(" Almost there : Elastic + Amazon Bedrock LLMs are at work...")
 
     # Step 3: Using the address coordinates and the radius, perform an Elastic search operation to find the nearest points of interest
-    results = run_elastic_geospatial_query (geo_coded_lat, geo_coded_long, search_property_radius, search_property_type, index_name)
+    results = run_elastic_geospatial_query (geo_coded_lat, geo_coded_long, search_property_radius, search_property_type,search_property_features, index_name)
     data = results.body
-    if True:
+    if debug:
         print("***** Elastic Search Results - start")
         print(results.body)
         print("***** Elastic Search Results - end")
@@ -454,8 +468,9 @@ def main():
 
     # User input
     with st.expander("Example Prompts to try:"):
-        st.markdown("- Find me homes near Frisco, TX.")
+        st.markdown("- Find me homes near Frisco, TX thats near to train stations")
         st.markdown("- Find townhomes near Apple campus in California.")
+        st.markdown("- Find me a Town house in Frisco, TX within 5 miles distance. I prefer that the townhoume has a jack and jill baths upstairs.")
         st.markdown("- Find me luxury condos in Cupertino, CA within 15 miles distance that has a private balcony and that is just near to Apple campus. I would like spa or sauna along with clubhouse facilities. An outdoor pools is even great. However, I want HOA fees per year not to exceed $10K.")
         st.markdown("- Find me some multi family residences near to Cupertino california. I prefer a private backyard. I would like the property to be near to malls, schools, tech giant companies. I do not want annual tax assessment amoutn to exceed $10K.")
         st.markdown("- Find me a single family residence near Frisco, TX. I like the home to feature high ceilings. I prefer the second bedroom downstairs for my elderly parents. I like backyard fenced with stone and wood. I prefer flooring that has mix of carpet, ceramic tiles and hardwood. Keep my HOA expenses under $1000 annually.")
@@ -493,7 +508,7 @@ def main():
                 st.session_state.messages.append({"role": "assistant", "content": formatted_response})
 
             except Exception as e:
-                error_message = f"Unable to find what you are looking for. Please Retry a different question. Truly apologize for the inconvinience caused."
+                error_message = f"Unable to find what you are looking for. Please Retry a different question. Truly apologize for the inconvinience caused. ERROR: {str(e)}"
                 message_placeholder.error(error_message)
                 st.session_state.messages.append({"role": "assistant", "content": error_message})
 
