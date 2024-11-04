@@ -77,8 +77,21 @@ Update the `config.yaml` file with the following details
 - cloud_api_key
 - index_name
 
+### Data loader
+Elastic Developer Tools Web Console Method:
+- Login into your Elastic Cloud's account
+- Access Developer Tool console.
+- Paste the contents of `data-loader-elastic-console.txt` in to the developer tool console.
+- Edit AWS configuration settings such as `aws_access_key` and `aws_secret_key`.
+- Start running each of the API calls in Elastic Cloud's Developer console.
 
 ### Run streamlit app
+
+0. Clone this repo. And change directory in to this folder.
+```
+git clone https://github.com/aws-samples/aws-generativeai-partner-samples.git
+cd aws-generativeai-partner-samples/ 
+```
 
 1. Enable python virtual environment.
 
