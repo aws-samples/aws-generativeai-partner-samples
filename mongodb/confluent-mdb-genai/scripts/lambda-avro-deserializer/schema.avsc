@@ -1,0 +1,214 @@
+{
+  "fields": [
+    {
+      "default": null,
+      "name": "user_id",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "default": null,
+      "name": "rating",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "default": null,
+      "name": "title",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "default": null,
+      "name": "text",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "default": null,
+      "name": "images",
+      "type": [
+        "null",
+        {
+          "items": [
+            "null",
+            "string"
+          ],
+          "type": "array"
+        }
+      ]
+    },
+    {
+      "default": null,
+      "name": "asin",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "default": null,
+      "name": "parent_asin",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "default": null,
+      "name": "timestamp",
+      "type": [
+        "null",
+        {
+          "logicalType": "local-timestamp-millis",
+          "type": "long"
+        }
+      ]
+    },
+    {
+      "default": null,
+      "name": "helpful_vote",
+      "type": [
+        "null",
+        "int"
+      ]
+    },
+    {
+      "default": null,
+      "name": "verified_purchase",
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    {
+      "default": null,
+      "name": "window_start",
+      "type": [
+        "null",
+        {
+          "logicalType": "local-timestamp-millis",
+          "type": "long"
+        }
+      ]
+    },
+    {
+      "default": null,
+      "name": "window_end",
+      "type": [
+        "null",
+        {
+          "logicalType": "local-timestamp-millis",
+          "type": "long"
+        }
+      ]
+    },
+    {
+      "default": null,
+      "name": "review_count",
+      "type": [
+        "null",
+        "long"
+      ]
+    },
+    {
+      "default": null,
+      "name": "address",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "default": null,
+      "name": "city",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "default": null,
+      "name": "country",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "default": null,
+      "name": "email",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "default": null,
+      "name": "first_name",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "default": null,
+      "name": "gender",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "default": null,
+      "name": "last_name",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "default": null,
+      "name": "payment_method",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "default": null,
+      "name": "phone_number",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "default": null,
+      "name": "state",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "default": null,
+      "name": "zip_code",
+      "type": [
+        "null",
+        "string"
+      ]
+    }
+  ],
+  "name": "record",
+  "namespace": "org.apache.flink.avro.generated",
+  "type": "record"
+}
