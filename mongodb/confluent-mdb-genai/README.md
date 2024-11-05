@@ -468,13 +468,6 @@ This lambda function summarizes the review after consuming off the `valid_review
     Secrets Manager Key: genai_demo_secret
     ```
 1. Confirm data is following by looking at the `enriched_product` topic. If you see messages coming in, the AWS Lambda trigger is working and the AWS Lambda is consuming and publishing data to Confluent Cloud. 
-2. Additional AWS Resource Cleanup
-
-To delete the sample application that you created, use the AWS CLI. Assuming you used your project name for the stack name, you can run the following:
-
-```bash
-sam delete --stack-name "confluent-mdb-genai"
-```
 
 ### **Filter down to unique reviews**
 This lambda function finds reviews that are unique. This could come in the form of length/comprehensiveness, a varied perspective, etc. This is done by finding reviews that have the least amount of matches after consuming off the `valid_reviews_with_user_info_json` topic. The newly generated review and associated details are then publish to the `enriched_review` topic.
@@ -498,4 +491,12 @@ This lambda function finds reviews that are unique. This could come in the form 
     This will delete all resources provisioned by Terraform.
 
 2. Terminate all running processes such as connectors and Flink commands, then delete the cluster and environment in the Confluent Cloud UI.
-3. Delete the collection and database, then remove the cluster in MongoDB Atlas.
+3. Additional AWS Resource Cleanup
+
+To delete the sample application that you created, use the AWS CLI. Assuming you used your project name for the stack name, you can run the following:
+
+```bash
+sam delete --stack-name "confluent-mdb-genai"
+```
+
+4. Delete the collection and database, then remove the cluster in MongoDB Atlas.
