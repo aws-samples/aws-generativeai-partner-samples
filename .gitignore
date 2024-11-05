@@ -1,0 +1,10 @@
+# Global patterns to ignore. Sorted alphabetically.
+*/*/__pycache__
+*/__pycache__
+**/.DS_Store
+**/venv
+
+# Files and directories to ignore. Sorted alphabetically.
+.idea
+common/bedrock_access_patterns/config.local.yaml
+mongodb/confluent-mdb-genai/.aws-sam/*

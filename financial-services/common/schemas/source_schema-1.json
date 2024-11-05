@@ -1,0 +1,112 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Insurance Company Data Model",
+  "type": "object",
+  "properties": {
+    "policies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "policyNumber": { "type": "string" },
+          "policyType": { "type": "string" },
+          "effectiveDate": { "type": "string", "format": "date" },
+          "expirationDate": { "type": "string", "format": "date" },
+          "premium": { "type": "number" }
+        },
+        "required": ["policyNumber", "policyType", "effectiveDate", "expirationDate", "premium"]
+      }
+    },
+    "persons": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "firstName": { "type": "string" },
+          "lastName": { "type": "string" },
+          "dateOfBirth": { "type": "string", "format": "date" },
+          "address": { "type": "object" }
+        },
+        "required": ["firstName", "lastName", "dateOfBirth", "address"]
+      }
+    },
+    "branches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "branchId": { "type": "string" },
+          "branchName": { "type": "string" },
+          "address": { "type": "object" }
+        },
+        "required": ["branchId", "branchName", "address"]
+      }
+    },
+    "agents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "agentId": { "type": "string" },
+          "firstName": { "type": "string" },
+          "lastName": { "type": "string" },
+          "branchId": { "type": "string" }
+        },
+        "required": ["agentId", "firstName", "lastName", "branchId"]
+      }
+    },
+    "paymentMethods": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "paymentMethodId": { "type": "string" },
+          "paymentType": { "type": "string" },
+          "details": { "type": "object" }
+        },
+        "required": ["paymentMethodId", "paymentType", "details"]
+      }
+    },
+    "personsWithPolicies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "personId": { "type": "string" },
+          "policyId": { "type": "string" }
+        },
+        "required": ["personId", "policyId"]
+      }
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "claimNumber": { "type": "string" },
+          "policyId": { "type": "string" },
+          "claimDate": { "type": "string", "format": "date" },
+          "claimAmount": { "type": "number" },
+          "claimStatus": { "type": "string" }
+        },
+        "required": ["claimNumber", "policyId", "claimDate", "claimAmount", "claimStatus"]
+      }
+    },
+    "vehicleInformation": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "vehicleId": { "type": "string" },
+          "make": { "type": "string" },
+          "model": { "type": "string" },
+          "year": { "type": "integer" },
+          "vin": { "type": "string" },
+          "policyId": { "type": "string" }
+        },
+        "required": ["vehicleId", "make", "model", "year", "vin", "policyId"]
+      }
+    }
+  },
+  "required": ["policies", "persons", "branches", "agents", "paymentMethods", "personsWithPolicies", "claims", "vehicleInformation"]
+}
