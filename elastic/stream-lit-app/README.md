@@ -5,6 +5,13 @@ In this streamlit application you will see how to use Elastic search, Amazon Bed
 
 This application introduces an interactive AI agent designed to assist with real estate inquiries. Users looking to purchase properties, such as townhomes, condos, or single-family homes in specific locations (e.g., New York, NY or Cupertino, CA) can use the agent to find listings that match their preferences. These preferences can include factors like city, distance, property type, and desired amenities such as a swimming pool or lawn.
 
+## Demo
+
+
+https://github.com/user-attachments/assets/2a73376b-45c8-4907-96f0-693b589f2cae
+
+
+
 ## Hybrid Geo Spatial RAG - System Architecture
 ![alt text](./geo-spatial-RAG-architecture.png).
 
