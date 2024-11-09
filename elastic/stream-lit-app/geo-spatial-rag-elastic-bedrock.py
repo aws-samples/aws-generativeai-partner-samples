@@ -196,10 +196,11 @@ def run_elastic_geospatial_query (geo_coded_lat, geo_coded_long, search_property
         query={
             "bool": {
                 "must": {
-                    "multi_match": {
-                        "fields": ["propertyType"],
-                        "query": search_property_type,
-                        "boost": 1.5,
+                    "match": {
+                        "propertyType": {
+                           "query": search_property_type,
+                           "boost": 1.5
+                        }
                     }
                 },
                 "should": {
@@ -211,7 +212,7 @@ def run_elastic_geospatial_query (geo_coded_lat, geo_coded_long, search_property
                 },
                 "filter": {
                     "geo_distance" : {
-                        "distance": "15mi", 
+                        "distance": search_property_radius, 
                         "propertyCoordinates": {
                             "lat": geo_coded_lat, 
                             "lon": geo_coded_long
@@ -369,9 +370,10 @@ def get_ai_response(callback, prompt):
         'Search Property Distance': [search_property_radius],
         'Search Property Features': [search_property_features]
     }
-    st.header("Named Entity Recognition (NER) at work")
     df = pd.DataFrame(ner_data)
-    st.table(df)
+    with st.expander("Named Entity Recognition (NER) at work.."):
+        #st.header("Named Entity Recognition (NER) at work")
+        st.table(df)
     
     ##
     # Step 2 : Geocoding using AWS Location Services. Using the address information, geocode and get longitude and latitude.
@@ -394,9 +396,10 @@ def get_ai_response(callback, prompt):
         'Geo coded Latitude': [geo_coded_lat],
         'Geo coded Longitude': [geo_coded_long]
     }
-    st.header("Geocoding using Amazon Location Services at work")
     df = pd.DataFrame(geo_coded_data)
-    st.table(df)
+    #st.header("Geocoding using Amazon Location Services at work")
+    with st.expander("Geocoding using Amazon Location Services at work.."):
+        st.table(df)
     placeholder = st.empty()
     placeholder.subheader(" Almost there : Elastic + Amazon Bedrock LLMs are at work...")
 
@@ -434,6 +437,7 @@ def get_ai_response(callback, prompt):
 
 def main():
     st.title("Hybrid Geo Spatial RAG using Elastic and Amazon Bedrock")
+    st.image("elastic-aws-logo.png", width=600)
     intro_text = """
     In this streamlit application you will see how to use Elastic search, Amazon Bedrock, Anthropic Claude 3 
     and Langchain to build a Retrieval Augmented Generation (RAG) solution that leverages Geospatial features of Elastic.
@@ -451,10 +455,48 @@ def main():
         st.subheader("Use case")
         st.markdown(usecase_text)
         st.subheader("Geo Spatial RAG Architecture")
-        st.image("geo-spatial-RAG-architecture.png")
+        st.image("geo-spatial-RAG-architecture.svg")
         st.subheader("Elastic endpoints Info")
         st.write(els_client.info())
         st.write("INFO: Successfully connected to Elastic endpoints")
+        st.subheader("Power of Hybrid Search : Lexicographical + Geospatial + Vector Similarity")
+        st.markdown(
+            """
+            ```Python
+            resp = els_client.search(
+                    index=index_name,
+                    query={
+                        "bool": {
+                            "must": {
+                                "match": {
+                                    "propertyType": {
+                                    "query": search_property_type,
+                                    "boost": 1.5
+                                    }
+                                }
+                            },
+                            "should": {
+                                "semantic": {
+                                    "field": "propertyFeatures_v",
+                                    "query": search_property_features,
+                                    "boost": 3.0,
+                                }
+                            },
+                            "filter": {
+                                "geo_distance" : {
+                                    "distance": search_property_radius, 
+                                    "propertyCoordinates": {
+                                        "lat": geo_coded_lat, 
+                                        "lon": geo_coded_long
+                                    }
+                                }
+                            },
+                        }
+                    }
+                ) 
+            ```   
+            """
+        )
 
 
     # Initialize chat history
@@ -468,9 +510,8 @@ def main():
 
     # User input
     with st.expander("Example Prompts to try:"):
-        st.markdown("- Find me homes near Frisco, TX thats near to train stations")
-        st.markdown("- Find townhomes near Apple campus in California.")
         st.markdown("- Find me a Town house in Frisco, TX within 5 miles distance. I prefer that the townhoume has a jack and jill baths upstairs.")
+        st.markdown("- Find townhomes near Apple campus in California.")
         st.markdown("- Find me luxury condos in Cupertino, CA within 15 miles distance that has a private balcony and that is just near to Apple campus. I would like spa or sauna along with clubhouse facilities. An outdoor pools is even great. However, I want HOA fees per year not to exceed $10K.")
         st.markdown("- Find me some multi family residences near to Cupertino california. I prefer a private backyard. I would like the property to be near to malls, schools, tech giant companies. I do not want annual tax assessment amoutn to exceed $10K.")
         st.markdown("- Find me a single family residence near Frisco, TX. I like the home to feature high ceilings. I prefer the second bedroom downstairs for my elderly parents. I like backyard fenced with stone and wood. I prefer flooring that has mix of carpet, ceramic tiles and hardwood. Keep my HOA expenses under $1000 annually.")
