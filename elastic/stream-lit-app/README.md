@@ -78,7 +78,16 @@ https://github.com/user-attachments/assets/2a73376b-45c8-4907-96f0-693b589f2cae
     }
     ```
 ### Configuration of Elastic endpoints
+Install git
+```
+sudo yum install git
+```
 Clone this repo first.
+Change directory in to stream-lit-app folder.
+```
+cd aws-generativeai-partner-samples/elastic/stream-lit-app/
+```
+
 Update the `config.yaml` file with the following details
 - cloud_id
 - cloud_api_key

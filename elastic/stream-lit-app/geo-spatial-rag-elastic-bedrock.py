@@ -377,6 +377,9 @@ def get_ai_response(callback, prompt):
     
     ##
     # Step 2 : Geocoding using AWS Location Services. Using the address information, geocode and get longitude and latitude.
+    if search_property_address is None or search_property_address == "" :
+        return " Please mention a valid geographical location, atleast mentioning a city and state name. Example: Cupertino, CA"
+
     aws_location_service_result = invoke_aws_loc_service(search_property_address)
     if (debug):
         print(aws_location_service_result)
