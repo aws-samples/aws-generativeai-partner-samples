@@ -10,24 +10,12 @@ import botocore
 import nltk
 import pandas as pd
 import yaml
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_community.chat_models.bedrock import BedrockChat
-from langchain.embeddings import BedrockEmbeddings
 from botocore.client import Config
-from langchain_community.retrievers import AmazonKnowledgeBasesRetriever
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_elasticsearch import ElasticsearchStore
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
-from langchain.schema.runnable import RunnablePassthrough
-from langchain.chains import RetrievalQA
-from getpass import getpass
 from langchain.prompts import PromptTemplate
-from langchain.document_loaders import DirectoryLoader
 from pathlib import Path
 from typing import Dict
-from langchain_elasticsearch import ElasticsearchRetriever
 from elasticsearch import Elasticsearch
 from streamlit_folium import folium_static
 import folium
@@ -56,9 +44,6 @@ bedrock_config = Config(connect_timeout=120, read_timeout=120, retries={'max_att
 bedrock_client = boto3.client('bedrock-runtime', region_name='us-east-1')
 modelId = 'anthropic.claude-3-sonnet-20240229-v1:0' # change this to use a different version from the model provider
 embeddingmodelId = 'amazon.titan-embed-text-v1' # change this to use a different embedding model
-
-llm = BedrockChat(model_id=modelId, client=bedrock_client)
-embeddings = BedrockEmbeddings(model_id=embeddingmodelId,client=bedrock_client)
 
 user_prompt_template = """
 Human: You will be acting as a Real estate realtor. Your end users will ask questions about finding properties near to a specific location given in the form of an address. This address may sometimes contains the Street number, Street Name, City name, State name and zip code. If the country name is not mentioned, consider it as USA.  For the prompt, extract the longitude and latitude information by geocoding.
@@ -220,7 +205,15 @@ def run_elastic_geospatial_query (geo_coded_lat, geo_coded_long, search_property
                     }
                 },
             }
-        }
+        },
+        source= [
+            "propertyId",
+            "propertyName",
+            "propertyType", 
+            "propertyAddress",
+            "propertyFeatures",
+            "propertyCoordinates"
+        ]
     )    
     
     return resp
@@ -377,6 +370,9 @@ def get_ai_response(callback, prompt):
     
     ##
     # Step 2 : Geocoding using AWS Location Services. Using the address information, geocode and get longitude and latitude.
+    if search_property_address is None or search_property_address == "" :
+        return " Please mention a valid geographical location, atleast mentioning a city and state name. Example: Cupertino, CA"
+
     aws_location_service_result = invoke_aws_loc_service(search_property_address)
     if (debug):
         print(aws_location_service_result)
@@ -490,7 +486,7 @@ def main():
                                         "lon": geo_coded_long
                                     }
                                 }
-                            },
+                            }
                         }
                     }
                 ) 
