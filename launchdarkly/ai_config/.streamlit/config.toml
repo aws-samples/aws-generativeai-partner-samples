@@ -1,0 +1,8 @@
+[server]
+baseUrlPath = "app"
+port = 8501
+headless = true
+
+[browser]
+serverAddress = "localhost"
+serverPort = 8501
