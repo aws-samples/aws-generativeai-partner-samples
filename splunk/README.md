@@ -1,0 +1,302 @@
+# Splunk Bedrock Integration Suite
+
+## An Agentic AI approach to build customized Splunk assistants using Bedrock agents
+This solution provides an approach to build an AI assistant for your Splunk environment, using Amazon BedRock LLMs and features. This AI assistant takes natural language input and translates it into executable Splunk SPL query, executes the query, analyze the results and provide you the summary of findings.
+
+
+## Components
+This project consists of three components:
+
+1. Jupyter notebooks for solution walk through and understanding the implementation:
+   1. `Splunk_secrets.ipynb` - Run this notebook to create and store secrets for Splunk User Token and Host information
+   2. `Splunk_bedrock_agent.ipynb` - Run this notebook for step by step instructions on creating VectorDB for source types, lambda functions, bedrock agents, invocation and clean-up instructions.   
+2. A CDK application that deploys an AWS Bedrock agent integrated with Splunk.
+3. A Streamlit-based demo application showcasing Bedrock capabilities.
+
+Choose the appropriate component based on your needs.
+
+## Architecture Overview
+
+![architecture](image/architecture.png)
+
+
+The solution consists of the following main components:
+
+- Amazon Bedrock Agent for handling queries
+- Amazon OpenSearch Serverless for data storage and search
+- AWS Lambda functions for data ingestion and querying
+- Integration with Splunk for data sourcing
+- Amazon S3 for storing intermediate data
+
+## Components
+
+### 1. CDK Deployment (Infrastructure)
+This component sets up the core infrastructure including the Bedrock agent, OpenSearch, and Lambda functions.
+
+### 2. Streamlit Demo Application
+Located in the `/bedrock` directory, this component provides a web-based interface for interacting with Bedrock models.
+
+## Prerequisites
+
+Before using this solution, you need:
+
+1. AWS Account with appropriate permissions
+2. Python 3.8 or later
+3. AWS Bedrock access enabled in your account
+4. Splunk instance with appropriate access
+
+Additional requirements per component:
+- For CDK Deployment: AWS CDK CLI installed
+- For Streamlit Demo: Amazon SageMaker Studio access
+
+## Getting Started
+
+1. Clone this repository
+
+2. Set up your environment:
+
+### Environment Setup
+
+#### Issue: "This environment is externally managed"
+
+This error occurs when trying to install Python packages in an environment that is managed by an external tool (like Homebrew on macOS). Here's how to resolve it:
+
+##### Solution 1: Use Virtual Environment (Recommended)
+
+1. Create a virtual environment:
+   ```bash
+   python3 -m venv .venv
+   ```
+
+2. Activate the virtual environment:
+   - On macOS/Linux:
+     ```bash
+     source .venv/bin/activate
+     ```
+   - On Windows:
+     ```bash
+     .venv\Scripts\activate
+     ```
+
+3. Install dependencies within the virtual environment:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+##### Solution 2: Alternative Approaches
+
+If you cannot use a virtual environment:
+
+1. Use Homebrew to install system packages:
+   ```bash
+   brew install python-package-name
+   ```
+
+2. Or use the `--user` flag with pip:
+   ```bash
+   pip3 install --user -r requirements.txt
+   ```
+
+### Environment Variables
+
+Before proceeding, set the following environment variables:
+
+- AWS_ACCOUNT_ID
+- S3_BUCKET_NAME (optional)
+- SPLUNK_SECRET_NAME
+
+3. Choose your component:
+
+### For CDK Deployment:
+
+1. Install CDK dependencies:
+```bash
+cd stacks
+pip install -r requirements.txt
+```
+
+2. Configure environment variables:
+```bash
+export AWS_ACCOUNT_ID=your_account_id
+export S3_BUCKET_NAME=your_bucket_name  # defaults to splunkrag{account_id}
+export SPLUNK_SECRET_NAME=your_secret_name  # ARN format
+```
+
+3. Update configuration in `stacks/config.py`:
+   - Verify ACCOUNT_REGION (default: us-east-1)
+   - Adjust RAG_PROJ_NAME (default: e2e-rag)
+   - Configure chunking strategy:
+     - Options: Default(0), Fixed-size(1), No chunking(2)
+     - Default setting: Fixed-size chunking
+     - Adjustable token limit (default: 512)
+     - Adjustable overlap percentage (default: 20%)
+
+### For Streamlit Demo:
+
+1. Navigate to the demo directory:
+```bash
+cd stacks
+```
+
+2. Install demo dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+3. Follow the setup instructions in `bedrock/README.md`
+
+## Testing
+
+After deployment, you can verify the setup:
+
+### CDK Deployment Testing
+1. Access the AWS Console and navigate to the Bedrock Agents
+2. Verify the agent status is "Available"
+3. Test the agent through the AWS Console test interface
+
+### Streamlit Demo Testing
+1. Access the provided SageMaker Studio URL
+2. Verify the chat interface loads correctly
+3. Test basic interactions with the model
+
+## Stack Components
+
+The solution deploys these CDK stacks:
+
+### 1. KbRoleStack
+- Creates IAM roles for knowledge base access
+- Role name format: {RAG_PROJ_NAME}-kb-role
+
+### 2. OpenSearchServerlessInfraStack
+- Sets up OpenSearch Serverless collection and indexes
+- Collection name: {RAG_PROJ_NAME}-kb-collection
+- Index name: splunk-sourcetypes
+
+### 3. KnowledgeBaseStack
+- Configures Bedrock knowledge base integration
+- Sets up data source connections
+- Deploys ingestion and query Lambda functions
+- Configures EventBridge rules for synchronization
+
+### 4. BedrockStack
+- Configures Bedrock agent and execution role
+- Integrates with knowledge base
+- Sets up Splunk connection configuration
+
+## Deployment Steps
+
+1. Bootstrap CDK (if not already done):
+```bash
+cdk bootstrap aws://ACCOUNT-NUMBER/REGION
+```
+
+2. Deploy all stacks:
+```bash
+cdk deploy --all
+```
+
+## Configuration Details
+
+The solution uses these key configurations:
+
+1. Embedding Model:
+   - Default: amazon.titan-embed-text-v2:0
+
+2. OpenSearch Settings:
+   - Collection: {RAG_PROJ_NAME}-kb-collection
+   - Index: splunk-sourcetypes
+
+3. Splunk Integration:
+   - Uses Secrets Manager for credentials
+   - Default secret ARN format:
+     arn:aws:secretsmanager:{region}:{account_id}:secret:splunk-bedrock-secret-bPya16
+
+4. S3 Storage:
+   - Default bucket name: splunkrag{account_id}
+   - Can be overridden via environment variable
+
+## Troubleshooting
+
+1. Check CloudWatch logs for Lambda functions:
+   - Ingestion Lambda
+   - Query Lambda
+
+2. Verify environment variables:
+   - AWS_ACCOUNT_ID
+   - S3_BUCKET_NAME
+   - SPLUNK_SECRET_NAME
+
+3. Common Issues:
+   - Ensure AWS Bedrock service access is enabled
+   - Verify Splunk credentials in Secrets Manager
+   - Check IAM roles and permissions
+
+## Security Considerations
+
+- Uses IAM roles with least privilege
+- Secrets stored in AWS Secrets Manager
+- Network access restricted by VPC configuration
+- Logging and monitoring through CloudWatch
+- Encryption at rest for all data stores
+- Secure API endpoints for all services
+- Encrypted data transfer and storage
+
+## Deployment
+
+### CDK Infrastructure
+```bash
+# Bootstrap CDK (if not already done)
+cdk bootstrap aws://ACCOUNT-NUMBER/REGION
+
+# Deploy all stacks
+cdk deploy --all
+```
+
+### Streamlit Demo
+```bash
+# From the bedrock directory
+
+./run.sh
+
+or 
+
+streamlit run app.py
+```
+
+The Streamlit app will be available at:
+- Local: http://localhost:8501
+- SageMaker Studio: https://<your-domain>.studio.<region>.sagemaker.aws/jupyter/default/proxy/8501/
+
+## Maintenance and Updates
+
+1. Regular Updates
+   - Check for CDK package updates
+   - Review AWS Bedrock model versions
+   - Update Python dependencies
+
+2. Monitoring
+   - Configure CloudWatch alarms
+   - Monitor usage metrics
+   - Check application logs
+
+3. Cost Management
+   - Monitor OpenSearch usage
+   - Track Bedrock API calls
+   - Review Lambda invocations
+
+## Support and Contact
+
+For issues and questions:
+1. Check the troubleshooting section
+2. Review CloudWatch logs
+3. Open a GitHub issue for bugs
+4. Contact AWS Support for service-specific issues
+
+
+## Contributing
+
+Contributions are welcome! Please submit pull requests with improvements.
+
+## License
+
+This library is licensed under the MIT-0 License. See the LICENSE file.

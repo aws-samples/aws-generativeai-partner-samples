@@ -1,0 +1,12 @@
+langchain
+streamlit
+boto3
+pdfplumber
+python-dotenv
+splunk-sdk
+langchain-community
+faiss-cpu
+langchain-aws
+
+aws-cdk-lib
+constructs
