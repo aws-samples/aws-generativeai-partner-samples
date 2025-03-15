@@ -11,10 +11,10 @@ This directory contains pre-built samples and solutions to help customers get st
 ## Project setup
 
 #### Local
-Follow these [steps](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) to install AWS CLI in your local environment.
+- Follow these [steps](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) to install AWS CLI in your local environment.
 
 #### SageMaker
-Follow these [steps](https://docs.aws.amazon.com/sagemaker/latest/dg/gs-setup-working-env.html) to create a SageMaker notebook instance.
+- Follow these [steps](https://docs.aws.amazon.com/sagemaker/latest/dg/gs-setup-working-env.html) to create a SageMaker notebook instance.
 
 ### Local
 
