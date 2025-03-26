@@ -21,24 +21,20 @@ This architecture creates a flexible foundation for Agentic AI systems that can 
 ## Components
 
 1. **Elasticsearch MCP Server**: Provides natural language access to Elasticsearch indices
-
-
-Tools:
+- Tools:
     - **search_elasticsearch**: Dynamically searches Elasticsearch indices based on natural language queries
         - Parameters: query (string), top_k (integer, optional)
         - Features: Automatically handles nested fields, adapts to index structure, supports fuzzy matching
         - Returns: Formatted search results with relevant document content
 
 2. **Weather MCP Server** : Provides weather forecast data via the NWS API
-
-
-Tools:
+- Tools:
     - **get_forecast**: Retrieves detailed weather forecast for a specific location
         - Parameters: latitude (float), longitude (float)
         - Features: Multi-day forecast, temperature data, wind conditions, precipitation details
         - Returns: Formatted forecast broken down by time periods (today, tonight, tomorrow, etc.)
 
-        
+
     - **get_alerts**: Retrieves active weather alerts for a specified US state
         - Parameters: state (string) - two-letter US state code
         - Features: Emergency alerts, severe weather warnings, hazard notifications
@@ -46,7 +42,7 @@ Tools:
 
 3. **Multi-Server MCP Client**: Integrates multiple MCP servers with Amazon Bedrock
 
-**Key Functions**:
+- **Key Functions**:
     - **Tool Discovery**: Automatically discovers and registers all available tools from connected servers
     - **Tool Routing**: Routes tool calls to the appropriate servers based on tool names
     - **Conversation Management**: Maintains context across multiple tool calls and servers
