@@ -18,41 +18,38 @@ This architecture creates a flexible foundation for Agentic AI systems that can 
 
 
 
-
-
 ## Components
 
 1. **Elasticsearch MCP Server**: Provides natural language access to Elasticsearch indices
 Tools:
-    - search_elasticsearch: Dynamically searches Elasticsearch indices based on natural language queries
-        Parameters: query (string), top_k (integer, optional)
-        Features: Automatically handles nested fields, adapts to index structure, supports fuzzy matching
-        Returns: Formatted search results with relevant document content
-    - get_index_info: Retrieves metadata about available indices or a specific index
-        Parameters: index_name (string, optional)
-        Features: Shows document count, size, and field structure including nested fields
-        Returns: Detailed information about index structure and statistics
+    - **search_elasticsearch**: Dynamically searches Elasticsearch indices based on natural language queries
+        - Parameters: query (string), top_k (integer, optional)
+        - Features: Automatically handles nested fields, adapts to index structure, supports fuzzy matching
+        - Returns: Formatted search results with relevant document content
 
 2. **Weather MCP Server** : Provides weather forecast data via the NWS API
 
 Tools:
-    - get_forecast: Retrieves detailed weather forecast for a specific location
-        Parameters: latitude (float), longitude (float)
-        Features: Multi-day forecast, temperature data, wind conditions, precipitation details
-        Returns: Formatted forecast broken down by time periods (today, tonight, tomorrow, etc.)
-    - get_alerts: Retrieves active weather alerts for a specified US state
-        Parameters: state (string) - two-letter US state code
-        Features: Emergency alerts, severe weather warnings, hazard notifications
-        Returns: Formatted alert information including severity, description, and instructions
+    - **get_forecast**: Retrieves detailed weather forecast for a specific location
+        - Parameters: latitude (float), longitude (float)
+        - Features: Multi-day forecast, temperature data, wind conditions, precipitation details
+        - Returns: Formatted forecast broken down by time periods (today, tonight, tomorrow, etc.)
+    - **get_alerts**: Retrieves active weather alerts for a specified US state
+        - Parameters: state (string) - two-letter US state code
+        - Features: Emergency alerts, severe weather warnings, hazard notifications
+        - Returns: Formatted alert information including severity, description, and instructions
 
 3. **Multi-Server MCP Client**: Integrates multiple MCP servers with Amazon Bedrock
 
-Key Functions:
-    - Tool Discovery: Automatically discovers and registers all available tools from connected servers
-    - Tool Routing: Routes tool calls to the appropriate servers based on tool names
-    - Conversation Management: Maintains context across multiple tool calls and servers
-    - Response Synthesis: Uses Claude to integrate results from multiple tools into coherent responses
-    - Error Handling: Gracefully handles failures in tool execution and server communication
+**Key Functions**:
+    - **Tool Discovery**: Automatically discovers and registers all available tools from connected servers
+    - **Tool Routing**: Routes tool calls to the appropriate servers based on tool names
+    - **Conversation Management**: Maintains context across multiple tool calls and servers
+    - **Response Synthesis**: Uses Claude to integrate results from multiple tools into coherent responses
+    - **Error Handling**: Gracefully handles failures in tool execution and server communication
+
+## Reference Architecture
+![mcp](./mcp.png)
 
 
 ### Workflow
@@ -95,7 +92,7 @@ uv pip install elasticsearch[async]>=8.0.0 aiohttp httpx mcp[cli] boto3
 
 ### 2. Configure Elasticsearch
 
-Set up your Elasticsearch index with customer data:
+Set up your Elasticsearch index named *customers* and populate it with data:
 
 ```
 # In Elasticsearch Dev Tools console
@@ -216,16 +213,6 @@ Once the client is running, you can enter the following prompt:
 Find out city where John Doe is located from his purchase history and then get me a summary of the weather forecast for this city
 ```
 
-### Expected Workflow
-
-1. The client will send the prompt to Claude
-2. Claude will identify this as a multi-step task:
-   - First, search Elasticsearch for John Doe's location
-   - Then, get the weather forecast for that location
-3. Claude will call the `search_elasticsearch` tool with an appropriate query
-4. After receiving the address information (New York), Claude will parse the city and state
-5. Claude will then call the `get_forecast` tool with the coordinates for New York
-6. Finally, Claude will provide a summary of the weather forecast for New York
 
 ### Example Response
 
