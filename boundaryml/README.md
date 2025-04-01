@@ -21,7 +21,7 @@ pip install nova-act
 ```
 
 ## BAML Setup
-You can find instructiosn in setting up BAML with Python here. https://docs.boundaryml.com/guide/installation-language/python
+You can find instructions in setting up BAML with Python here. https://docs.boundaryml.com/guide/installation-language/python
 
 ### Install BAML
 
@@ -29,3 +29,8 @@ You can find instructiosn in setting up BAML with Python here. https://docs.boun
 pip install baml-py
 ```
 
+Once BAML is installed, run following command to generate baml_client files which are used in the client python libraries
+
+```bash
+baml-cli generate
+```
