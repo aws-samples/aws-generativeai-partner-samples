@@ -2,8 +2,8 @@ from nova_act import NovaAct
 from pydantic import BaseModel
 
 class AWSInfra(BaseModel):
-    regions: list[str]
-    azs: list[str]
+    regions: int
+    azs: int
 
 with NovaAct(starting_page="https://aws.amazon.com", headless=True, record_video=True) as n:
     n.act("click on Ask AWS Chat Icon")
