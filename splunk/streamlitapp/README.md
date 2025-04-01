@@ -1,12 +1,6 @@
-# Refactored Bedrock Agent Test UI
-
-This repository contains a refactored version of the AWS Bedrock Agent Test UI application. The refactoring improves code organization, maintainability, and readability by implementing modular design principles.
-
-This directory contains the Streamlit demo application for the Splunk Bedrock Integration Suite.
-
 ## Overview
 
-The Streamlit application provides a user-friendly interface to interact with the Bedrock integration components and demonstrate the capabilities of the system.
+The Streamlit application provides a user-friendly interface to interact with the Bedrock Agent for Splunk Assistant
 
 ## Prerequisites
 
@@ -15,17 +9,43 @@ Before running the application, ensure you have:
 2. Required Python packages installed (see `requirements.txt`)
 3. Proper AWS credentials configured
 4. Environment variables set up correctly
+5. Bedrock Agent should be created. Following the instructions from ../README.md to deploy bedrock agent using CDK.
+5. Update the .env file and provide agent_id and agent_alias_id
+
+Capture the following outputs from BedrockAgentStack and replace them in the .env in the streamlitapp
+For example, if your CDK output is shown as below:
+```
+   BedrockAgentStack.BedrockAgentAlias = 7D5OBAYQUT|R4KHCSUTXD
+   BedrockAgentStack.BedrockAgentID = 7D5OBAYQUT
+```
+
+Then edit your `.env` file as below:
+```
+# Environment variables for streamlit app
+# Replace AGENT_ID and AGENT_ALIAS_ID
+LOG_LEVEL=INFO
+BEDROCK_AGENT_ID=7D5OBAYQUT
+BEDROCK_AGENT_ALIAS_ID=R4KHCSUTXD
+```
+
 
 ## Setup
 
 1. Install required dependencies:
    ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate
    pip install -r requirements.txt
    ```
 
-2. Ensure your AWS credentials are properly configured with appropriate permissions
+2. Ensure your AWS credentials are properly configured with appropriate permissions 
 
-3. Configure environment variables as needed
+3. Configure environment variables as needed 
+   ```bash
+   export AWS_ACCESS_KEY_ID=<YOUR AWS ACCESS KEY>
+   export AWS_SECRET_ACCESS_KEY=<YOUR AWS SECRET ACCESS KEY>
+   export AWS_SESSION_TOKEN=<YOUR AWS SESSION TOKEN>
+   ```
 
 ## How to Run
 You can run the application using either of these methods:
@@ -40,37 +60,11 @@ You can run the application using either of these methods:
    streamlit run app.py
    ```
 
+The Streamlit app will be available at:
+- Local: http://localhost:8501
+
+
 ## Project Structure
-
-```
-├── app.py                  # Original application (for reference)
-├── app_refactored.py       # Refactored main application
-├── modules/                # Refactored modular components
-│   ├── __init__.py         # Package initialization
-│   ├── config.py           # Configuration handling
-│   ├── ui.py               # UI component functions
-│   └── bedrock_client.py   # AWS Bedrock service client
-├── requirements.txt        # Project dependencies
-└── README.md               # Project documentation
-```
-
-## Improvements Made
-
-1. **Modular Architecture**
-   - Separated concerns into dedicated modules
-   - Improved code reusability and maintenance
-
-2. **Enhanced Error Handling**
-   - Structured error handling with proper logging
-   - Better user feedback on errors
-
-3. **Better Code Organization**
-   - Functions are grouped by responsibility
-   - Clear separation between configuration, UI rendering, and API calls
-
-4. **Improved Documentation**
-   - Added comprehensive docstrings
-   - Clear function parameters and return types
 
 - `app.py`: Main Streamlit application file
 - `bedrock_agent_runtime.py`: Handles Bedrock agent interactions
@@ -99,4 +93,4 @@ If you encounter issues:
 
 
 ## Sample Query
-Can you write and execute SPL to query AWS cloudtrail data. I need to see which top 5 count of non-success error code by AWS service and event. Give me a table of final results and provide your summary
+Write a SPL to query the AWS CloudTrail data, get list of top 10 AWS events and summarize the result.

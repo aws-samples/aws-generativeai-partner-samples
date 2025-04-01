@@ -34,7 +34,7 @@ The solution consists of the following main components:
 This component sets up the core infrastructure including the Bedrock agent, OpenSearch, and Lambda functions.
 
 ### 2. Streamlit Demo Application
-Located in the `/bedrock` directory, this component provides a web-based interface for interacting with Bedrock models.
+Located in the `/streamlitapp` directory, this component provides a web-based interface for interacting with Bedrock models.
 
 ## Prerequisites
 
@@ -46,8 +46,8 @@ Before using this solution, you need:
 4. Splunk instance with appropriate access
 
 Additional requirements per component:
-- For CDK Deployment: AWS CDK CLI installed
-- For Streamlit Demo: Amazon SageMaker Studio access
+- For CDK Deployment: AWS CDK CLI installed. Refer [AWS documentation](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html) for CDK
+
 
 ## Getting Started
 
@@ -56,12 +56,6 @@ Additional requirements per component:
 2. Set up your environment:
 
 ### Environment Setup
-
-#### Issue: "This environment is externally managed"
-
-This error occurs when trying to install Python packages in an environment that is managed by an external tool (like Homebrew on macOS). Here's how to resolve it:
-
-##### Solution 1: Use Virtual Environment (Recommended)
 
 1. Create a virtual environment:
    ```bash
@@ -82,21 +76,7 @@ This error occurs when trying to install Python packages in an environment that 
    ```bash
    pip install -r requirements.txt
    ```
-
-##### Solution 2: Alternative Approaches
-
-If you cannot use a virtual environment:
-
-1. Use Homebrew to install system packages:
-   ```bash
-   brew install python-package-name
-   ```
-
-2. Or use the `--user` flag with pip:
-   ```bash
-   pip3 install --user -r requirements.txt
-   ```
-
+   
 ### Environment Variables
 
 Before proceeding, set the following environment variables:
@@ -111,53 +91,63 @@ Before proceeding, set the following environment variables:
 
 1. Install CDK dependencies:
 ```bash
-cd stacks
-pip install -r requirements.txt
+   cd stacks
+   pip install -r requirements.txt
 ```
+2. Edit `create_splunk_secrets.py` and update the SplunkHost and SplunkToken and run this python script to create the Splunk secrets in AWS Secrets Manager. Note down the sercets ARN for following stept configure environment variables.
+```bash
+python create_splunk_secrets.py
+```
+3. Bootstrap CDK (if not already done):
+   
+`cdk bootstrap aws://ACCOUNT-NUMBER/REGION`
 
-2. Configure environment variables:
+4. Configure environment variables:
 ```bash
 export AWS_ACCOUNT_ID=your_account_id
 export S3_BUCKET_NAME=your_bucket_name  # defaults to splunkrag{account_id}
-export SPLUNK_SECRET_NAME=your_secret_name  # ARN format
+export SPLUNK_SECRET_NAME=your_secret_name  # ARN format created from previous step
 ```
 
-3. Update configuration in `stacks/config.py`:
+5. Update configuration in `stacks/config.py`:
    - Verify ACCOUNT_REGION (default: us-east-1)
    - Adjust RAG_PROJ_NAME (default: e2e-rag)
-   - Configure chunking strategy:
-     - Options: Default(0), Fixed-size(1), No chunking(2)
-     - Default setting: Fixed-size chunking
-     - Adjustable token limit (default: 512)
-     - Adjustable overlap percentage (default: 20%)
+
+6. Deploy the stacks
+   ```bash
+      cdk deploy --all
+   ```
+
+7. Clean up (optional)
+   ```bash
+      cdk destroy --all
+   ```
 
 ### For Streamlit Demo:
+Capture the following outputs from BedrockAgentStack and replace them in the `.env` in the streamlitapp directory
 
-1. Navigate to the demo directory:
-```bash
-cd stacks
+For example, if your CDK output is shown as below:
+```
+   BedrockAgentStack.BedrockAgentAlias = 7D5OBAYQUT|R4KHCSUTXD
+   BedrockAgentStack.BedrockAgentID = 7D5OBAYQUT
 ```
 
-2. Install demo dependencies:
-```bash
-pip install -r requirements.txt
+Then edit your `.env` file as below:
+```
+# Environment variables for streamlit app
+# Replace AGENT_ID and AGENT_ALIAS_ID
+LOG_LEVEL=INFO
+BEDROCK_AGENT_ID=7D5OBAYQUT
+BEDROCK_AGENT_ALIAS_ID=R4KHCSUTXD
 ```
 
-3. Follow the setup instructions in `bedrock/README.md`
+You can also retrieve the alias and agent Id from Bedrock Agent console
 
-## Testing
+Follow the setup instructions in `streamlitapp/README.md`
 
-After deployment, you can verify the setup:
+The Streamlit app will be available at:
+- Local: http://localhost:8501
 
-### CDK Deployment Testing
-1. Access the AWS Console and navigate to the Bedrock Agents
-2. Verify the agent status is "Available"
-3. Test the agent through the AWS Console test interface
-
-### Streamlit Demo Testing
-1. Access the provided SageMaker Studio URL
-2. Verify the chat interface loads correctly
-3. Test basic interactions with the model
 
 ## Stack Components
 
@@ -183,17 +173,6 @@ The solution deploys these CDK stacks:
 - Integrates with knowledge base
 - Sets up Splunk connection configuration
 
-## Deployment Steps
-
-1. Bootstrap CDK (if not already done):
-```bash
-cdk bootstrap aws://ACCOUNT-NUMBER/REGION
-```
-
-2. Deploy all stacks:
-```bash
-cdk deploy --all
-```
 
 ## Configuration Details
 
@@ -241,31 +220,15 @@ The solution uses these key configurations:
 - Secure API endpoints for all services
 - Encrypted data transfer and storage
 
-## Deployment
 
-### CDK Infrastructure
-```bash
-# Bootstrap CDK (if not already done)
-cdk bootstrap aws://ACCOUNT-NUMBER/REGION
+### CDK Deployment Testing
+1. Access the AWS Console and navigate to the Bedrock Agents
+2. Verify the agent status is "Available"
+3. Test the agent through the AWS Console test interface
 
-# Deploy all stacks
-cdk deploy --all
-```
 
-### Streamlit Demo
-```bash
-# From the bedrock directory
 
-./run.sh
 
-or 
-
-streamlit run app.py
-```
-
-The Streamlit app will be available at:
-- Local: http://localhost:8501
-- SageMaker Studio: https://<your-domain>.studio.<region>.sagemaker.aws/jupyter/default/proxy/8501/
 
 ## Maintenance and Updates
 
