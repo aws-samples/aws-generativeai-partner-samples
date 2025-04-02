@@ -66,12 +66,26 @@ This architecture creates a flexible foundation for Agentic AI systems that can 
 
 ### Prerequisites
 
-- Python 3.8+ with uv package manager
+- Python 3.10+ with uv package manager
 - Access to Amazon Bedrock with Anthropic's Claude (or your choice of foundation model) model enabled
 - Access to Elasticsearch cloud or serverless
 - AWS account with proper IAM permissions for Bedrock
 
 ### 1. Install Dependencies
+
+If you are not running Python3.10+, here is how you can upgrade for Amazon Linux as an example:
+```bash
+sudo dnf upgrade --releasever=2023.7.20250331
+# Search for python3.XX versions. 
+sudo yum list available | grep python3
+
+# if Python 3.10 or 3.11 is found, simply install.
+sudo yum install python3.11
+python3.11 --version
+sudo alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
+sudo alternatives --config python3
+python3 --version
+```
 
 ```bash
 
@@ -203,7 +217,7 @@ ES_API_KEY = "
 1. Run the client with both server scripts:
 
 ```bash
-uv run multi_server_client.py /path/to/weather.py /path/to/elastic_retriever.py
+uv run multi_server_client.py /path/to/weather.py /path/to/elasticsearch_retriever.py
 ```
 
 ### Sample Prompt
