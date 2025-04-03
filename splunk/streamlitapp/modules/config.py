@@ -24,7 +24,7 @@ def load_environment():
         "LOG_LEVEL": "INFO",
         "BEDROCK_AGENT_ID": "changeme",
         "BEDROCK_AGENT_ALIAS_ID": "changeme",
-        "BEDROCK_AGENT_TEST_UI_TITLE": "Agents for Amazon Bedrock Test UI",
+        "BEDROCK_AGENT_TEST_UI_TITLE": "Splunk AI Assistant - using Bedrock",
         "BEDROCK_AGENT_TEST_UI_ICON": ""
     }
     
@@ -52,7 +52,7 @@ def get_config_values():
     return {
         "agent_id": os.environ.get("BEDROCK_AGENT_ID", "OLRUVU6WS4"),
         "agent_alias_id": os.environ.get("BEDROCK_AGENT_ALIAS_ID", "HYYQBZGPOI"),
-        "ui_title": os.environ.get("BEDROCK_AGENT_TEST_UI_TITLE", "Agents for Amazon Bedrock Test UI"),
+        "ui_title": os.environ.get("BEDROCK_AGENT_TEST_UI_TITLE", "Splunk AI Assistant - using Bedrock"),
         "ui_icon": os.environ.get("BEDROCK_AGENT_TEST_UI_ICON")
     }
 
