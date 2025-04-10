@@ -5,7 +5,7 @@
 ## Architecture
 The architecture of the solution is shown below. You will build a MCP server with components like a a Vector DB to store the information for AWS Source types and tools calling for Splunk to get the fields, lookups and do a SPL searches.
 
-![splunk_mcp_server](/images/splunk-mcp-server.png)
+![splunk_mcp_server](images/splunk-mcp-server.png)
 
 
 ## Deployment Steps
