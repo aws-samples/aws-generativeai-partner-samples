@@ -1,0 +1,16 @@
+[project]
+name = "splunk-mcp-server"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "boto3>=1.37.25",
+    "langchain-aws>=0.2.1",
+    "langchain-mcp-adapters>=0.0.7",
+    "langgraph>=0.3.27",
+    "mcp[cli]>=1.6.0",
+    "opensearch-py>=2.8.0",
+    "requests-aws4auth>=1.3.1",
+    "splunk-sdk>=2.1.0",
+]
