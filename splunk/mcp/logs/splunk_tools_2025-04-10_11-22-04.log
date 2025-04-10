@@ -1,0 +1,16 @@
+2025-04-10 11:22:04,388 - botocore.credentials - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-04-10 11:22:04,550 - botocore.credentials - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-04-10 11:22:04,555 - __main__ - INFO - Starting Splunk tools server
+2025-04-10 11:22:04,565 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-04-10 11:24:02,804 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:24:02,805 - __main__ - INFO - Searching AWS sourcetypes for: cloudtrail
+2025-04-10 11:24:02,805 - __main__ - INFO - Generating embedding for text: cloudtrail
+2025-04-10 11:24:03,011 - __main__ - INFO - Successfully generated embedding
+2025-04-10 11:24:03,349 - opensearch - INFO - POST https://v7hfyv11s4r35wcfldve.us-east-1.aoss.amazonaws.com:443/splunk-sourcetypes/_search [status:200 request:0.337s]
+2025-04-10 11:24:03,350 - __main__ - INFO - Found sourcetypes: ['{"AWS_Data_Type": "CloudTrail", "Splunk_sourcetype": "aws:cloudtrail", "Description": "Represents AWS API call history from the AWS CloudTrail service."}', '{"AWS_Data_Type": "CloudTrail Lake", "Splunk_sourcetype": "aws:cloudtrail:lake", "Description": "Represents JSON data from cloudtrail lake event data store."}']
+2025-04-10 11:24:09,564 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:24:09,566 - __main__ - INFO - Executing Splunk query: index=* sourcetype=aws:cloudtrail | stats count by eventSource, eventName | sort - count | head 10
+2025-04-10 11:24:10,074 - __main__ - ERROR - Error executing Splunk query: HTTP 400 Bad Request -- Unknown search command 'index'.
+2025-04-10 11:24:12,829 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:24:12,830 - __main__ - INFO - Executing Splunk query: sourcetype=aws:cloudtrail | stats count by eventSource, eventName | sort - count | head 10
+2025-04-10 11:24:13,239 - __main__ - ERROR - Error executing Splunk query: HTTP 400 Bad Request -- Unknown search command 'sourcetype'.

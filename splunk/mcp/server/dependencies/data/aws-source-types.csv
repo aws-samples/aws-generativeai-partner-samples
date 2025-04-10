@@ -1,0 +1,29 @@
+﻿AWS_Data_Type,Splunk_sourcetype,Description
+Billing,aws:billing,aws:billing represents billing reports that you have configured in AWS.
+Billing,aws:billing:cur,aws:billing:cur represents cost and usage reports.
+CloudFront Access Logs,aws:cloudfront:accesslogs,Represents CloudFront Access Logs.
+CloudTrail,aws:cloudtrail,Represents AWS API call history from the AWS CloudTrail service.
+CloudWatch,aws:cloudwatch,Represents performance and billing metrics from the AWS CloudWatch service.
+CloudWatch Logs,aws:cloudwatchlogs,aws:cloudwatchlogs represents generic data from the CloudWatch Logs service.
+VPC Flow Logs,aws:cloudwatchlogs:vpcflow,aws:cloudwatchlogs:vpcflow represents VPC flow logs from the CloudWatch Logs service.
+Config,aws:config,aws:config represents real time and historical configuration snapshots.
+Config Notification,aws:config:notification,aws:config:notification represents configuration change notifications.
+Config Rules,aws:config:rule,"Represents compliance details, compliance summary, and evaluation status of your AWS Config Rules."
+S3 Delimited Files,aws:s3:csv,"Represents delimited files (CSV, PSV, TSV file extensions). Provides index-time timestamp for events."
+ELB Access Logs,aws:elb:accesslogs,Represents ELB Access Logs.
+Inspector,aws:inspector,"aws:inspectorRepresents assessments, runs, and findings data from the Amazon Inspector service."
+Inspector V2,aws:inspector:v2:findings,aws:inspector:v2:findingsRepresents findings data from the Amazon Inspector service.
+Metadata,aws:metadata,"Descriptions of your AWS EC2 instances, reserved instances, and EBS snapshots."
+S3,aws:s3,Represents generic log data from your S3 buckets.
+S3 Access Logs,aws:s3:accesslogs,Represents S3 Access Logs.
+Amazon Security Lake,aws:asl,aws:asl represents AWS API dataset data collection from Amazon Security Lake.
+SQS,aws:sqs,Represents generic data from SQS.
+VPC Flow Logs,aws:cloudwatchlogs:vpcflow,Represents VPC Flow Logs.
+CloudTrail Lake,aws:cloudtrail:lake,Represents JSON data from cloudtrail lake event data store.
+GuardDuty Events,aws:cloudwatchlogs:guardduty,Represents GuardDuty Events.
+CloudWatch events,aws:firehose:cloudwatchevents,Data from CloudWatch. You can extract CloudTrail events embedded within CloudWatch events with this sourcetype as well.
+GuardDuty events,aws:cloudwatch:guardduty,GuardDuty events from CloudWatch.
+Amazon Identity and Access Management (IAM) Access Analyzer events,aws:accessanalyzer:finding,Using Eventbridge event bus to ingest the IAM Access Analyzer events
+Amazon Kinesis Firehose JSON data,aws:firehose:json,Any JSON formatted Firehose data.
+Amazon Kinesis Firehose text data,aws:firehose:text,Firehose raw text format.
+AWS Security Hub,aws:securityhub:finding,Collect events from AWS Security Hub.

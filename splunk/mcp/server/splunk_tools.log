@@ -1,0 +1,3 @@
+2025-04-10 11:01:53,829 - botocore.credentials - INFO - Found credentials in environment variables.
+2025-04-10 11:01:54,005 - botocore.credentials - INFO - Found credentials in environment variables.
+2025-04-10 11:01:54,010 - __main__ - INFO - Starting Splunk tools server

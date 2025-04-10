@@ -1,0 +1,17 @@
+2025-04-10 11:27:10,404 - botocore.credentials - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-04-10 11:27:10,553 - botocore.credentials - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-04-10 11:27:10,559 - __main__ - INFO - Starting Splunk tools server
+2025-04-10 11:27:10,572 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-04-10 11:27:39,509 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:27:39,510 - __main__ - INFO - Searching AWS sourcetypes for: cloudtrail
+2025-04-10 11:27:39,510 - __main__ - INFO - Generating embedding for text: cloudtrail
+2025-04-10 11:27:39,717 - __main__ - INFO - Successfully generated embedding
+2025-04-10 11:27:40,124 - opensearch - INFO - POST https://v7hfyv11s4r35wcfldve.us-east-1.aoss.amazonaws.com:443/splunk-sourcetypes/_search [status:200 request:0.405s]
+2025-04-10 11:27:40,125 - __main__ - INFO - Found sourcetypes: ['{"AWS_Data_Type": "CloudTrail", "Splunk_sourcetype": "aws:cloudtrail", "Description": "Represents AWS API call history from the AWS CloudTrail service."}', '{"AWS_Data_Type": "CloudTrail Lake", "Splunk_sourcetype": "aws:cloudtrail:lake", "Description": "Represents JSON data from cloudtrail lake event data store."}']
+2025-04-10 11:27:41,938 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:27:41,938 - __main__ - INFO - Getting Splunk fields for sourcetype: aws:cloudtrail
+2025-04-10 11:27:42,079 - __main__ - INFO - Executing search query: search index=main sourcetype=aws:cloudtrail | fieldsummary | fields field
+2025-04-10 11:27:44,976 - __main__ - INFO - Found fields: ['app', 'authentication_method', 'aws_account_id', 'command', 'desc', 'dest', 'dest_ip_range', 'dest_port_range', 'direction', 'dvc', 'errorCode', 'errorMessage', 'eventtype', 'host', 'image_id', 'index', 'instance_type', 'linecount', 'logEvents{}.id', 'logEvents{}.message', 'logEvents{}.timestamp', 'logGroup', 'logStream', 'messageType', 'msg', 'object', 'object_attrs', 'object_id', 'owner', 'product', 'protocol', 'protocol_code', 'punct', 'reason', 'region', 'result', 'result_id', 'rule_action', 'signature', 'source', 'sourcetype', 'splunk_server', 'splunk_server_group', 'src', 'src_ip', 'src_ip_range', 'src_port_range', 'src_user', 'src_user_id', 'src_user_name', 'src_user_role', 'src_user_type', 'start_time', 'subscriptionFilters{}', 'tag', 'tag::eventtype', 'temp_access_key', 'timestamp', 'user', 'userName', 'user_access_key', 'user_agent', 'user_arn', 'user_group_id', 'user_id', 'user_name', 'user_role', 'user_type', 'vendor', 'vendor_account', 'vendor_product', 'vendor_region']
+2025-04-10 11:27:47,909 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:27:47,909 - __main__ - INFO - Executing Splunk query: search index=* sourcetype=aws:cloudtrail | stats count by eventName | sort - count | head 10
+2025-04-10 11:27:50,989 - __main__ - INFO - Query returned 10 results

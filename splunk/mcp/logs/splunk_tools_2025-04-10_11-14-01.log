@@ -1,0 +1,69 @@
+2025-04-10 11:14:01,443 - botocore.credentials - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-04-10 11:14:01,602 - botocore.credentials - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-04-10 11:14:01,607 - __main__ - INFO - Starting Splunk tools server
+2025-04-10 11:14:01,618 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-04-10 11:14:15,792 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:14:15,792 - __main__ - INFO - Searching AWS sourcetypes for: vpc flow
+2025-04-10 11:14:15,792 - __main__ - INFO - Generating embedding for text: vpc flow
+2025-04-10 11:14:15,986 - __main__ - INFO - Successfully generated embedding
+2025-04-10 11:14:16,602 - opensearch - INFO - POST https://v7hfyv11s4r35wcfldve.us-east-1.aoss.amazonaws.com:443/splunk-sourcetypes/_search [status:200 request:0.615s]
+2025-04-10 11:14:16,605 - __main__ - INFO - Found sourcetypes: ['{"AWS_Data_Type": "VPC Flow Logs", "Splunk_sourcetype": "aws:cloudwatchlogs:vpcflow", "Description": "aws:cloudwatchlogs:vpcflow represents VPC flow logs from the CloudWatch Logs service."}', '{"AWS_Data_Type": "Config Rules", "Splunk_sourcetype": "aws:config:rule", "Description": "Represents compliance details, compliance summary, and evaluation status of your AWS Config Rules."}']
+2025-04-10 11:14:20,890 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:14:20,890 - __main__ - INFO - Getting Splunk fields for sourcetype: aws:cloudwatchlogs:vpcflow
+2025-04-10 11:14:21,113 - __main__ - INFO - Executing search query: search index=main sourcetype=aws:cloudwatchlogs:vpcflow | fieldsummary | fields field
+2025-04-10 11:14:24,155 - __main__ - INFO - Found fields: ['account_id', 'action', 'app', 'aws_account_id', 'bytes', 'date_hour', 'date_mday', 'date_minute', 'date_month', 'date_second', 'date_wday', 'date_year', 'date_zone', 'dest', 'dest_ip', 'dest_port', 'duration', 'dvc', 'end_time', 'eventtype', 'host', 'index', 'interface_id', 'linecount', 'log_status', 'packets', 'protocol', 'protocol_code', 'protocol_full_name', 'protocol_version', 'punct', 'region', 'source', 'sourcetype', 'splunk_server', 'splunk_server_group', 'src', 'src_ip', 'src_port', 'start_time', 'tag', 'tag::eventtype', 'timeendpos', 'timestamp', 'timestartpos', 'transport', 'user_id', 'vendor_account', 'vendor_product', 'version', 'vpcflow_action']
+2025-04-10 11:14:31,501 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:14:31,501 - __main__ - INFO - Executing Splunk query: sourcetype=aws:cloudwatchlogs:vpcflow dest_port=22 action=REJECT NOT src_ip IN (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) | stats count by src_ip | sort -count | head 10
+2025-04-10 11:14:32,085 - __main__ - ERROR - Error executing Splunk query: HTTP 400 Bad Request -- Unknown search command 'sourcetype'.
+2025-04-10 11:14:36,421 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:14:36,422 - __main__ - INFO - Executing Splunk query: search sourcetype=aws:cloudwatchlogs:vpcflow dest_port=22 action=REJECT NOT src_ip IN (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) | stats count by src_ip | sort -count | head 10
+2025-04-10 11:14:39,744 - __main__ - INFO - Query returned 0 results
+2025-04-10 11:14:42,581 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:14:42,582 - __main__ - INFO - Executing Splunk query: search sourcetype=aws:cloudwatchlogs:vpcflow | head 1
+2025-04-10 11:14:45,725 - __main__ - INFO - Query returned 1 results
+2025-04-10 11:14:49,686 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:14:49,687 - __main__ - INFO - Executing Splunk query: search sourcetype=aws:cloudwatchlogs:vpcflow | head 10 | table _raw
+2025-04-10 11:14:52,939 - __main__ - INFO - Query returned 10 results
+2025-04-10 11:14:59,620 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:14:59,620 - __main__ - INFO - Executing Splunk query: search sourcetype=aws:cloudwatchlogs:vpcflow REJECT | head 5
+2025-04-10 11:15:02,604 - __main__ - INFO - Query returned 0 results
+2025-04-10 11:15:13,202 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:15:13,202 - __main__ - INFO - Executing Splunk query: search sourcetype=aws:cloudwatchlogs:vpcflow 22 | head 5
+2025-04-10 11:15:16,172 - __main__ - INFO - Query returned 5 results
+2025-04-10 11:15:21,915 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:15:21,915 - __main__ - INFO - Executing Splunk query: search sourcetype=aws:cloudwatchlogs:vpcflow | rex field=_raw "^(?<version>\S+)\s+(?<account>\S+)\s+(?<eni>\S+)\s+(?<srcaddr>\S+)\s+(?<dstaddr>\S+)\s+(?<srcport>\d+)\s+(?<dstport>\d+)" | where dstport=22 | head 5
+2025-04-10 11:15:24,883 - __main__ - INFO - Query returned 5 results
+2025-04-10 11:15:31,467 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:15:31,467 - __main__ - INFO - Executing Splunk query: search sourcetype=aws:cloudwatchlogs:vpcflow | rex field=_raw "^(?<version>\S+)\s+(?<account>\S+)\s+(?<eni>\S+)\s+(?<srcaddr>\S+)\s+(?<dstaddr>\S+)\s+(?<srcport>\d+)\s+(?<dstport>\d+)\s+(?<protocol>\d+)\s+(?<packets>\d+)\s+(?<bytes>\d+)\s+(?<start>\d+)\s+(?<end>\d+)\s+(?<action>\S+)" | where dstport=22 AND action="REJECT" | head 2
+2025-04-10 11:16:27,080 - __main__ - INFO - Query returned 0 results
+2025-04-10 11:16:34,607 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:16:34,617 - __main__ - INFO - Executing Splunk query: search sourcetype=aws:cloudwatchlogs:vpcflow | rex field=_raw "^(?<version>\S+)\s+(?<account>\S+)\s+(?<eni>\S+)\s+(?<srcaddr>\S+)\s+(?<dstaddr>\S+)\s+(?<srcport>\d+)\s+(?<dstport>\d+)\s+(?<protocol>\d+)\s+(?<packets>\d+)\s+(?<bytes>\d+)\s+(?<start>\d+)\s+(?<end>\d+)\s+(?<action>\S+)" | where dstport=22 | eval is_private=if(match(srcaddr, "^(10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|192\.168\.)"), 1, 0) | where is_private=0 | stats count by srcaddr | sort -count | head 10
+2025-04-10 11:16:48,619 - __main__ - INFO - Query returned 10 results
+2025-04-10 11:17:12,606 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:17:12,607 - __main__ - INFO - Executing Splunk query: search sourcetype=aws:cloudwatchlogs:vpcflow | rex field=_raw "^(?<version>\S+)\s+(?<account>\S+)\s+(?<eni>\S+)\s+(?<srcaddr>\S+)\s+(?<dstaddr>\S+)\s+(?<srcport>\d+)\s+(?<dstport>\d+)\s+(?<protocol>\d+)\s+(?<packets>\d+)\s+(?<bytes>\d+)\s+(?<start>\d+)\s+(?<end>\d+)\s+(?<action>\S+)" | where dstport=22 | eval is_private=if(match(srcaddr, "^(10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|192\.168\.)"), 1, 0) | where is_private=0 | stats count by srcaddr, action | sort -count | head 10
+2025-04-10 11:17:57,125 - __main__ - INFO - Query returned 10 results
+2025-04-10 11:19:07,230 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:19:07,230 - __main__ - INFO - Searching AWS sourcetypes for: cloudtrail
+2025-04-10 11:19:07,230 - __main__ - INFO - Generating embedding for text: cloudtrail
+2025-04-10 11:19:07,335 - __main__ - INFO - Successfully generated embedding
+2025-04-10 11:19:07,460 - opensearch - INFO - POST https://v7hfyv11s4r35wcfldve.us-east-1.aoss.amazonaws.com:443/splunk-sourcetypes/_search [status:200 request:0.124s]
+2025-04-10 11:19:07,462 - __main__ - INFO - Found sourcetypes: ['{"AWS_Data_Type": "CloudTrail", "Splunk_sourcetype": "aws:cloudtrail", "Description": "Represents AWS API call history from the AWS CloudTrail service."}', '{"AWS_Data_Type": "CloudTrail Lake", "Splunk_sourcetype": "aws:cloudtrail:lake", "Description": "Represents JSON data from cloudtrail lake event data store."}']
+2025-04-10 11:19:15,188 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:19:15,189 - __main__ - INFO - Getting Splunk fields for sourcetype: aws:cloudtrail
+2025-04-10 11:19:15,358 - __main__ - INFO - Executing search query: search index=main sourcetype=aws:cloudtrail | fieldsummary | fields field
+2025-04-10 11:19:18,262 - __main__ - INFO - Found fields: ['app', 'authentication_method', 'aws_account_id', 'command', 'desc', 'dest', 'dest_ip_range', 'dest_port_range', 'direction', 'dvc', 'errorCode', 'errorMessage', 'eventtype', 'host', 'image_id', 'index', 'instance_type', 'linecount', 'logEvents{}.id', 'logEvents{}.message', 'logEvents{}.timestamp', 'logGroup', 'logStream', 'messageType', 'msg', 'object', 'object_attrs', 'object_id', 'owner', 'product', 'protocol', 'protocol_code', 'punct', 'reason', 'region', 'result', 'result_id', 'rule_action', 'signature', 'source', 'sourcetype', 'splunk_server', 'splunk_server_group', 'src', 'src_ip', 'src_ip_range', 'src_port_range', 'src_user', 'src_user_id', 'src_user_name', 'src_user_role', 'src_user_type', 'start_time', 'subscriptionFilters{}', 'tag', 'tag::eventtype', 'temp_access_key', 'timestamp', 'user', 'userName', 'user_access_key', 'user_agent', 'user_arn', 'user_group_id', 'user_id', 'user_name', 'user_role', 'user_type', 'vendor', 'vendor_account', 'vendor_product', 'vendor_region']
+2025-04-10 11:19:22,278 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:19:22,278 - __main__ - INFO - Executing Splunk query: search sourcetype=aws:cloudtrail errorCode!=success AND errorCode!=* | stats count by aws_account_id, eventSource, eventName, errorCode | sort -count
+2025-04-10 11:19:27,409 - __main__ - INFO - Query returned 0 results
+2025-04-10 11:19:30,950 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:19:30,950 - __main__ - INFO - Executing Splunk query: search sourcetype=aws:cloudtrail errorCode=* errorCode!=success | stats count by aws_account_id, eventSource, eventName, errorCode | sort -count
+2025-04-10 11:19:36,075 - __main__ - INFO - Query returned 33 results
+2025-04-10 11:19:47,264 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:19:47,265 - __main__ - INFO - Executing Splunk query: search sourcetype=aws:cloudtrail errorCode=* errorCode!=success | stats count by aws_account_id | sort -count
+2025-04-10 11:19:52,541 - __main__ - INFO - Query returned 1 results
+2025-04-10 11:19:56,483 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:19:56,483 - __main__ - INFO - Executing Splunk query: search sourcetype=aws:cloudtrail errorCode=* errorCode!=success | stats count by errorCode | sort -count
+2025-04-10 11:19:59,816 - __main__ - INFO - Query returned 13 results
+2025-04-10 11:20:05,041 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-04-10 11:20:05,042 - __main__ - INFO - Executing Splunk query: search sourcetype=aws:cloudtrail errorCode=* errorCode!=success | stats count by aws_account_id, eventSource, eventName, errorCode | sort -count limit=15
+2025-04-10 11:20:10,739 - __main__ - INFO - Query returned 15 results
