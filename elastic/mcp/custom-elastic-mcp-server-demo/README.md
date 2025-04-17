@@ -1,5 +1,7 @@
 # Elasticsearch MCP Server
 
+==Important Note== If you would like to learn how to build a custom MCP server from scratch for Elastic, this is the right folder. If you would like use official MCP server from Elastic, please refer to `official-elastic-mcp-server-demo` folder.
+
 ## About
 
 Elasticsearch MCP Server is a natural language interface to Elasticsearch data using the Model Context Protocol (MCP). The system allows users to query Elasticsearch indices using conversational language rather than complex query syntax. When combined with other MCP servers like a Weather API, it enables powerful multi-domain AI applications that can connect information across different data sources.

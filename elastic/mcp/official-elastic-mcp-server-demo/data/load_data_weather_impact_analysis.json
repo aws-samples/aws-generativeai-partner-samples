@@ -1,0 +1,528 @@
+PUT travel.weather_impact_analysis
+{
+  "mappings": {
+    "properties": {
+      "analysis_id": { "type": "keyword" },
+      "hotel_id": { "type": "keyword" },
+      "date_range": {
+        "type": "object",
+        "properties": {
+          "start": { "type": "date" },
+          "end": { "type": "date" }
+        }
+      },
+      "weather_pattern": {
+        "type": "nested",
+        "properties": {
+          "condition": { "type": "keyword" },
+          "duration": { "type": "integer" },
+          "severity": { "type": "keyword" }
+        }
+      },
+      "business_impact": {
+        "type": "nested",
+        "properties": {
+          "metric": { "type": "keyword" },
+          "normal_value": { "type": "float" },
+          "impacted_value": { "type": "float" },
+          "percentage_change": { "type": "float" }
+        }
+      },
+      "affected_services": {
+        "type": "nested",
+        "properties": {
+          "service_name": { "type": "keyword" },
+          "impact_level": { "type": "keyword" },
+          "revenue_loss": { "type": "float" }
+        }
+      },
+      "mitigation_actions": {
+        "type": "nested",
+        "properties": {
+          "action": { "type": "text" },
+          "effectiveness": { "type": "float" },
+          "cost": { "type": "float" }
+        }
+      },
+      "created_at": { "type": "date" },
+      "updated_at": { "type": "date" }
+    }
+  }
+}
+
+
+POST travel.weather_impact_analysis/_doc/1
+{
+  "analysis_id": "WIA001",
+  "hotel_id": "HTL001",
+  "date_range": {
+    "start": "2023-06-15",
+    "end": "2023-06-20"
+  },
+  "weather_pattern": [
+    {
+      "condition": "heatwave",
+      "duration": 5,
+      "severity": "high"
+    }
+  ],
+  "business_impact": [
+    {
+      "metric": "occupancy_rate",
+      "normal_value": 0.85,
+      "impacted_value": 0.95,
+      "percentage_change": 11.76
+    },
+    {
+      "metric": "revpar",
+      "normal_value": 425,
+      "impacted_value": 498.75,
+      "percentage_change": 17.35
+    }
+  ],
+  "affected_services": [
+    {
+      "service_name": "beach_activities",
+      "impact_level": "positive",
+      "revenue_gain": 3000
+    },
+    {
+      "service_name": "spa_services",
+      "impact_level": "negative",
+      "revenue_loss": 1000
+    }
+  ],
+  "mitigation_actions": [
+    {
+      "action": "Increased poolside service staff",
+      "effectiveness": 0.85,
+      "cost": 1500
+    },
+    {
+      "action": "Extended beach umbrella rentals",
+      "effectiveness": 0.90,
+      "cost": 800
+    }
+  ],
+  "created_at": "2023-06-21",
+  "updated_at": "2023-06-21"
+}
+
+POST travel.weather_impact_analysis/_doc/2
+{
+  "analysis_id": "WIA002",
+  "hotel_id": "HTL003",
+  "date_range": {
+    "start": "2023-07-10",
+    "end": "2023-07-15"
+  },
+  "weather_pattern": [
+    {
+      "condition": "light_rain",
+      "duration": 3,
+      "severity": "low"
+    },
+    {
+      "condition": "cloudy",
+      "duration": 2,
+      "severity": "low"
+    }
+  ],
+  "business_impact": [
+    {
+      "metric": "occupancy_rate",
+      "normal_value": 0.90,
+      "impacted_value": 0.85,
+      "percentage_change": -5.56
+    },
+    {
+      "metric": "outdoor_activity_revenue",
+      "normal_value": 10000,
+      "impacted_value": 8000,
+      "percentage_change": -20
+    }
+  ],
+  "affected_services": [
+    {
+      "service_name": "hiking_tours",
+      "impact_level": "negative",
+      "revenue_loss": 2000
+    },
+    {
+      "service_name": "indoor_spa",
+      "impact_level": "positive",
+      "revenue_gain": 1500
+    }
+  ],
+  "mitigation_actions": [
+    {
+      "action": "Offered indoor activity packages",
+      "effectiveness": 0.75,
+      "cost": 500
+    },
+    {
+      "action": "Provided complimentary rain gear",
+      "effectiveness": 0.60,
+      "cost": 1000
+    }
+  ],
+  "created_at": "2023-07-16",
+  "updated_at": "2023-07-16"
+}
+
+POST travel.weather_impact_analysis/_doc/3
+{
+  "analysis_id": "WIA003",
+  "hotel_id": "HTL006",
+  "date_range": {
+    "start": "2023-08-01",
+    "end": "2023-08-07"
+  },
+  "weather_pattern": [
+    {
+      "condition": "perfect_weather",
+      "duration": 7,
+      "severity": "low"
+    }
+  ],
+  "business_impact": [
+    {
+      "metric": "occupancy_rate",
+      "normal_value": 0.90,
+      "impacted_value": 0.98,
+      "percentage_change": 8.89
+    },
+    {
+      "metric": "outdoor_dining_revenue",
+      "normal_value": 25000,
+      "impacted_value": 30000,
+      "percentage_change": 20
+    }
+  ],
+  "affected_services": [
+    {
+      "service_name": "water_sports",
+      "impact_level": "positive",
+      "revenue_gain": 5000
+    },
+    {
+      "service_name": "beach_weddings",
+      "impact_level": "positive",
+      "revenue_gain": 10000
+    }
+  ],
+  "mitigation_actions": [
+    {
+      "action": "Extended outdoor activity hours",
+      "effectiveness": 0.95,
+      "cost": 2000
+    },
+    {
+      "action": "Increased staff for beach services",
+      "effectiveness": 0.90,
+      "cost": 3000
+    }
+  ],
+  "created_at": "2023-08-08",
+  "updated_at": "2023-08-08"
+}
+
+POST travel.weather_impact_analysis/_doc/4
+{
+  "analysis_id": "WIA004",
+  "hotel_id": "HTL008",
+  "date_range": {
+    "start": "2023-12-20",
+    "end": "2023-12-27"
+  },
+  "weather_pattern": [
+    {
+      "condition": "heavy_snow",
+      "duration": 4,
+      "severity": "high"
+    },
+    {
+      "condition": "clear_cold",
+      "duration": 3,
+      "severity": "medium"
+    }
+  ],
+  "business_impact": [
+    {
+      "metric": "occupancy_rate",
+      "normal_value": 0.95,
+      "impacted_value": 1.00,
+      "percentage_change": 5.26
+    },
+    {
+      "metric": "ski_activity_revenue",
+      "normal_value": 20000,
+      "impacted_value": 25000,
+      "percentage_change": 25
+    }
+  ],
+  "affected_services": [
+    {
+      "service_name": "ski_lessons",
+      "impact_level": "positive",
+      "revenue_gain": 3000
+    },
+    {
+      "service_name": "equipment_rental",
+      "impact_level": "positive",
+      "revenue_gain": 2000
+    }
+  ],
+  "mitigation_actions": [
+    {
+      "action": "Extended ski lift hours",
+      "effectiveness": 0.85,
+      "cost": 2500
+    },
+    {
+      "action": "Offered night skiing packages",
+      "effectiveness": 0.80,
+      "cost": 1500
+    }
+  ],
+  "created_at": "2023-12-28",
+  "updated_at": "2023-12-28"
+}
+
+POST travel.weather_impact_analysis/_doc/5
+{
+  "analysis_id": "WIA005",
+  "hotel_id": "HTL004",
+  "date_range": {
+    "start": "2023-10-01",
+    "end": "2023-10-05"
+  },
+  "weather_pattern": [
+    {
+      "condition": "tropical_storm",
+      "duration": 3,
+      "severity": "high"
+    },
+    {
+      "condition": "scattered_showers",
+      "duration": 2,
+      "severity": "medium"
+    }
+  ],
+  "business_impact": [
+    {
+      "metric": "occupancy_rate",
+      "normal_value": 0.85,
+      "impacted_value": 0.75,
+      "percentage_change": -11.76
+    },
+    {
+      "metric": "event_cancellations",
+      "normal_value": 0,
+      "impacted_value": 2,
+      "percentage_change": 200
+    }
+  ],
+  "affected_services": [
+    {
+      "service_name": "beach_activities",
+      "impact_level": "severe",
+      "revenue_loss": 8000
+    },
+    {
+      "service_name": "restaurant",
+      "impact_level": "moderate",
+      "revenue_loss": 3000
+    }
+  ],
+  "mitigation_actions": [
+    {
+      "action": "Offered indoor entertainment packages",
+      "effectiveness": 0.70,
+      "cost": 2000
+    },
+    {
+      "action": "Provided shuttle service to local attractions",
+      "effectiveness": 0.65,
+      "cost": 1500
+    }
+  ],
+  "created_at": "2023-10-06",
+  "updated_at": "2023-10-06"
+}
+
+POST travel.weather_impact_analysis/_doc/6
+{
+  "analysis_id": "WIA006",
+  "hotel_id": "HTL005",
+  "date_range": {
+    "start": "2023-07-03",
+    "end": "2023-07-05"
+  },
+  "weather_pattern": [
+    {
+      "condition": "clear_hot",
+      "duration": 3,
+      "severity": "medium"
+    }
+  ],
+  "business_impact": [
+    {
+      "metric": "occupancy_rate",
+      "normal_value": 0.90,
+      "impacted_value": 1.00,
+      "percentage_change": 11.11
+    },
+    {
+      "metric": "rooftop_bar_revenue",
+      "normal_value": 15000,
+      "impacted_value": 25000,
+      "percentage_change": 66.67
+    }
+  ],
+  "affected_services": [
+    {
+      "service_name": "rooftop_party",
+      "impact_level": "positive",
+      "revenue_gain": 10000
+    },
+    {
+      "service_name": "pool_area",
+      "impact_level": "positive",
+      "revenue_gain": 5000
+    }
+  ],
+  "mitigation_actions": [
+    {
+      "action": "Extended rooftop bar hours",
+      "effectiveness": 0.95,
+      "cost": 1000
+    },
+    {
+      "action": "Added cooling mist systems",
+      "effectiveness": 0.80,
+      "cost": 2000
+    }
+  ],
+  "created_at": "2023-07-06",
+  "updated_at": "2023-07-06"
+}
+
+POST travel.weather_impact_analysis/_doc/7
+{
+  "analysis_id": "WIA007",
+  "hotel_id": "HTL009",
+  "date_range": {
+    "start": "2023-11-15",
+    "end": "2023-11-20"
+  },
+  "weather_pattern": [
+    {
+      "condition": "clear_cool",
+      "duration": 5,
+      "severity": "low"
+    }
+  ],
+  "business_impact": [
+    {
+      "metric": "occupancy_rate",
+      "normal_value": 0.80,
+      "impacted_value": 0.88,
+      "percentage_change": 10
+    },
+    {
+      "metric": "stargazing_tour_revenue",
+      "normal_value": 5000,
+      "impacted_value": 8000,
+      "percentage_change": 60
+    }
+  ],
+  "affected_services": [
+    {
+      "service_name": "desert_tours",
+      "impact_level": "positive",
+      "revenue_gain": 3000
+    },
+    {
+      "service_name": "night_sky_photography",
+      "impact_level": "positive",
+      "revenue_gain": 2000
+    }
+  ],
+  "mitigation_actions": [
+    {
+      "action": "Added extra stargazing sessions",
+      "effectiveness": 0.90,
+      "cost": 1000
+    },
+    {
+      "action": "Offered astrophotography workshops",
+      "effectiveness": 0.85,
+      "cost": 1500
+    }
+  ],
+  "created_at": "2023-11-21",
+  "updated_at": "2023-11-21"
+}
+
+POST travel.weather_impact_analysis/_doc/8
+{
+  "analysis_id": "WIA008",
+  "hotel_id": "HTL010",
+  "date_range": {
+    "start": "2023-08-20",
+    "end": "2023-08-25"
+  },
+  "weather_pattern": [
+    {
+      "condition": "light_rain",
+      "duration": 3,
+      "severity": "low"
+    },
+    {
+      "condition": "overcast",
+      "duration": 2,
+      "severity": "low"
+    }
+  ],
+  "business_impact": [
+    {
+      "metric": "occupancy_rate",
+      "normal_value": 0.85,
+      "impacted_value": 0.80,
+      "percentage_change": -5.88
+    },
+    {
+      "metric": "eco_tour_revenue",
+      "normal_value": 10000,
+      "impacted_value": 12000,
+      "percentage_change": 20
+    }
+  ],
+  "affected_services": [
+    {
+      "service_name": "rainforest_hikes",
+      "impact_level": "positive",
+      "revenue_gain": 2000
+    },
+    {
+      "service_name": "outdoor_yoga",
+      "impact_level": "negative",
+      "revenue_loss": 1000
+    }
+  ],
+  "mitigation_actions": [
+    {
+      "action": "Offered 'rainy day' photography tours",
+      "effectiveness": 0.80,
+      "cost": 500
+    },
+    {
+      "action": "Provided complimentary rain ponchos",
+      "effectiveness": 0.75,
+      "cost": 1000
+    }
+  ],
+  "created_at": "2023-08-26",
+  "updated_at": "2023-08-26"
+}
