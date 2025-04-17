@@ -1,0 +1,6 @@
+elasticsearch[async]>=8.0.0
+aiohttp
+httpx
+mcp[cli]
+boto3
+dotenv
