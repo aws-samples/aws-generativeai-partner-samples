@@ -11,6 +11,23 @@ The application provides intelligent analysis of weather impacts on hotel operat
 - Elasticsearch's official MCP server for efficient data querying and analytics 
 - Custom Weather MCP server for real-time weather data 
 - Multi-server architecture for scalable and modular functionality 
+
+                                 ┌────────────────────────┐
+                                 │  Amazon Bedrock 	  │
+                                 │  (Claude Sonnet 3)     │
+                                 └────────┬───────────────┘
+                                          │
+                              ┌───────────┴──────────┐
+                              │                      │
+                     ┌────────┴───────┐    ┌─────────┴────────┐
+                     │ Weather MCP    │    │ Elastic MCP      │
+                     │ Server         │    │ Server           │
+                     └────────────────┘    └───────┬──────────┘
+                                                   │
+                                          ┌────────┴────────┐
+                                          │  Elasticsearch  │
+                                          └─────────────────┘
+
 ### Key Features 
 - Natural language queries for complex hotel analytics 
 - Real-time weather impact analysis 

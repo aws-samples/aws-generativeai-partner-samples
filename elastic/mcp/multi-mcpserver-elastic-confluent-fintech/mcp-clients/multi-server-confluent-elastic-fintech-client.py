@@ -17,31 +17,61 @@ import boto3
 MAX_TOKENS = 2000
 MAX_TURNS = 15
 
-SYSTEM_PROMPT = """You are an AI assistant for hotel and tourism analytics, using Elasticsearch indices to answer weather-related queries. Use these indices:
 
-1. travel.hotels: Basic hotel info (ID, name, location, amenities)
-2. travel.bookings: Reservation data, guest satisfaction
-3. travel.events: Scheduled activities, weather dependencies
-4. travel.revenue_metrics: Financial data, occupancy rates, weather conditions
-5. travel.weather_impact_analysis: Detailed weather effects, business impact
+SYSTEM_PROMPT = """
+You are an advanced financial analysis AI with access to real-time market data through the Confluent MCP server and historical data through the Elastic MCP server. Your task is to provide comprehensive insights by combining streaming and historical data.
 
-When analyzing:
-- Revenue: Start with travel.revenue_metrics, cross-reference travel.weather_impact_analysis
-- Weather impact: Use travel.weather_impact_analysis, check travel.revenue_metrics for dates
-- Events: Begin with travel.events, link to travel.weather_impact_analysis and travel.revenue_metrics
-- Bookings: Use travel.bookings, connect to travel.revenue_metrics and travel.weather_impact_analysis
+To answer the user's query, follow these steps:
 
-Always: skip your thought process. Get me the answer straight for the question asked.
+1. Analyze the query to determine required data types:
+   - Real-time data needs (e.g., current prices, live order books). For this go to Confluent Server.
+   - Historical data needs (e.g., past performance, long-term trends). For this got to Elasticsearch Server.
 
-Remember to:
-1. Identify primary index for the query
-2. Use additional indices for comprehensive analysis
-3. Consider seasonal and location factors
-4. Find patterns across indices
-5. Offer data-driven, actionable insights
+2. Formulate queries for the Confluent MCP server:
+   - For real-time market data, go to the Confluent Server Topics with names "market_data", "order_book" and "trades" only. No need to check for other topics.
+   - Example: "Get current order book for AMZN", go to "order_book" topic in Confluent.
+   - For the Flink SQL statements always assume that the default catalog name is "default". In other words, sql.current-catalog="default".
+   - Similarly for all of the Flink SQL statements, always assume that the default database is "cluster_0". In other words,sql.current-database="cluster_0". 
+   - Do not execute unnessarily same Flink SQL statement many times and unnessarily increase input token size and get in to error like: "Input is too long for requested model." Avoid this situation.
+   - Every Flink SQL statement should have LIMIT parameter set to any value between 1 to 5 and after first execution and results fetched, immediately stop executing the Flink SQL statement.
+   - Example: Here is an example "order_book" topic structure looks like:
+   	 For key = AMZN
+   	 Value = {"event_type": "order-book","symbol": "AMZN","stampedtime": "2025-04-23T23:00:12.609157","bids": [ {"price": 366.82,"quantity": 1661},{"price": 366.45,"quantity": 4527},],"asks": [{"price": 366.82,"quantity": 3606},{"price": 367.19,"quantity": 205}]}
+   - Example: Here is an example "markdet_data" topic structure looks like:
+   	 For key = AMZN
+   	 Value = {"event_type": "market-data","symbol": "AMZN","stampedtime": "2025-04-23T23:00:12.609086","price": 362.71, "volume": 815,"bid": 362.7,"ask": 362.72,"exchange": "LSE","volatility": 1.1199094504889437}
+   - Example: Here is an example data for "trades"
+   	 For key = AMZN
+   	 Value = {  "event_type": "trade",  "trade_id": "ce9e4c10-943d-4784-b131-eabfc9f82286",  "symbol": "AMZN",  "stampedtime": "2025-04-23T23:00:12.609122",  "price": 368.95,  "quantity": 792,  "side": "sell",  "order_type": "market",  "trader_id": "e88bba69-24e1-4729-91e5-14c5069c15a9",  "execution_venue": "TSE"}
 
-Provide accurate, structured responses to weather-related hospitality queries."""
+3. Formulate queries for the Elastic MCP server:
+   - For historical data, use only Elasticsearch indices with the names: "market-data" and "trading-metrics"
+   - Here are the mappings for "market-data" index.
+   {  "mappings": {    "properties": {      "adjusted-close": {        "type": "float"      },      "close": {        "type": "float"      },      "exchange": {        "type": "keyword"      },      "high": {        "type": "float"      },      "low": {        "type": "float"      },      "open": {        "type": "float"      },      "price": {        "type": "float"      },      "symbol": {        "type": "keyword"      },      "timestamp": {        "type": "date"      },      "volume": {        "type": "long"      }    }  }}
+   
+   - Here are the mappings for "trading-metrics"
+   {  "mappings": {    "properties": {      "ma-20": {        "type": "float"      },      "ma-50": {        "type": "float"      },      "rsi": {        "type": "float"      },      "symbol": {        "type": "keyword"      },      "timestamp": {        "type": "date"      },      "volatility": {        "type": "float"      },      "volume-ma": {        "type": "float"      }    }  }}
 
+4. Integrate data from both sources:
+   - Compare real-time patterns with historical trends
+   - Identify anomalies or significant deviations
+
+5. Apply financial analysis techniques:
+   - Utilize appropriate models (e.g., time series analysis, risk metrics)
+   - Consider market conditions and relevant external factors
+
+6. Generate insights and recommendations:
+   - Synthesize findings into clear, actionable advice
+   - Provide confidence levels and potential risks
+
+7. Format the response:
+   - Present key points first, followed by supporting details
+   - Include relevant visualizations or metrics when appropriate
+
+Remember to maintain data privacy and adhere to financial regulations in your analysis and recommendations.
+
+Now, based on the user's query, proceed with your analysis and provide a comprehensive response.
+"""
 
 @dataclass
 class Message:
@@ -96,14 +126,14 @@ class Message:
                 }
             }
         } for tool in tools_list]
-
+    
 class MultiServerMCPClient:
-    MODEL_ID = "us.anthropic.claude-3-5-sonnet-20240620-v1:0"
+    MODEL_ID = "us.anthropic.claude-3-5-sonnet-20241022-v2:0"
     
     def __init__(self):
         self.sessions: Dict[str, ClientSession] = {}
         self.exit_stack = AsyncExitStack()
-        self.bedrock = boto3.client(service_name='bedrock-runtime', region_name='us-east-1')
+        self.bedrock = boto3.client(service_name='bedrock-runtime', region_name='us-west-2')
         self.all_tools = {}
         self.server_configs = {}
 
@@ -267,7 +297,7 @@ class MultiServerMCPClient:
         return formatted_result, messages
 
     async def chat_loop(self):
-        print("\nWelcome to the Multi-Server MCP Chat!")
+        print("\nWelcome to the Multi-Server MCP Chat featuring the best of Confluent and Elasticsearch!")
         print("Type 'quit' to exit or your query.")
         
         while True:
@@ -290,25 +320,18 @@ class MultiServerMCPClient:
 
 async def main():
     load_dotenv()
-    
-    if len(sys.argv) < 2:
-        print("Usage: python multi_server_client.py <weather_server_script>")
-        sys.exit(1)
-
-    weather_script = sys.argv[1]
-    
     es_url = os.getenv("ES_URL")
     es_api_key = os.getenv("ES_API_KEY")
+    mcp_app_env_path = os.getenv("MCP_APP_ENV_PATH", "/home/ec2-user/aws-generativeai-partner-samples/elastic/mcp/multi-mcpserver-elastic-confluent-fintech/.env")
 
     if not es_url or not es_api_key:
         print("Error: ES_URL and ES_API_KEY must be set in the .env file")
         sys.exit(1)
 
     server_configs = {
-        "weather": {
-            "command": "python",
-            "args": [weather_script],
-            "env": None
+        "confluent": {
+            "command": "npx",
+            "args": ["-y", "@confluentinc/mcp-confluent", "-e", mcp_app_env_path]
         },
         "elasticsearch-mcp-server": {
             "command": "npx",
