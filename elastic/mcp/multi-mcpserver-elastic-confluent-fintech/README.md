@@ -20,6 +20,7 @@ The application consists of the following components:
 2. **Elasticsearch MCP Server**: Provides access to historical market data and trading metrics
 3. **Multi-Server MCP Client**: Connects to both servers and coordinates interactions with the Claude AI model
 4. **Data Loaders**: Utilities to populate Kafka topics and Elasticsearch indices with sample data
+```
 
                    ┌─────────────────────┐
                    │    LLM User Query   │
@@ -60,7 +61,7 @@ The application consists of the following components:
                    │pattern with 15% vol │
                    │increase vs history" │
                    └─────────────────────┘
-
+```
 
 ### Flow
 - Users ask questions in natural language

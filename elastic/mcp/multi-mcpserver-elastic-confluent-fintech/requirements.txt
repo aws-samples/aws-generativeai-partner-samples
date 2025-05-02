@@ -1,0 +1,11 @@
+confluent-kafka
+faker
+elasticsearch==8.15.1
+yfinance
+pandas
+numpy
+aiohttp
+httpx
+mcp[cli]
+boto3
+dotenv
