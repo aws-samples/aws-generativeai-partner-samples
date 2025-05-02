@@ -128,10 +128,6 @@ class Message:
         } for tool in tools_list]
     
 class MultiServerMCPClient:
-    #MODEL_ID = "anthropic.claude-3-sonnet-20240229-v1:0"
-    #MODEL_ID = "anthropic.claude-3-5-sonnet-20240620-v1:0"
-    #MODEL_ID = "anthropic.claude-3-5-haiku-20241022-v1:0"
-    #MODEL_ID = "anthropic.claude-3-5-sonnet-20241022-v2:0"
     MODEL_ID = "us.anthropic.claude-3-5-sonnet-20241022-v2:0"
     
     def __init__(self):
