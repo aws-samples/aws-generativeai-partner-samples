@@ -160,9 +160,6 @@ source multi-mcp-env/bin/activate  # On Unix/Mac
 # Install required packages
 uv pip install -r requirements.txt
 
-# Install Python dependencies
-pip install -r requirements.txt
-
 # Install MCP server packages
 npm install -g @confluentinc/mcp-confluent
 ```
