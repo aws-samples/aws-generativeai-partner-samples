@@ -98,7 +98,7 @@ class Message:
         } for tool in tools_list]
 
 class MultiServerMCPClient:
-    MODEL_ID = "anthropic.claude-3-5-sonnet-20240620-v1:0"
+    MODEL_ID = "us.anthropic.claude-3-5-sonnet-20240620-v1:0"
     
     def __init__(self):
         self.sessions: Dict[str, ClientSession] = {}

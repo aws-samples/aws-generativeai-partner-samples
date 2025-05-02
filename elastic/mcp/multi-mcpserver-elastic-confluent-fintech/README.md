@@ -1,6 +1,6 @@
-# Multi-Server MCP Financial Analytics Application
+# Multi-Server MCP based Financial Analytics Application
 
-This application demonstrates the integration of Confluent and Elasticsearch Model Completion Protocol (MCP) servers to create a powerful financial analytics platform. The application leverages real-time streaming data from Confluent and historical data from Elasticsearch to provide comprehensive financial insights.
+This application demonstrates the integration of Confluent and Elasticsearch Model Completion Protocol (MCP) servers to create a powerful financial analytics platform. The application leverages real-time streaming data from **Confluent** and historical data from **Elasticsearch** to provide comprehensive financial insights leveraging **Amazon Bedrock** LLMs.
 
 ## Overview
 
@@ -8,7 +8,7 @@ The Multi-Server MCP Financial Analytics Application combines:
 
 - **Real-time market data** from Confluent Kafka streams
 - **Historical financial data** from Elasticsearch indices
-- **Claude 3.5 Sonnet** AI model via Amazon Bedrock for intelligent analysis
+- **Claude 3.5 Sonnet** AI model via **Amazon Bedrock** for intelligent analysis
 
 This integration enables advanced financial analytics by combining streaming and historical data sources, allowing users to query both real-time market conditions and historical trends through a unified interface.
 
@@ -198,8 +198,9 @@ The client will:
 
 Once the application is running, you can enter financial analysis queries such as:
 
+- "What can you do for me? Give me a few examples of questions I can ask."
+- "Based on currrent market conditions and historical patterns for the last 1 month, what's the optimal entry point for NVDA?"
 - "What's the current order book for AMZN?"
-- "Compare the current price of AAPL with its 50-day moving average"
 - "Show me the volatility trend for TSLA over the past month"
 - "Identify any anomalies in today's trading volume for MSFT compared to historical patterns"
 
