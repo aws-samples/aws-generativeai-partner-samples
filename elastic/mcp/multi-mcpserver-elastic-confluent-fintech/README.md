@@ -81,32 +81,23 @@ The application consists of the following components:
 
 ## Setup Instructions
 
-### 1. AWS Account Setup
-- Active AWS account with access to Amazon Bedrock 
-- AWS CLI installed and configured 
-- Permissions to use Claude 3 Sonnet model
-- Set up AWS credentials for Bedrock access:
+### 1. Spin up EC2 and prep
+Spin up an EC2 machine with the followsing instance type details:
+- Amazon Linux 2023 AMI
+- 64-bit (x86)
+- t2.medium
+- 40GB gp3 storage
 
-```shell
-# Set environment variables (temporary)
-export AWS_ACCESS_KEY_ID=your_access_key_id
-export AWS_SECRET_ACCESS_KEY=your_secret_access_key
-export AWS_REGION=us-east-1
+After you launch EC2 machine,  install git and clone this repo.
 
-# Or configure AWS CLI (permanent)
-aws configure
+```bash
+sudo yum install git
+git clone https://github.com/aws-samples/aws-generativeai-partner-samples.git
+cd elastic/mcp/multi-mcpserver-elastic-confluent-fintech/
 ```
 
-### 2. Elasticsearch Setup
 
-- Elasticsearch deployment (cloud or local)
-- Elasticsearch API key
-- Create .env file with credentials:
-    
-        ES_URL=your-elasticsearch-url 
-        ES_API_KEY=your-api-key`
-
-### 3. Install Dependencies
+### 2. Install Dependencies
 If you are not running Python3.10+, here is how you can upgrade for Amazon Linux as an example:
 
 ```bash
@@ -122,27 +113,41 @@ sudo alternatives --config python3
 python3 --version
 ```
 
-### 4. Clone the Repository
+### 3. Elasticsearch Setup
 
-```bash
-git clone <repository-url>
-cd aws-generativeai-partner-samples/elastic/mcp/multi-mcpserver-elastic-confluent-fintech
+Setup Elastic Cloud on AWS using the free trial [here](https://cloud.elastic.co/registration?fromURI=%2Fhome).
+Note the following details to connect to Elastic Cloud from your application.
+
+- Elasticsearch deployment (cloud or local)
+- Elasticsearch API key
+- In the next step (not now) you will create .env file. Please make a note of the following credentials that you will use in the next step :
+```    
+        ES_URL=your-elasticsearch-url 
+        ES_API_KEY=your-api-key
 ```
+
+### 4. Confluent Kafka Cluster Setup
+
+Sign up for Confluent free trial account [here](https://www.confluent.io/get-started/).
+Create a Kafka cluster.
 
 ### 5. Set Up Environment Variables
 
-Create a `.env` file based on the provided `.env.sample`:
-
-```bash
-cp .env.sample .env
-```
-
-Edit the `.env` file with your actual credentials:
+Run the script `environment_variables_setup.sh` to setup `.env` file with the following credentials:
 - Confluent Cloud credentials
 - Elasticsearch credentials
 - AWS credentials (for Bedrock access)
 
-### 6. Install Dependencies
+Make the script executable by adding execute permissions:
+```
+chmod +x environment_variables_setup.sh
+./environment_variables_setup
+```
+
+To find the Confluent Kafka related configurations, please refer to [this document](./docs/confluent-configurations.md).
+To find the Elastic related configurations, please refer to [this document](./docs/elastic-configurations.md).
+
+### 6. Install more Dependencies
 
 ```
 # install uv
