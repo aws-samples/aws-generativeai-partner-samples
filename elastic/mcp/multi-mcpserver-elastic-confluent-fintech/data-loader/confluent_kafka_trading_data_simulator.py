@@ -5,21 +5,33 @@ from datetime import datetime, timedelta
 from typing import Dict, List
 import json
 import time
+import os
+from dotenv import load_dotenv
 from faker import Faker
 from confluent_kafka import Producer
 import yfinance as yf
 import numpy as np
 
+# Load environment variables from .env file
+load_dotenv()
+
 class TradingDataSimulator:
     def __init__(self):
         self.faker = Faker()
         
-        # Kafka configuration
-        SASL_USERNAME="RGVD4SUSZHIGIMU4"
-        SASL_PASSWORD="eqCi73PbQEE5f+TD1ElSmgO2o5KatRZWM6/0fTtx0QeflFtRlQpeyM5wUrAr/Cyy"
-        SR_URL="https://psrc-0kywq.us-east-2.aws.confluent.cloud"
-        BASIC_AUTH_USER_INFO="5OOCTCE5H6RHATG7:8kgAY9zEcSvOO9ILTTs38axIfhNVHLV5cAbeQGJxyFQiwmsKWafACvMh+oJrD5IC"
-        BOOTSTRAP_URL="pkc-rgm37.us-west-2.aws.confluent.cloud:9092"
+        # Kafka configuration from environment variables
+        SASL_USERNAME = os.getenv("CONFLUENT_CLOUD_API_KEY")
+        SASL_PASSWORD = os.getenv("CONFLUENT_CLOUD_API_SECRET")
+        SR_URL = os.getenv("SCHEMA_REGISTRY_ENDPOINT")
+        SCHEMA_REGISTRY_API_KEY = os.getenv("SCHEMA_REGISTRY_API_KEY")
+        SCHEMA_REGISTRY_API_SECRET = os.getenv("SCHEMA_REGISTRY_API_SECRET")
+        BASIC_AUTH_USER_INFO = f"{SCHEMA_REGISTRY_API_KEY}:{SCHEMA_REGISTRY_API_SECRET}"
+        BOOTSTRAP_URL = os.getenv("BOOTSTRAP_SERVERS")
+        
+        # Validate required environment variables
+        if not all([SASL_USERNAME, SASL_PASSWORD, SR_URL, SCHEMA_REGISTRY_API_KEY, 
+                   SCHEMA_REGISTRY_API_SECRET, BOOTSTRAP_URL]):
+            raise ValueError("Missing required environment variables. Please check your .env file.")
 
         self.kafka_config = {
             'client.id': 'trading-data-simulator',
