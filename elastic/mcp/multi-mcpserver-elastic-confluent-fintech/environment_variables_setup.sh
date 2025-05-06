@@ -79,9 +79,11 @@ update_env_var "AWS_REGION" "$aws_region"
 # Elasticsearch Configuration
 echo -e "\n=== Elasticsearch Configuration ==="
 read -p "Elasticsearch URL: " es_url
+read -p "Elasticsearch Cloud ID: " es_cloud_id
 read -p "Elasticsearch API Key: " es_api_key
 
 update_env_var "ES_URL" "$es_url"
+update_env_var "ES_CLOUD_ID" "$es_cloud_id"
 update_env_var "ES_API_KEY" "$es_api_key"
 
 # Confluent Configuration
