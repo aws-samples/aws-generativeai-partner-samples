@@ -91,7 +91,9 @@ Spin up an EC2 machine with the followsing instance type details:
 After you launch EC2 machine,  install git and clone this repo.
 
 ```bash
-sudo yum install git
+sudo yum install git -y
+sudo yum install nodejs -y
+
 git clone https://github.com/aws-samples/aws-generativeai-partner-samples.git
 cd elastic/mcp/multi-mcpserver-elastic-confluent-fintech/
 ```

@@ -1,12 +1,13 @@
 # Amazon Bedrock with Elastic - Agentic workflows with official Elastic MCP Server Demo
 
-## Travel & Tourism Industry Analytics powered by Amazon Bedrock and Elastic MCP Server
+## Travel & Tourism Advisory application powered by Amazon Bedrock and Elastic MCP Server
 
-This application demonstrates an intelligent analytics system for the hospitality industry, combining the power of Amazon Bedrock's Large Language Models with Elasticsearch's real-time search and analytics capabilities through Model-Content-Protocol (MCP) servers.
+This project implements a travel advisory application that uses MCP (Model Context Protocol) servers to integrate with Elasticsearch and weather services. The application provides information about tourist destinations, attractions, hotels, travel advisories, weather forecasts, and events. It also supports user profiles and hotel reservations.
+
 
 ## Overview 
 
-The application provides intelligent analysis of weather impacts on hotel operations, revenue, and guest satisfaction by leveraging: 
+The application provides intelligent analysis and information about tourist destinations, attractions, hotel etc and provides advisory to plan a travel, leverating: 
 - Amazon Bedrock's Claude 3 Sonnet for natural language understanding and reasoning 
 - Elasticsearch's official MCP server for efficient data querying and analytics 
 - Custom Weather MCP server for real-time weather data 
@@ -29,17 +30,62 @@ The application provides intelligent analysis of weather impacts on hotel operat
                                           └─────────────────┘
 
 ### Key Features 
-- Natural language queries for complex hotel analytics 
-- Real-time weather impact analysis 
-- Cross-referenced data analysis across multiple domains: 
-	- Hotel operations 
-	- Booking patterns 
-	- Event management 
-	- Revenue metrics 
-	- Weather patterns 
-	- Intelligent recommendations for weather-related business decisions
+- Natural language queries for complex travel advisory, recommendations and reservations 
+- Search for destinations based on various criteria (continent, budget, safety, etc.)
+- Find attractions at destinations
+- Search for hotels with specific amenities
+- Get travel advisories for countries
+- Check weather forecasts for destinations
+- Find events happening at destinations
+- User profiles with preferences and loyalty information
+- Hotel reservation management
+- Room availability checking and booking
+
+### Elasticsearch Indices
+
+The application uses the following Elasticsearch indices:
+
+1. **destinations**: Information about travel destinations
+2. **attractions**: Tourist attractions at destinations
+3. **hotels**: Hotel and accommodation information
+4. **advisories**: Travel advisories and safety information
+5. **weather**: Weather forecasts for destinations
+6. **events**: Events happening at destinations
+7. **users**: User profiles and preferences
+8. **reservations**: Hotel reservation information
+9. **room_availability**: Room availability and pricing information
+
+### Real-World Data Integration
+
+The application now uses realistic data for destinations and their related entities:
+
+- Real-world destinations with accurate geographic information
+- Famous attractions for popular cities
+- Well-known hotels with appropriate amenities and star ratings
+- Actual events that occur in each destination
+- Realistic travel advisories based on current global conditions
+- Seasonal weather patterns that match the destination's climate
+
+This makes the data more coherent and realistic, providing a better demonstration of the travel advisory application's capabilities.
 
 ## Setup
+
+### Spin up EC2
+You can run this on your local machine, but the instructions here are for an EC2 machine with:
+- Amazon Linux 2023 AMI
+- 64-bit (x86)
+- t2.medium
+- 40GB gp3 storage
+
+After you launch EC2 machine,  install git and clone this repo.
+
+```bash
+sudo yum install git -y
+sudo yum install nodejs -y
+
+git clone https://github.com/aws-samples/aws-generativeai-partner-samples.git
+cd elastic/mcp/official-elastic-mcp-server-demo/
+```
 
 ### AWS Account Setup
 - Active AWS account with access to Amazon Bedrock 
@@ -57,15 +103,6 @@ export AWS_REGION=us-east-1
 aws configure
 ```
 
-### Elasticsearch Setup
-
-- Elasticsearch deployment (cloud or local)
-- Elasticsearch API key
-- Create .env file with credentials:
-    
-        ES_URL=your-elasticsearch-url 
-        ES_API_KEY=your-api-key`
-
 ### Install Dependencies
 If you are not running Python3.10+, here is how you can upgrade for Amazon Linux as an example:
 
@@ -82,9 +119,22 @@ sudo alternatives --config python3
 python3 --version
 ```
 
+### Elasticsearch Setup
+
+Setup Elastic Cloud on AWS using the free trial [here](https://cloud.elastic.co/registration?fromURI=%2Fhome).
+Note the following details to connect to Elastic Cloud from your application.
+
+- Elasticsearch deployment (cloud or local)
+- Elasticsearch API key
+- In the next step (not now) you will create .env file. Please make a note of the following credentials that you will use in the next step :
+```    
+        ES_URL=your-elasticsearch-url 
+        ES_API_KEY=your-api-key
+```
+
+### Set Up Python Environment & install Python dependencies
 
 ```bash
-git clone [this-repository-url]
 # install uv
 cd aws-generativeai-partner-samples/elastic/mcp/official-elastic-mcp-server-demo
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -101,8 +151,35 @@ source elastic-mcp-official-env/bin/activate  # On Unix/Mac
 uv pip install -r requirements.txt
 ```
 
+### Set Up Environment Variables
+
+Run the script `environment_variables_setup.sh` to setup `.env` file with the following credentials:
+- Confluent Cloud credentials
+- Elasticsearch credentials
+- AWS credentials (for Bedrock access)
+
+Make the script executable by adding execute permissions:
+```
+chmod +x environment_variables_setup.sh
+./environment_variables_setup
+```
+
 ### Data Loading
-Using Elastic Cloud on AWS web console, navigate to Dev Tools and load the data found in the `data` folder.
+1. Generate destination and travel data:
+   ```
+   python generate_data.py --save-json
+   ```
+
+2. Generate user profiles and reservations:
+   ```
+   python generate_user_data.py --save-json
+   ```
+
+3. Load all data into Elasticsearch:
+   ```
+   python generate_data.py --load-es
+   python generate_user_data.py --load-es
+   ```
 
 ## Running the Application
 Go ahead and run the application. You are supplying the weather MCP server path as an argument. There is no need to run Elasticsearch MCP server locally as you are directly using the official MCP server.
@@ -114,44 +191,72 @@ python multi_server_client_travel_analytics.py ../mcp-servers/weather/weather.py
 
 #### Sample Queries to ask
 
-```
-When did Summer Beach Music Festival event happened and how is the weather currently there?
-```
-
-```
-I am planning to stay at Mountain View Lodge. What amenities it has? How is the weather and can I take advantage of these facilities?
-```
-
-```
-Where is Desert Stargazing Night event happening? And how is the weather there?
-```
-
-```
-I am going for City Business Innovation Summit. What are the nearest hotels there? How is the weather conditions this week?
-```
+- I am planing a trip to New York in 2 weeks. Whats the weather like and are there any travel advisories?
+- Which destinations in France, can I consider to visit? 
+- OK, are there any upcoming events in France that are interesting to consider for my travel?
+- Any interesting events in Paris around next year.
+- Can you give precise details of when is Paris Fashion Week happening?
+- Find me some hotels in Paris that offer free breakfast
+- When are the rooms available for the Hôtel de Crillon (Rosewood) in Paris
+- book hotel at Hôtel de Crillon (Rosewood)
+- view reservation replace_this_string_with_reservation_id
+- update reservation replace_this_string_with_reservation_id
+- cancel reservation replace_this_string_with_reservation_id
 
 ##  Data Model
-The application uses five primary Elasticsearch indices:
+The application uses the following Elasticsearch indices:
 
-1. `hotels`: Basic hotel information and facilities
-2. `bookings`: Reservation and guest satisfaction data
-3. `events`: Scheduled activities and weather dependencies
-4. `revenue_metrics`: Financial and occupancy data
-5. `weather_impact_analysis`: Detailed weather effect analysis
+1. **destinations**: Information about travel destinations
+2. **attractions**: Tourist attractions at destinations
+3. **hotels**: Hotel and accommodation information
+4. **advisories**: Travel advisories and safety information
+5. **weather**: Weather forecasts for destinations
+6. **events**: Events happening at destinations
+7. **users**: User profiles and preferences
+8. **reservations**: Hotel reservation information
+9. **room_availability**: Room availability and pricing information
 
 ## Conclusion
 This project demonstrates how to create MCP-compliant servers for data retrieval and integrate them with foundation models to provide seamless responses to complex queries that span multiple domains of information.
-### Amazon Bedrock
 
+### Amazon Bedrock
 - Powerful natural language understanding with FMs from Anthropic via Amazon Bedrock
 - No ML infrastructure management required
 - Pay-per-use pricing model
 - Enhanced reasoning capabilities for complex queries
 
 ### Elastic MCP Server
-
 - Official integration with Elasticsearch
 - Optimized query performance
 - Real-time data analytics
 - Secure data access
 - Advanced hybrid search capabilities.
+
+
+## Cleanup and Data Management
+
+The application now includes functionality to clean up Elasticsearch indices before loading new data:
+
+### Cleaning Up All Indices
+
+To delete all indices before loading new data:
+```
+python generate_data.py --cleanup --load-es
+```
+
+To only delete all indices without loading new data:
+```
+python generate_data.py --delete-indices
+```
+
+### Cleaning Up User-Related Indices
+
+To delete only user-related indices before loading user data:
+```
+python generate_user_data.py --cleanup --load-es
+```
+
+To only delete user-related indices without loading new data:
+```
+python generate_user_data.py --delete-indices
+```
