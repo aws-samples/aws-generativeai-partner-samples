@@ -4,20 +4,33 @@ from datetime import datetime, timedelta
 from typing import Dict, List
 import random
 import json
+import os
+from dotenv import load_dotenv
 from faker import Faker
 from elasticsearch import Elasticsearch, helpers, exceptions
 import yfinance as yf
 import pandas as pd
 import numpy as np
 
+# Load environment variables from .env file
+load_dotenv()
+
 class HistoricalDataLoader:
     def __init__(self):
         self.faker = Faker()
         
-        # Elasticsearch configuration
+        # Elasticsearch configuration using environment variables
+        es_url = os.getenv("ES_URL")
+        es_api_key = os.getenv("ES_API_KEY")
+        es_cloud_id = os.getenv("ES_CLOUD_ID")
+        
+        if not es_url or not es_api_key or not es_cloud_id:
+            raise ValueError("ES_URL , ES_API_KEY and ES_CLOUD_ID must be set in the .env file")
+            
+        # Connect to Elasticsearch
         self.es = Elasticsearch(
-            cloud_id="SecondDeployment:dXMtZWFzdC0xLmF3cy5mb3VuZC5pbyRiZWZmMTljZDdjMTQ0YzlmYjc3MWQzMjZjNjRiMWM4NyQwNTEwOTBiYTlkNzQ0ZDYyOTU1ZTkzMjJmZmNjYTAzMw==",
-            api_key="elo5anc1RUI1Sm9wUklaYW5IX3A6ZnRpV2oxVVNRNE9NQU44VGljTFFSdw=="
+            cloud_id=es_cloud_id,
+            api_key=es_api_key
         )
         
         self.symbols = ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'META', 'NVDA', 'TSLA','ESTC']
