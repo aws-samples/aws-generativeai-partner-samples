@@ -84,7 +84,7 @@ sudo yum install git -y
 sudo yum install nodejs -y
 
 git clone https://github.com/aws-samples/aws-generativeai-partner-samples.git
-cd elastic/mcp/official-elastic-mcp-server-demo/
+cd aws-generativeai-partner-samples/elastic/mcp/official-elastic-mcp-server-demo
 ```
 
 ### AWS Account Setup
@@ -112,7 +112,7 @@ sudo dnf upgrade --releasever=2023.7.20250331
 sudo yum list available | grep python3
 
 # if Python 3.10 or 3.11 is found, simply install.
-sudo yum install python3.11
+sudo yum install python3.11 -y
 python3.11 --version
 sudo alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
 sudo alternatives --config python3
@@ -161,8 +161,20 @@ Run the script `environment_variables_setup.sh` to setup `.env` file with the fo
 Make the script executable by adding execute permissions:
 ```
 chmod +x environment_variables_setup.sh
-./environment_variables_setup
+./environment_variables_setup.sh
 ```
+### Setup MCP Servers
+There are 3 MCP servers needed for this app.
+- Official MCP Server from Elastic: There are no additional steps needed to configure and run this. During runtime of this application, the MCP server is automatically downloaded and run.
+- Weather MCP Server: Again, no additional steps needed. Its already pre-packaged in the `mcp-servers\weather` folder.
+- Amazon SES MCP Server: In the `mcp-servers\aws-ses-mcp` folder, you have all the bits to run the MCP server. However it requires following configurations:
+
+```
+cd mcp-servers/aws-ses-mcp/
+npm install
+npm run build
+```
+
 
 ### Data Loading
 1. Generate destination and travel data:
