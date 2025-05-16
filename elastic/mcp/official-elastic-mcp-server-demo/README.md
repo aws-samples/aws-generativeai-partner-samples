@@ -112,7 +112,7 @@ sudo dnf upgrade --releasever=2023.7.20250331
 sudo yum list available | grep python3
 
 # if Python 3.10 or 3.11 is found, simply install.
-sudo yum install python3.11
+sudo yum install python3.11 -y
 python3.11 --version
 sudo alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
 sudo alternatives --config python3
@@ -161,7 +161,7 @@ Run the script `environment_variables_setup.sh` to setup `.env` file with the fo
 Make the script executable by adding execute permissions:
 ```
 chmod +x environment_variables_setup.sh
-./environment_variables_setup
+./environment_variables_setup.sh
 ```
 
 ### Data Loading

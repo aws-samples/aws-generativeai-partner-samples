@@ -1,4 +1,4 @@
-elasticsearch[async]>=8.0.0
+elasticsearch==8.15.1
 aiohttp
 httpx
 mcp[cli]
