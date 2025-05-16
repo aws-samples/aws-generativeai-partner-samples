@@ -976,6 +976,7 @@ async def main():
     aws_region = os.getenv("AWS_REGION", "us-west-2")
     sender_email = os.getenv("SENDER_EMAIL_ADDRESS")
     reply_to_email = os.getenv("REPLY_TO_EMAIL_ADDRESSES")
+    aws_ses_mcp_server_path=os.getenv("AWS_SES_MCP_SERVER_PATH")
     
     # Validate required environment variables
     if not all([aws_access_key_id, aws_secret_access_key, sender_email]):
@@ -998,7 +999,7 @@ async def main():
         },
         "aws-ses-mcp": {
             "command": "node",
-            "args": ["/home/ec2-user/official-elastic-mcp-server-demo/mcp-servers/aws-ses-mcp/build/index.js"],
+            "args": [aws_ses_mcp_server_path],
             "env": {
                 "AWS_ACCESS_KEY_ID": aws_access_key_id,
                 "AWS_SECRET_ACCESS_KEY": aws_secret_access_key,
