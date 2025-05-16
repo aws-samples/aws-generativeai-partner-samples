@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "vbr": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/your/vbr-mcp-server",
+        "run",
+        "server/vbr_mcp.py"
+      ],
+      "transport": "stdio",
+      "env": {
+        "VBR_API_URL": "https://your VBR server hostname:9419",
+        "VBR_USERNAME": "your VBR administrator username",
+        "VBR_PASSWORD": "your VBR password"
+      },
+      "alwaysAllow": [
+        "list_vbr_repositories",
+        "get_s3_bucket_cost"
+      ]
+    }
+  }
+}
