@@ -46,6 +46,15 @@ This diagram illustrates the architecture of an academic question-answering syst
 - `bedrock_claude.py`: Amazon Bedrock client for Claude integration
 - `templates/`: HTML templates for the web interface
 
+## Requirements
+
+- Python 3.8+
+- Flask
+- Elasticsearch Python client
+- AWS SDK for Python (boto3)
+- An Elasticsearch instance with academic_documents index with ELSER
+- Amazon Bedrock access with permissions to use Claude models
+
 ## Setup Instructions
 
 1. **Clone the repository**:
@@ -117,12 +126,3 @@ Response:
   ]
 }
 ```
-
-## Requirements
-
-- Python 3.8+
-- Flask
-- Elasticsearch Python client
-- AWS SDK for Python (boto3)
-- An Elasticsearch instance with academic_documents index with ELSER
-- Amazon Bedrock access with permissions to use Claude models
