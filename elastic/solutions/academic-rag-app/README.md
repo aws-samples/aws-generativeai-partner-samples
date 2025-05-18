@@ -31,14 +31,20 @@ This diagram illustrates the architecture of an academic question-answering syst
 
 5. **Response Delivery**: The system returns "The best answer" to the user, which is contextually accurate based on the academic documents
 
-# Key Components:
+  # Key Components:
 
-- **Elasticsearch**: Handles document storage and vector search capabilities for semantic matching
-- **Amazon Bedrock**: Provides the AI inference capabilities to generate natural language responses
-- **Flask**: Powers the front-end web interface for user interaction
-- **Vector Search**: Enables semantic understanding of queries rather than just keyword matching
+  - **Elasticsearch**: Handles document storage and vector search capabilities for semantic matching
+  - **Amazon Bedrock**: Provides the AI inference capabilities to generate natural language responses
+  - **Flask**: Powers the front-end web interface for user interaction
+  - **Vector Search**: Enables semantic understanding of queries rather than just keyword matching
 
-This architecture enables an academic chatbot that can accurately answer questions by leveraging both the information retrieval capabilities of Elasticsearch and the natural language generation abilities of large language models through Amazon Bedrock.
+  This architecture enables an academic chatbot that can accurately answer questions by leveraging both the information retrieval capabilities of Elasticsearch and the natural language generation abilities of large language models through Amazon Bedrock.
+
+## Project Structure 
+- `app.py`: Flask web application
+- `search.py`: Elasticsearch integration for academic document search
+- `bedrock_claude.py`: Amazon Bedrock client for Claude integration
+- `templates/`: HTML templates for the web interface
 
 ## Setup Instructions
 
@@ -80,13 +86,6 @@ Copy .env.example & save as .env: `cp .env.example .env` (then edit with your cr
    python app.py
    ```
    The application will be available at `http://localhost:5000`
-
-
-## Project Architecture
-- `app.py`: Flask web application
-- `search.py`: Elasticsearch integration for academic document search
-- `bedrock_claude.py`: Amazon Bedrock client for Claude integration
-- `templates/`: HTML templates for the web interface
 
 ## API Usage
 
