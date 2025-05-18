@@ -1,14 +1,44 @@
 # Academic Q&A Chatbot
 
-A Flask-based academic Q&A chatbot that integrates Elasticsearch and AWS Bedrock with Claude to provide accurate answers from academic documents.
+A Flask-based academic Q&A chatbot that integrates Elasticsearch and Amazon Bedrock with Claude to provide accurate answers from academic documents.
 
 ## Features
 
 - **Vector Search**: Retrieves the top 3 most relevant academic documents for each query using ELSER sparse embeddings
-- **AI-Powered Answers**: Generates concise, contextual responses using Claude through AWS Bedrock
+- **AI-Powered Answers**: Generates concise, contextual responses using Claude through Amazon Bedrock
 - **Source Citations**: Includes citations to specific source documents
 - **Interactive UI**: Clean interface with collapsible source sections and async request handling
 
+## Architecture
+
+![Architecture Diagram](static/architecture.png)
+
+This diagram illustrates the architecture of an academic question-answering system that combines Elasticsearch for document retrieval and Amazon Bedrock for generating accurate answers.
+
+1. **User Interface**: A Python Flask front-end provides the interface where users enter their academic questions (shown on the left with a search box).
+
+2. **Document Repository**: The system has bulk-uploaded PDF documents containing academic information (employee handbooks, class registration procedures, university information, career counseling resources, etc.) which are indexed in an Elasticsearch "academic_documents" index.
+
+3. **Search Process**: 
+   - When a user submits a question, it's sent to Elasticsearch's Vector Search functionality
+   - Elasticsearch retrieves the most relevant results from the academic documents
+   - The system combines the user's question with the most relevant document excerpts
+
+4. **Answer Generation**: 
+   - The combined information is sent to Amazon Bedrock (Amazon's AI service)
+   - Amazon Bedrock processes the question and reference materials using Language Models (LLMs) trained on public datasets
+   - The service can be deployed either in public or private hosted environments
+
+5. **Response Delivery**: The system returns "The best answer" to the user, which is contextually accurate based on the academic documents
+
+# Key Components:
+
+- **Elasticsearch**: Handles document storage and vector search capabilities for semantic matching
+- **Amazon Bedrock**: Provides the AI inference capabilities to generate natural language responses
+- **Flask**: Powers the front-end web interface for user interaction
+- **Vector Search**: Enables semantic understanding of queries rather than just keyword matching
+
+This architecture enables an academic chatbot that can accurately answer questions by leveraging both the information retrieval capabilities of Elasticsearch and the natural language generation abilities of large language models through Amazon Bedrock.
 
 ## Setup Instructions
 
@@ -55,7 +85,7 @@ Copy .env.example & save as .env: `cp .env.example .env` (then edit with your cr
 ## Project Architecture
 - `app.py`: Flask web application
 - `search.py`: Elasticsearch integration for academic document search
-- `bedrock_claude.py`: AWS Bedrock client for Claude integration
+- `bedrock_claude.py`: Amazon Bedrock client for Claude integration
 - `templates/`: HTML templates for the web interface
 
 ## API Usage
@@ -96,4 +126,4 @@ Response:
 - Elasticsearch Python client
 - AWS SDK for Python (boto3)
 - An Elasticsearch instance with academic_documents index with ELSER
-- AWS Bedrock access with permissions to use Claude models
+- Amazon Bedrock access with permissions to use Claude models
