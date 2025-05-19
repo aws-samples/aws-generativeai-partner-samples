@@ -93,7 +93,7 @@ Copy .env.example & save as .env: `cp .env.example .env` (then edit with your cr
    - `AWS_REGION`: AWS region (e.g., us-east-1)
    - `AWS_ACCESS_KEY_ID`: Your AWS access key
    - `AWS_SECRET_ACCESS_KEY`: Your AWS secret access key
-   - `CLAUDE_MODEL_ID`: Claude model ID (default: anthropic.claude-3-sonnet-20240229-v1:0)
+   - `CLAUDE_MODEL_ID`: Claude model ID (default: anthropic.claude-3-7-sonnet-20250219-v1:0)
    - `SECRET_KEY`: Secret key for Flask sessions (generate a random string)
 
 
