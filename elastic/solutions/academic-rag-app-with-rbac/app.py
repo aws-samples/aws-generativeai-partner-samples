@@ -6,7 +6,9 @@ from search import Search
 from dotenv import load_dotenv
 import bedrock_claude
 from models import User
+from document_indexer import DocumentIndexer
 from functools import wraps
+import base64
 
 # Load environment variables
 load_dotenv()
@@ -21,27 +23,41 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 login_manager.login_message = 'Please log in to access this page.'
 
-# Mock user database - in production, use a real database
-users = {
-    '1': User('1', 'student', 'password123', ['student']),
-    '2': User('2', 'faculty', 'password123', ['faculty']),
-    '3': User('3', 'admin', 'password123', ['admin']),
-    '4': User('4', 'researcher', 'password123', ['researcher']),
-    '5': User('5', 'superuser', 'password123', ['student', 'faculty', 'admin', 'researcher'])
-}
-
 # Initialize services with error handling
 try:
     # Use environment variable to control whether to use cloud or local Elasticsearch
     use_cloud = os.getenv("USE_ELASTIC_CLOUD", "true").lower() == "true"
     es = Search(use_cloud=use_cloud)
+    document_indexer = DocumentIndexer(use_cloud=use_cloud)
+    
+    # Create index mapping if it doesn't exist
+    mapping_result = document_indexer.create_document_mapping()
+    print(mapping_result)
 except Exception as e:
     print(f"Error initializing Elastic or Bedrock services: {e}")
 
+# Store API keys in memory (in production, use a database)
+api_keys = {}
+
 @login_manager.user_loader
 def load_user(user_id):
-    """Load user from the mock database."""
-    return users.get(user_id)
+    """Load user from API key ID or session."""
+    # First check if we have an API key for this user
+    if user_id in api_keys:
+        return api_keys[user_id]
+    
+    # If not, try to validate the API key with Elasticsearch
+    user_info = document_indexer.validate_api_key(user_id)
+    if user_info:
+        user = User(
+            id=user_id,
+            username=user_info["username"],
+            roles=user_info["roles"]
+        )
+        api_keys[user_id] = user
+        return user
+    
+    return None
 
 # Role-based access control decorator
 def role_required(roles):
@@ -76,7 +92,7 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    """Handle user login."""
+    """Handle user login with Elasticsearch API keys."""
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     
@@ -84,13 +100,63 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
         
-        # Find user by username
-        user = next((u for u in users.values() if u.username == username), None)
-        
-        if user and user.password == password:  # In production, use password hashing
+        # Mock authentication - in production, validate against a database
+        if username == 'student' and password == 'password123':
+            # Create API key for this user
+            api_key_info = document_indexer.create_user_api_key(username, ['student'])
+            user = User(
+                id=api_key_info["id"],
+                username=username,
+                roles=['student'],
+                api_key=api_key_info["encoded_api_key"]
+            )
+            api_keys[api_key_info["id"]] = user
             login_user(user)
-            next_page = request.args.get('next')
-            return redirect(next_page or url_for('index'))
+            return redirect(url_for('index'))
+        elif username == 'faculty' and password == 'password123':
+            api_key_info = document_indexer.create_user_api_key(username, ['faculty'])
+            user = User(
+                id=api_key_info["id"],
+                username=username,
+                roles=['faculty'],
+                api_key=api_key_info["encoded_api_key"]
+            )
+            api_keys[api_key_info["id"]] = user
+            login_user(user)
+            return redirect(url_for('index'))
+        elif username == 'admin' and password == 'password123':
+            api_key_info = document_indexer.create_user_api_key(username, ['admin'])
+            user = User(
+                id=api_key_info["id"],
+                username=username,
+                roles=['admin'],
+                api_key=api_key_info["encoded_api_key"]
+            )
+            api_keys[api_key_info["id"]] = user
+            login_user(user)
+            return redirect(url_for('index'))
+        elif username == 'researcher' and password == 'password123':
+            api_key_info = document_indexer.create_user_api_key(username, ['researcher'])
+            user = User(
+                id=api_key_info["id"],
+                username=username,
+                roles=['researcher'],
+                api_key=api_key_info["encoded_api_key"]
+            )
+            api_keys[api_key_info["id"]] = user
+            login_user(user)
+            return redirect(url_for('index'))
+        elif username == 'superuser' and password == 'password123':
+            api_key_info = document_indexer.create_user_api_key(username, ['student', 'faculty', 'admin', 'researcher'])
+            user = User(
+                id=api_key_info["id"],
+                username=username,
+                roles=['student', 'faculty', 'admin', 'researcher'],
+                api_key=api_key_info["encoded_api_key"]
+            )
+            api_keys[api_key_info["id"]] = user
+            login_user(user)
+            return redirect(url_for('index'))
         else:
             flash('Invalid username or password', 'danger')
     
@@ -100,6 +166,7 @@ def login():
 @login_required
 def logout():
     """Handle user logout."""
+    # In a production environment, you might want to invalidate the API key
     logout_user()
     return redirect(url_for('login'))
 
@@ -146,14 +213,12 @@ def ask():
 def get_document(doc_id):
     """Render a page showing a specific document with RBAC check."""
     try:
-        document = es.retrieve_document(doc_id)
-        
-        # Check if user has access to this document
-        allowed_roles = document['_source'].get('allowed_roles', [])
-        if allowed_roles and not any(role in current_user.roles for role in allowed_roles):
+        # Verify document access using Elasticsearch API
+        if not es.verify_document_access(doc_id, current_user.roles):
             flash('You do not have permission to access this document.', 'danger')
             return redirect(url_for('index'))
         
+        document = es.retrieve_document(doc_id, user_roles=current_user.roles)
         title = document['_source'].get('attachment', {}).get('title', 'Untitled Document')
         
         # Extract and format content as paragraphs
@@ -167,6 +232,9 @@ def get_document(doc_id):
         paragraphs = content.split('\n')
         
         return render_template('document.html', title=title, paragraphs=paragraphs)
+    except PermissionError as e:
+        flash(str(e), 'danger')
+        return redirect(url_for('index'))
     except Exception as e:
         print(f"Error retrieving document: {e}")
         return render_template('index.html', error=f"Error retrieving document: {str(e)}")
@@ -177,6 +245,22 @@ def get_document(doc_id):
 def admin_panel():
     """Admin panel - only accessible to users with admin role."""
     return render_template('admin.html')
+
+@app.route('/admin/documents')
+@login_required
+@role_required('admin')
+def admin_documents():
+    """Document management interface for admins."""
+    # In a real implementation, you would list documents from Elasticsearch
+    return render_template('admin_documents.html')
+
+@app.route('/admin/users')
+@login_required
+@role_required('admin')
+def admin_users():
+    """User management interface for admins."""
+    # In a real implementation, you would list users from a database
+    return render_template('admin_users.html')
 
 # Custom Jinja filter for date formatting
 @app.template_filter('date_format')
