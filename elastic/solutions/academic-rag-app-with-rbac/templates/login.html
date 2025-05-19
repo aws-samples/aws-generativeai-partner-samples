@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Academic Q&A Chatbot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <header class="bg-gradient-to-r from-blue-700 to-purple-700 text-white py-4 px-4 shadow-lg">
+        <div class="container mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div>
+                    <img src="https://brand.elastic.co/uploads/YxRMVgeFNJEJwq5hrXY96A.png" alt="Elastic Logo" width="64" height="64">
+                </div>
+                <h1 class="text-xl font-bold">Elastic + AWS Q&A Chatbot</h1>
+            </div>
+            <div class="flex items-center space-x-2 bg-white/20 px-3 py-1 rounded-full">
+                <i class="fab fa-aws text-yellow-300"></i>
+                <span class="text-sm font-medium">Powered by AWS & Elasticsearch</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 container mx-auto py-12 px-4 flex flex-col items-center justify-center">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden w-full max-w-md">
+            <div class="bg-indigo-600 py-4 px-6 text-white">
+                <h2 class="text-xl font-bold">Login</h2>
+                <p class="text-indigo-200 text-sm">Access the Academic Q&A System</p>
+            </div>
+            
+            <div class="p-6">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="mb-4 p-3 rounded-lg {% if category == 'danger' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <form method="POST" action="{{ url_for('login') }}">
+                    <div class="mb-4">
+                        <label for="username" class="block text-gray-700 font-medium mb-2">Username</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                                <i class="fas fa-user"></i>
+                            </span>
+                            <input type="text" id="username" name="username" 
+                                class="w-full pl-10 pr-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                placeholder="Enter your username" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label for="password" class="block text-gray-700 font-medium mb-2">Password</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                            <input type="password" id="password" name="password" 
+                                class="w-full pl-10 pr-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                placeholder="Enter your password" required>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                        <i class="fas fa-sign-in-alt mr-2"></i> Login
+                    </button>
+                </form>
+                
+                <div class="mt-6 text-center text-sm text-gray-500">
+                    <p>Demo Accounts:</p>
+                    <div class="mt-2 grid grid-cols-2 gap-2 text-xs">
+                        <div class="bg-gray-50 p-2 rounded">
+                            <p class="font-medium">Username: student</p>
+                            <p>Role: Student</p>
+                        </div>
+                        <div class="bg-gray-50 p-2 rounded">
+                            <p class="font-medium">Username: faculty</p>
+                            <p>Role: Faculty</p>
+                        </div>
+                        <div class="bg-gray-50 p-2 rounded">
+                            <p class="font-medium">Username: admin</p>
+                            <p>Role: Admin</p>
+                        </div>
+                        <div class="bg-gray-50 p-2 rounded">
+                            <p class="font-medium">Username: researcher</p>
+                            <p>Role: Researcher</p>
+                        </div>
+                    </div>
+                    <p class="mt-2">Password for all accounts: password123</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-3 text-center text-sm">
+        <p>Q&A Chatbot &copy; {{ now().year }} - Elasticsearch + AWS Bedrock </p>
+    </footer>
+</body>
+</html>
