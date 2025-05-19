@@ -143,7 +143,6 @@ For testing purposes, the following demo accounts are available:
 - Username: `faculty`, Password: `password123`, Role: Faculty
 - Username: `admin`, Password: `password123`, Role: Admin
 - Username: `researcher`, Password: `password123`, Role: Researcher
-- Username: `superuser`, Password: `password123`, Roles: All roles
 
 ## Using the Document Indexer
 

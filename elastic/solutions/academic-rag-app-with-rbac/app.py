@@ -26,8 +26,7 @@ users = {
     '1': User('1', 'student', 'password123', ['student']),
     '2': User('2', 'faculty', 'password123', ['faculty']),
     '3': User('3', 'admin', 'password123', ['admin']),
-    '4': User('4', 'researcher', 'password123', ['researcher']),
-    '5': User('5', 'superuser', 'password123', ['student', 'faculty', 'admin', 'researcher'])
+    '4': User('4', 'researcher', 'password123', ['researcher'])
 }
 
 # Initialize services with error handling
