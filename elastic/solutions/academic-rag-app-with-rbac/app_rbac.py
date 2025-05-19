@@ -2,16 +2,27 @@ import os
 from datetime import datetime
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, session
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from search import Search
 from dotenv import load_dotenv
 import bedrock_claude
-from models import User
-from document_indexer import DocumentIndexer
 from functools import wraps
-import base64
+from elastic_rbac import ElasticRBAC
 
 # Load environment variables
 load_dotenv()
+
+# User model for Flask-Login
+class User:
+    def __init__(self, id, username, roles, api_key=None):
+        self.id = id
+        self.username = username
+        self.roles = roles
+        self.api_key = api_key
+        self.is_authenticated = True
+        self.is_active = True
+        self.is_anonymous = False
+    
+    def get_id(self):
+        return self.id
 
 # Initialize Flask application
 app = Flask(__name__)
@@ -23,18 +34,13 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 login_manager.login_message = 'Please log in to access this page.'
 
-# Initialize services with error handling
-try:
-    # Use environment variable to control whether to use cloud or local Elasticsearch
-    use_cloud = os.getenv("USE_ELASTIC_CLOUD", "true").lower() == "true"
-    es = Search(use_cloud=use_cloud)
-    document_indexer = DocumentIndexer(use_cloud=use_cloud)
-    
-    # Create index mapping if it doesn't exist
-    mapping_result = document_indexer.create_document_mapping()
+# Initialize Elasticsearch RBAC service
+elastic_rbac = ElasticRBAC()
+
+# Create index mapping if it doesn't exist
+if elastic_rbac.is_ready():
+    mapping_result = elastic_rbac.create_document_mapping()
     print(mapping_result)
-except Exception as e:
-    print(f"Error initializing Elastic or Bedrock services: {e}")
 
 # Store API keys in memory (in production, use a database)
 api_keys = {}
@@ -46,8 +52,12 @@ def load_user(user_id):
     if user_id in api_keys:
         return api_keys[user_id]
     
+    # If elastic_rbac is not initialized, we can't validate API keys
+    if not elastic_rbac.is_ready():
+        return None
+    
     # If not, try to validate the API key with Elasticsearch
-    user_info = document_indexer.validate_api_key(user_id)
+    user_info = elastic_rbac.validate_api_key(user_id)
     if user_info:
         user = User(
             id=user_id,
@@ -100,10 +110,19 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
         
+        # Check if elastic_rbac is initialized
+        if not elastic_rbac.is_ready():
+            flash('Authentication service is not available. Please try again later.', 'danger')
+            return render_template('login.html')
+            
         # Mock authentication - in production, validate against a database
         if username == 'student' and password == 'password123':
             # Create API key for this user
-            api_key_info = document_indexer.create_user_api_key(username, ['student'])
+            api_key_info = elastic_rbac.create_user_api_key(username, ['student'])
+            if not api_key_info:
+                flash('Error creating authentication token. Please try again.', 'danger')
+                return render_template('login.html')
+                
             user = User(
                 id=api_key_info["id"],
                 username=username,
@@ -114,7 +133,11 @@ def login():
             login_user(user)
             return redirect(url_for('index'))
         elif username == 'faculty' and password == 'password123':
-            api_key_info = document_indexer.create_user_api_key(username, ['faculty'])
+            api_key_info = elastic_rbac.create_user_api_key(username, ['faculty'])
+            if not api_key_info:
+                flash('Error creating authentication token. Please try again.', 'danger')
+                return render_template('login.html')
+                
             user = User(
                 id=api_key_info["id"],
                 username=username,
@@ -125,7 +148,11 @@ def login():
             login_user(user)
             return redirect(url_for('index'))
         elif username == 'admin' and password == 'password123':
-            api_key_info = document_indexer.create_user_api_key(username, ['admin'])
+            api_key_info = elastic_rbac.create_user_api_key(username, ['admin'])
+            if not api_key_info:
+                flash('Error creating authentication token. Please try again.', 'danger')
+                return render_template('login.html')
+                
             user = User(
                 id=api_key_info["id"],
                 username=username,
@@ -136,7 +163,11 @@ def login():
             login_user(user)
             return redirect(url_for('index'))
         elif username == 'researcher' and password == 'password123':
-            api_key_info = document_indexer.create_user_api_key(username, ['researcher'])
+            api_key_info = elastic_rbac.create_user_api_key(username, ['researcher'])
+            if not api_key_info:
+                flash('Error creating authentication token. Please try again.', 'danger')
+                return render_template('login.html')
+                
             user = User(
                 id=api_key_info["id"],
                 username=username,
@@ -147,7 +178,11 @@ def login():
             login_user(user)
             return redirect(url_for('index'))
         elif username == 'superuser' and password == 'password123':
-            api_key_info = document_indexer.create_user_api_key(username, ['student', 'faculty', 'admin', 'researcher'])
+            api_key_info = elastic_rbac.create_user_api_key(username, ['student', 'faculty', 'admin', 'researcher'])
+            if not api_key_info:
+                flash('Error creating authentication token. Please try again.', 'danger')
+                return render_template('login.html')
+                
             user = User(
                 id=api_key_info["id"],
                 username=username,
@@ -175,6 +210,10 @@ def logout():
 def ask():
     """API endpoint to handle Q&A requests with RBAC."""
     try:
+        # Check if elastic_rbac is initialized
+        if not elastic_rbac.is_ready():
+            return jsonify({"error": "Search service is not available"}), 503
+            
         # Get question from request
         data = request.json
         question = data.get('question', '')
@@ -184,10 +223,7 @@ def ask():
             return jsonify({"error": "No question provided"}), 400
         
         # Search Elastic for relevant documents with RBAC filtering
-        search_results, search_result = es.search(question, user_roles=current_user.roles)
-        
-        # Format search results
-        sources = es.format_search_results(search_results)
+        search_results, sources = elastic_rbac.search_documents(question, current_user.roles)
         
         if not sources:
             return jsonify({
@@ -195,8 +231,18 @@ def ask():
                 "sources": []
             })
 
+        # Generate prompt for Claude
+        prompt = f"""
+        Question: {question}
+        
+        Please answer the question based on the following academic documents:
+        
+        {sources}
+        
+        Provide a concise, accurate answer with citations to the source documents.
+        """
+        
         # Generate answer using Claude
-        prompt = Search.create_bedrock_prompt(search_result)
         bedrock_completion = bedrock_claude.execute_llm(prompt)
         
         # Return both the answer and sources
@@ -213,22 +259,25 @@ def ask():
 def get_document(doc_id):
     """Render a page showing a specific document with RBAC check."""
     try:
+        # Check if elastic_rbac is initialized
+        if not elastic_rbac.is_ready():
+            flash('Document service is not available. Please try again later.', 'danger')
+            return redirect(url_for('index'))
+            
         # Verify document access using Elasticsearch API
-        if not es.verify_document_access(doc_id, current_user.roles):
+        if not elastic_rbac.verify_document_access(doc_id, current_user.roles):
             flash('You do not have permission to access this document.', 'danger')
             return redirect(url_for('index'))
         
-        document = es.retrieve_document(doc_id, user_roles=current_user.roles)
+        document = elastic_rbac.retrieve_document(doc_id, current_user.roles)
+        if not document:
+            flash('Document not found.', 'danger')
+            return redirect(url_for('index'))
+            
         title = document['_source'].get('attachment', {}).get('title', 'Untitled Document')
         
         # Extract and format content as paragraphs
-        content = document['_source'].get('semantic_content', {}).get('inference', {}).get('chunks', [{}])[0].get('text', '')
-        content = content.replace("\n", "")
-        if not content:
-            content = document['_source'].get('attachment', {}).get('content', '')
-            content = content.replace("\n", "")
-
-        content = content.replace("\n", "")
+        content = document['_source'].get('attachment', {}).get('content', '')
         paragraphs = content.split('\n')
         
         return render_template('document.html', title=title, paragraphs=paragraphs)
@@ -245,22 +294,6 @@ def get_document(doc_id):
 def admin_panel():
     """Admin panel - only accessible to users with admin role."""
     return render_template('admin.html')
-
-@app.route('/admin/documents')
-@login_required
-@role_required('admin')
-def admin_documents():
-    """Document management interface for admins."""
-    # In a real implementation, you would list documents from Elasticsearch
-    return render_template('admin_documents.html')
-
-@app.route('/admin/users')
-@login_required
-@role_required('admin')
-def admin_users():
-    """User management interface for admins."""
-    # In a real implementation, you would list users from a database
-    return render_template('admin_users.html')
 
 # Custom Jinja filter for date formatting
 @app.template_filter('date_format')

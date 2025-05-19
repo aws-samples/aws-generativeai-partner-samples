@@ -11,6 +11,7 @@ A Flask-based academic Q&A chatbot that integrates Elasticsearch and Amazon Bedr
 - **Elasticsearch API-based RBAC**: Uses Elasticsearch security APIs for robust role-based access control
 - **API Key Authentication**: Secures user sessions with Elasticsearch API keys
 - **Admin Panel**: Interface for managing users, roles, and document access
+- **Robust Error Handling**: Graceful handling of service unavailability and initialization errors
 
 ## Architecture
 
@@ -44,7 +45,9 @@ This diagram illustrates the architecture of an academic question-answering syst
 - **Elasticsearch API Keys**: Secures user sessions and enforces role-based permissions
 
 ## Project Structure 
-- `app.py`: Flask web application with authentication and RBAC
+- `app.py`: Original Flask web application with authentication and RBAC
+- `app_rbac.py`: New improved Flask application with better error handling and RBAC
+- `elastic_rbac.py`: Dedicated class for all Elasticsearch RBAC operations
 - `search.py`: Elasticsearch integration for academic document search with RBAC filtering
 - `bedrock_claude.py`: Amazon Bedrock client for Claude integration
 - `models.py`: User model for authentication and role management
@@ -99,9 +102,17 @@ Copy .env.example & save as .env: `cp .env.example .env` (then edit with your cr
 
 
 4. **Run the application**:
+   
+   Original version:
    ```bash
    python app.py
    ```
+   
+   New improved version with better error handling:
+   ```bash
+   python app_rbac.py
+   ```
+   
    The application will be available at `http://localhost:5000`
 
 ## RBAC Implementation with Elasticsearch APIs
@@ -146,54 +157,55 @@ For testing purposes, the following demo accounts are available:
 - Username: `researcher`, Password: `password123`, Role: Researcher
 - Username: `superuser`, Password: `password123`, Roles: All roles
 
-## Using the Document Indexer
+## Using the New ElasticRBAC Class
 
-The application includes a `document_indexer.py` utility for adding documents with role permissions:
+The application now includes an improved `elastic_rbac.py` class for all Elasticsearch RBAC operations:
 
 ```python
-from document_indexer import DocumentIndexer
+from elastic_rbac import ElasticRBAC
 
-# Initialize the indexer
-indexer = DocumentIndexer()
+# Initialize the RBAC service with proper error handling
+rbac = ElasticRBAC()
 
-# Create index mapping if it doesn't exist
-indexer.create_document_mapping()
-
-# Index a document with role permissions
-indexer.index_document(
-    title="Student Handbook 2023",
-    content="This handbook contains important information for all students...",
-    allowed_roles=["student", "faculty", "admin"]
-)
-
-# Index a PDF document with role permissions
-indexer.index_pdf_document(
-    file_path="path/to/document.pdf",
-    allowed_roles=["faculty", "admin"],
-    title="Faculty Guidelines"
-)
-
-# Update permissions for an existing document
-indexer.update_document_roles("document_id", ["admin", "researcher"])
-
-# Bulk update permissions for documents matching a query
-query = {
-    "match": {
-        "attachment.content": "financial"
-    }
-}
-indexer.bulk_update_roles(query, ["admin", "finance"])
-
-# Create API key for a user
-api_key_info = indexer.create_user_api_key("student_user", ["student"])
-print(f"API Key: {api_key_info['encoded_api_key']}")
-
-# Validate an API key
-user_info = indexer.validate_api_key("api_key_id")
-if user_info and user_info["valid"]:
-    print(f"Valid API key for user: {user_info['username']}")
-    print(f"Roles: {user_info['roles']}")
+# Check if service is ready before using
+if rbac.is_ready():
+    # Create index mapping if it doesn't exist
+    rbac.create_document_mapping()
+    
+    # Index a document with role permissions
+    doc_id = rbac.index_document(
+        title="Student Handbook 2023",
+        content="This handbook contains important information for all students...",
+        allowed_roles=["student", "faculty", "admin"],
+        metadata={"department": "Student Affairs", "year": 2023}
+    )
+    
+    # Create API key for a user
+    api_key_info = rbac.create_user_api_key("student_user", ["student"])
+    if api_key_info:
+        print(f"API Key: {api_key_info['encoded_api_key']}")
+    
+    # Validate an API key
+    user_info = rbac.validate_api_key("api_key_id")
+    if user_info and user_info["valid"]:
+        print(f"Valid API key for user: {user_info['username']}")
+        print(f"Roles: {user_info['roles']}")
+    
+    # Search documents with RBAC filtering
+    search_results, formatted_results = rbac.search_documents(
+        "academic policies", 
+        user_roles=["student"]
+    )
+    
+    # Verify document access
+    has_access = rbac.verify_document_access("document_id", ["student"])
+else:
+    print("Elasticsearch service is not available")
 ```
+
+## Original Document Indexer
+
+The application still includes the original `document_indexer.py` utility for backward compatibility:
 
 ## API Usage
 
