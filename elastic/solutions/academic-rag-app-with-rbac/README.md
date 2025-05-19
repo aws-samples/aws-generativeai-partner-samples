@@ -102,12 +102,6 @@ Copy .env.example & save as .env: `cp .env.example .env` (then edit with your cr
 
 4. **Run the application**:
    
-   Original version:
-   ```bash
-   python app.py
-   ```
-   
-   New improved version with better error handling:
    ```bash
    python app_rbac.py
    ```
@@ -156,55 +150,6 @@ For testing purposes, the following demo accounts are available:
 - Username: `researcher`, Password: `password123`, Role: Researcher
 - Username: `superuser`, Password: `password123`, Roles: All roles
 
-## Using the New ElasticRBAC Class
-
-The application now includes an improved `elastic_rbac.py` class for all Elasticsearch RBAC operations:
-
-```python
-from elastic_rbac import ElasticRBAC
-
-# Initialize the RBAC service with proper error handling
-rbac = ElasticRBAC()
-
-# Check if service is ready before using
-if rbac.is_ready():
-    # Create index mapping if it doesn't exist
-    rbac.create_document_mapping()
-    
-    # Index a document with role permissions
-    doc_id = rbac.index_document(
-        title="Student Handbook 2023",
-        content="This handbook contains important information for all students...",
-        allowed_roles=["student", "faculty", "admin"],
-        metadata={"department": "Student Affairs", "year": 2023}
-    )
-    
-    # Create API key for a user
-    api_key_info = rbac.create_user_api_key("student_user", ["student"])
-    if api_key_info:
-        print(f"API Key: {api_key_info['encoded_api_key']}")
-    
-    # Validate an API key
-    user_info = rbac.validate_api_key("api_key_id")
-    if user_info and user_info["valid"]:
-        print(f"Valid API key for user: {user_info['username']}")
-        print(f"Roles: {user_info['roles']}")
-    
-    # Search documents with RBAC filtering
-    search_results, formatted_results = rbac.search_documents(
-        "academic policies", 
-        user_roles=["student"]
-    )
-    
-    # Verify document access
-    has_access = rbac.verify_document_access("document_id", ["student"])
-else:
-    print("Elasticsearch service is not available")
-```
-
-## Original Document Indexer
-
-The application still includes the original `document_indexer.py` utility for backward compatibility:
 
 ## API Usage
 
