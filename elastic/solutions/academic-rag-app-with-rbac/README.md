@@ -45,7 +45,6 @@ This diagram illustrates the architecture of an academic question-answering syst
 - **Elasticsearch API Keys**: Secures user sessions and enforces role-based permissions
 
 ## Project Structure 
-- `app.py`: Original Flask web application with authentication and RBAC
 - `app_rbac.py`: New improved Flask application with better error handling and RBAC
 - `elastic_rbac.py`: Dedicated class for all Elasticsearch RBAC operations
 - `search.py`: Elasticsearch integration for academic document search with RBAC filtering
