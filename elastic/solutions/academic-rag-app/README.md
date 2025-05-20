@@ -45,6 +45,8 @@ This diagram illustrates the architecture of an academic question-answering syst
 - `search.py`: Elasticsearch integration for academic document search
 - `bedrock_claude.py`: Amazon Bedrock client for Claude integration
 - `templates/`: HTML templates for the web interface
+- `inputs/`: PDF files that are bulk loaded into Elastic
+- `bulk_load_data_into_elastic.py`: Python script to bulk upload pdf files to Elastic
 
 ## Requirements
 
@@ -87,10 +89,15 @@ Copy .env.example & save as .env: `cp .env.example .env` (then edit with your cr
    - `AWS_REGION`: AWS region (e.g., us-east-1)
    - `AWS_ACCESS_KEY_ID`: Your AWS access key
    - `AWS_SECRET_ACCESS_KEY`: Your AWS secret access key
-   - `CLAUDE_MODEL_ID`: Claude model ID (default: anthropic.claude-3-sonnet-20240229-v1:0)
+   - `CLAUDE_MODEL_ID`: Claude model ID (default: anthropic.claude-3-7-sonnet-20250219-v1:0)
 
 
-4. **Run the application**:
+4. **Run the bulk uploader**:
+   ```
+   python bulk_load_into_elastic.py
+   ```
+
+5. **Run the application**:
    ```bash
    python app.py
    ```

@@ -1,6 +1,6 @@
-# Academic Q&A Chatbot with Elasticsearch API-based RBAC
+# Academic Q&A Chatbot with RBAC
 
-A Flask-based academic Q&A chatbot that integrates Elasticsearch and Amazon Bedrock with Claude to provide accurate answers from academic documents, with Role-Based Access Control (RBAC) implemented using Elasticsearch security APIs.
+A Flask-based academic Q&A chatbot that integrates Elasticsearch and Amazon Bedrock with Claude to provide accurate answers from academic documents, with Role-Based Access Control (RBAC) for document security.
 
 ## Features
 
@@ -8,10 +8,9 @@ A Flask-based academic Q&A chatbot that integrates Elasticsearch and Amazon Bedr
 - **AI-Powered Answers**: Generates concise, contextual responses using Claude through Amazon Bedrock
 - **Source Citations**: Includes citations to specific source documents
 - **Interactive UI**: Clean interface with collapsible source sections and async request handling
-- **Elasticsearch API-based RBAC**: Uses Elasticsearch security APIs for robust role-based access control
-- **API Key Authentication**: Secures user sessions with Elasticsearch API keys
+- **Role-Based Access Control**: Restricts document access based on user roles
+- **User Authentication**: Login system with role-based permissions
 - **Admin Panel**: Interface for managing users, roles, and document access
-- **Robust Error Handling**: Graceful handling of service unavailability and initialization errors
 
 ## Architecture
 
@@ -37,16 +36,15 @@ This diagram illustrates the architecture of an academic question-answering syst
 
 ## Key Components
 
-- **Elasticsearch**: Handles document storage, vector search capabilities, and RBAC security
+- **Elasticsearch**: Handles document storage, vector search capabilities, and document filtering
 - **Amazon Bedrock**: Provides the AI inference capabilities to generate natural language responses
 - **Flask**: Powers the front-end web interface for user interaction
 - **Vector Search**: Enables semantic understanding of queries rather than just keyword matching
 - **Flask-Login**: Handles user authentication and session management
-- **Elasticsearch API Keys**: Secures user sessions and enforces role-based permissions
+- **RBAC**: Restricts document access based on user roles
 
 ## Project Structure 
-- `app_rbac.py`: New improved Flask application with better error handling and RBAC
-- `elastic_rbac.py`: Dedicated class for all Elasticsearch RBAC operations
+- `app.py`: Flask web application with authentication and RBAC
 - `search.py`: Elasticsearch integration for academic document search with RBAC filtering
 - `bedrock_claude.py`: Amazon Bedrock client for Claude integration
 - `models.py`: User model for authentication and role management
@@ -62,7 +60,6 @@ This diagram illustrates the architecture of an academic question-answering syst
 - AWS SDK for Python (boto3)
 - An Elasticsearch instance with academic_documents index with ELSER
 - Amazon Bedrock access with permissions to use Claude models
-- Elasticsearch with security features enabled (X-Pack)
 
 ## Setup Instructions
 
@@ -96,42 +93,40 @@ Copy .env.example & save as .env: `cp .env.example .env` (then edit with your cr
    - `AWS_REGION`: AWS region (e.g., us-east-1)
    - `AWS_ACCESS_KEY_ID`: Your AWS access key
    - `AWS_SECRET_ACCESS_KEY`: Your AWS secret access key
-   - `CLAUDE_MODEL_ID`: Claude model ID (default: anthropic.claude-3-sonnet-20240229-v1:0)
+   - `CLAUDE_MODEL_ID`: Claude model ID (default: anthropic.claude-3-7-sonnet-20250219-v1:0)
    - `SECRET_KEY`: Secret key for Flask sessions (generate a random string)
 
 
 4. **Run the application**:
-   
    ```bash
-   python app_rbac.py
+   python app.py
    ```
-   
    The application will be available at `http://localhost:5000`
 
-## RBAC Implementation with Elasticsearch APIs
+## RBAC Implementation
 
-This application implements Role-Based Access Control (RBAC) using Elasticsearch's native security APIs:
+The application implements Role-Based Access Control (RBAC) with the following features:
 
-### 1. API Key-Based Authentication
+### 1. User Authentication System
 
-- **API Key Generation**: Each user gets a unique Elasticsearch API key with role metadata
-- **Key Validation**: API keys are validated against Elasticsearch's security API
-- **Session Management**: Flask-Login integrates with Elasticsearch API keys
-- **Automatic Expiration**: API keys can be configured to expire after a set period
+- **Flask-Login Integration**: Secure user authentication and session management
+- **User Model**: Custom User class with role management capabilities
+- **Login/Logout Flow**: Complete authentication workflow with session handling
+- **Protected Routes**: Routes requiring authentication are properly protected
 
-### 2. Document-Level Security
+### 2. Role-Based Document Access
 
-- **Role Field Indexing**: Documents are indexed with an `allowed_roles` field
-- **Query Filtering**: Search queries include a terms filter on the `allowed_roles` field
-- **Access Verification**: Document access is verified using Elasticsearch queries
-- **Bulk Role Management**: Roles can be updated in bulk using update_by_query
+- **Document Role Tagging**: Each document in Elasticsearch has an `allowed_roles` field
+- **Query Filtering**: Search queries automatically filter results based on user roles
+- **Access Verification**: Additional verification when accessing specific documents
+- **Role-Required Decorator**: Custom decorator to protect routes based on roles
 
-### 3. Security Benefits
+### 3. Admin Features
 
-- **Database-Level Security**: Access control is enforced at the database level
-- **Scalability**: Elasticsearch's security model is designed to scale
-- **Performance**: Role filtering happens efficiently at query time
-- **Auditability**: Elasticsearch provides audit logs for security events
+- **Admin Panel**: Special interface for administrators to manage the system
+- **User Management**: Interface for creating, editing, and deleting users
+- **Role Management**: Tools for defining and assigning roles
+- **Document Access Control**: Interface for setting document permissions
 
 ## Available Roles
 
@@ -148,8 +143,42 @@ For testing purposes, the following demo accounts are available:
 - Username: `faculty`, Password: `password123`, Role: Faculty
 - Username: `admin`, Password: `password123`, Role: Admin
 - Username: `researcher`, Password: `password123`, Role: Researcher
-- Username: `superuser`, Password: `password123`, Roles: All roles
 
+## Using the Document Indexer
+
+The application includes a `document_indexer.py` utility for adding documents with role permissions:
+
+```python
+from document_indexer import DocumentIndexer
+
+# Initialize the indexer
+indexer = DocumentIndexer()
+
+# Index a document with role permissions
+indexer.index_document(
+    title="Student Handbook 2023",
+    content="This handbook contains important information for all students...",
+    allowed_roles=["student", "faculty", "admin"]
+)
+
+# Index a PDF document with role permissions
+indexer.index_pdf_document(
+    file_path="path/to/document.pdf",
+    allowed_roles=["faculty", "admin"],
+    title="Faculty Guidelines"
+)
+
+# Update permissions for an existing document
+indexer.update_document_roles("document_id", ["admin", "researcher"])
+
+# Bulk update permissions for documents matching a query
+query = {
+    "match": {
+        "attachment.content": "financial"
+    }
+}
+indexer.bulk_update_roles(query, ["admin", "finance"])
+```
 
 ## API Usage
 
@@ -158,7 +187,6 @@ The chatbot provides a simple API endpoint that respects RBAC permissions:
 ```
 POST /api/ask
 Content-Type: application/json
-Authorization: ApiKey {encoded_api_key}
 
 {
   "question": "What are the recent advances in RAG?"
@@ -176,8 +204,7 @@ Response:
       "content": "Document content...",
       "score": 0.87,
       "created_on": "2023-09-15T14:30:00Z",
-      "updated_at": "2023-10-20T09:45:00Z",
-      "allowed_roles": ["student", "faculty"]
+      "updated_at": "2023-10-20T09:45:00Z"
     },
     ...
   ]
@@ -188,9 +215,9 @@ Response:
 
 For production environments, consider these additional security enhancements:
 
-1. **API Key Storage**: Store API keys securely, not in memory
+1. **Password Hashing**: Implement password hashing using a library like Flask-Bcrypt
 2. **Database Integration**: Replace the mock user database with a real database
-3. **HTTPS**: Ensure all communication is encrypted with HTTPS
-4. **Rate Limiting**: Implement rate limiting to prevent abuse
-5. **Audit Logging**: Enable Elasticsearch audit logging for security monitoring
-6. **Role Mapping**: Use Elasticsearch role mappings for more granular permissions
+3. **JWT Authentication**: Consider using JWT for API authentication
+4. **HTTPS**: Ensure all communication is encrypted with HTTPS
+5. **Rate Limiting**: Implement rate limiting to prevent abuse
+6. **Audit Logging**: Add logging for authentication and document access events
