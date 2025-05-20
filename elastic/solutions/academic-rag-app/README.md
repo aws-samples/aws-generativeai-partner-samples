@@ -59,12 +59,12 @@ This diagram illustrates the architecture of an academic question-answering syst
 
 1. **Clone the repository**:
    ```bash
-   git clone --depth 1 --no-checkout https://github.com/aws-samples aws-generativeai-partner-samples.git
+   git clone --depth 1 --no-checkout https://github.com/aws-samples/aws-generativeai-partner-samples.git
    cd aws-generativeai-partner-samples/
    git sparse-checkout set elastic
    git checkout
 
-   cd solutions/acamedic-rag-app
+   cd elastic/solutions/acamedic-rag-app
    ```
 
 2. **Install dependencies**:
