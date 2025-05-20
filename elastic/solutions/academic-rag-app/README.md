@@ -66,7 +66,7 @@ This diagram illustrates the architecture of an academic question-answering syst
    git sparse-checkout set elastic
    git checkout
 
-   cd solutions/acamedic-rag-app
+   cd elastic/solutions/acamedic-rag-app
    ```
 
 2. **Install dependencies**:
