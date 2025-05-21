@@ -24,8 +24,6 @@ def connect_to_aws():
         # Connect to Amazon Bedrock
         aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID")
         aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
-        print(aws_access_key_id)
-        print(aws_secret_access_key)
         bedrock_client = boto3.client(
             service_name='bedrock-runtime',
             region_name=os.getenv("AWS_REGION"),
