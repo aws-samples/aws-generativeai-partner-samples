@@ -63,7 +63,7 @@ This diagram illustrates the architecture of an academic question-answering syst
 
 1. **Clone the repository**:
    ```bash
-   git clone --depth 1 --no-checkout https://github.com/aws-samples aws-generativeai-partner-samples.git
+   git clone --depth 1 --no-checkout https://github.com/aws-samples/aws-generativeai-partner-samples.git
    cd aws-generativeai-partner-samples/
    git sparse-checkout set elastic
    git checkout
@@ -96,7 +96,7 @@ Copy .env.example & save as .env: `cp .env.example .env` (then edit with your cr
 
 4. **Run the bulk uploader**:
    ```
-   python bulk_load_into_elastic.py
+   python bulk_load_data_into_elastic.py
    ```
 
 5. **Run the application**:
