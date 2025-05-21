@@ -22,8 +22,6 @@ def connect_to_aws():
                     key, value = line.split('=', 1)
                     os.environ[key.strip()] = value.strip()
         # Connect to Amazon Bedrock
-        aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID")
-        aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
         bedrock_client = boto3.client(
             service_name='bedrock-runtime',
             region_name=os.getenv("AWS_REGION"),
@@ -38,7 +36,7 @@ def invoke_model(user_prompt, context=None):
     bedrock_client = connect_to_aws()
 
     # Claude model settings
-    model_id = 'us.anthropic.claude-3-5-haiku-20241022-v1:0'
+    model_id = os.getenv("BEDROCK_MODEL_ID", "us.anthropic.claude-3-5-haiku-20241022-v1:0")
     system_prompt = "You are Claude, a helpful AI assistant."
     max_tokens = 1000
     completion = ""
