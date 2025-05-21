@@ -1,18 +1,31 @@
 import boto3
 import json
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 from botocore.exceptions import ClientError
 
 """
 Script to call Claude 3.7 Sonnet on Amazon Bedrock with a predefined prompt.
 """
-# Load environment variables from .env file
-load_dotenv()
 
 def connect_to_aws():
     try:
+        # Load environment variables from .env file in the script directory
+        script_dir = Path(__file__).parent.absolute()
+        print(script_dir)
+        dotenv_path = os.path.join(script_dir, '.env')
+        with open(dotenv_path, 'r') as file:
+            for line in file:
+                line = line.strip()
+                if line and not line.startswith('#'):
+                    key, value = line.split('=', 1)
+                    os.environ[key.strip()] = value.strip()
         # Connect to Amazon Bedrock
+        aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID")
+        aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
+        print(aws_access_key_id)
+        print(aws_secret_access_key)
         bedrock_client = boto3.client(
             service_name='bedrock-runtime',
             region_name=os.getenv("AWS_REGION"),
@@ -27,8 +40,7 @@ def invoke_model(user_prompt, context=None):
     bedrock_client = connect_to_aws()
 
     # Claude model settings
-    model_id = os.getenv("CLAUDE_MODEL_ID", "us.anthropic.claude-3-7-sonnet-20250219-v1:0")
-    print(model_id)
+    model_id = 'us.anthropic.claude-3-5-haiku-20241022-v1:0'
     system_prompt = "You are Claude, a helpful AI assistant."
     max_tokens = 1000
     completion = ""
