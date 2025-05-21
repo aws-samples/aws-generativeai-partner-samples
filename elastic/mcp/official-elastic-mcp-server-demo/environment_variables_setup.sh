@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Script to update .env file with required configurations
-# for the Multi-Server MCP Financial Analytics Application
+# for the Multi-Server MCP Travel Analytics Application
 
 # Check if .env file exists, if not create from sample
 if [ ! -f .env ]; then
@@ -31,50 +31,31 @@ update_env_var() {
     echo "Updated ${key} in .env file"
 }
 
-# AWS Credentials Configuration (export to shell, not saved to .env)
+# AWS Credentials Configuration
 echo "=== AWS Credentials Configuration ==="
-echo "Note: AWS credentials will be exported to your current shell session only and NOT saved to the .env file"
 read -p "AWS Access Key ID: " aws_access_key_id
 read -p "AWS Secret Access Key: " aws_secret_access_key
-read -p "AWS Region for Bedrock (default: us-west-2): " aws_region
+read -p "AWS Region (default: us-west-2): " aws_region
 aws_region=${aws_region:-us-west-2}
 
-# Export AWS credentials to current shell session
-export AWS_ACCESS_KEY_ID="$aws_access_key_id"
-export AWS_SECRET_ACCESS_KEY="$aws_secret_access_key"
-export AWS_REGION="$aws_region"
-
-echo "AWS credentials exported to current shell session:"
-echo "AWS_ACCESS_KEY_ID=$aws_access_key_id"
-echo "AWS_SECRET_ACCESS_KEY=********"
-echo "AWS_REGION=$aws_region"
-
-# Ask if user wants to add AWS credentials to shell profile for persistence
-echo -e "\nWould you like to add these AWS credentials to your shell profile for persistence?"
-echo "This will add export commands to your ~/.bashrc or ~/.bash_profile"
-read -p "Add to shell profile? (y/n, default: n): " add_to_profile
-add_to_profile=${add_to_profile:-n}
-
-if [[ "$add_to_profile" == "y" || "$add_to_profile" == "Y" ]]; then
-    # Determine which shell profile file to use
-    if [ -f "$HOME/.bash_profile" ]; then
-        profile_file="$HOME/.bash_profile"
-    else
-        profile_file="$HOME/.bashrc"
-    fi
-    
-    # Add export commands to shell profile
-    echo -e "\n# AWS credentials for Multi-Server MCP Financial Analytics Application" >> "$profile_file"
-    echo "export AWS_ACCESS_KEY_ID=\"$aws_access_key_id\"" >> "$profile_file"
-    echo "export AWS_SECRET_ACCESS_KEY=\"$aws_secret_access_key\"" >> "$profile_file"
-    echo "export AWS_REGION=\"$aws_region\"" >> "$profile_file"
-    
-    echo "AWS credentials added to $profile_file"
-    echo "They will be available in new shell sessions"
-fi
-
-# Only save AWS region to .env file, not credentials
+# Save AWS credentials to .env file
+update_env_var "AWS_ACCESS_KEY_ID" "$aws_access_key_id"
+update_env_var "AWS_SECRET_ACCESS_KEY" "$aws_secret_access_key"
 update_env_var "AWS_REGION" "$aws_region"
+
+# AWS SES Email Configuration
+echo -e "\n=== AWS SES Email Configuration ==="
+read -p "Sender Email Address: " sender_email
+read -p "Reply-To Email Addresses (comma-separated, default: same as sender): " reply_to_email
+reply_to_email=${reply_to_email:-$sender_email}
+
+read -p "Amazon SES MCP Server Absolute Path (path to aws-ses-mcp/build/index.js file, default: /home/ec2-user/aws-generativeai-partner-samples/elastic/mcp/official-elastic-mcp-server-demo/mcp-servers/aws-ses-mcp/build/index.js):" aws_ses_mcp_path
+default_aws_ses_mcp_path="/home/ec2-user/aws-generativeai-partner-samples/elastic/mcp/official-elastic-mcp-server-demo/mcp-servers/aws-ses-mcp/build/index.js"
+aws_ses_mcp_path=${aws_ses_mcp_path:-$default_aws_ses_mcp_path}
+
+update_env_var "SENDER_EMAIL_ADDRESS" "$sender_email"
+update_env_var "REPLY_TO_EMAIL_ADDRESSES" "$reply_to_email"
+update_env_var "AWS_SES_MCP_SERVER_PATH" "$aws_ses_mcp_path"
 
 # Elasticsearch Configuration
 echo -e "\n=== Elasticsearch Configuration ==="
@@ -89,16 +70,6 @@ update_env_var "ES_API_KEY" "$es_api_key"
 
 echo -e "\n=== Configuration Complete ==="
 echo "All environment variables have been updated in the .env file."
-echo "AWS credentials have been exported to your current shell session."
-if [[ "$add_to_profile" == "y" || "$add_to_profile" == "Y" ]]; then
-    echo "AWS credentials have also been added to your shell profile for persistence."
-else
-    echo "Note: AWS credentials will need to be re-exported in new shell sessions."
-    echo "You can do this by running:"
-    echo "  export AWS_ACCESS_KEY_ID=\"$aws_access_key_id\""
-    echo "  export AWS_SECRET_ACCESS_KEY=\"$aws_secret_access_key\""
-    echo "  export AWS_REGION=\"$aws_region\""
-fi
 echo "You can review and edit the .env file manually if needed."
 
 source .env
@@ -118,3 +89,12 @@ else
     echo "AWS CLI not found. Please install it to verify your AWS credentials."
     echo "You can install it using: pip install awscli"
 fi
+
+# Verify AWS SES configuration
+echo -e "\n=== Verifying AWS SES Configuration ==="
+echo "To verify your AWS SES configuration, you can send a test email using the AWS CLI:"
+echo "aws ses send-email --from $sender_email --to YOUR_TEST_EMAIL --subject 'Test Email' --text 'This is a test email' --region $aws_region"
+
+echo -e "\n=== Setup Complete ==="
+echo "Your environment is now configured for the Multi-Server MCP Travel Analytics Application."
+echo "You can run the application using: python multi_server_client_travel_analytics.py <weather_server_script>"

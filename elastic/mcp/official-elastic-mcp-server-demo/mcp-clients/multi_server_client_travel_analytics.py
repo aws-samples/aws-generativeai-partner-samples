@@ -917,7 +917,19 @@ Special Requests: {updated['special_requests']} (Updated)
     async def chat_loop(self):
         print("\nWelcome to the Multi-Server MCP Chat!")
         print("Type 'quit' to exit or your query.")
-        print("\nReservation Commands:")
+        print("\n\nTravel Reservaration and Advisory Prompts you can ask: ")
+        print("- I am planing a trip to New York in 2 weeks. Whats the weather like and are there any travel advisories?")
+        print("- Which destinations in France, can I consider to visit?") 
+        print("- OK, are there any upcoming events in France that are interesting to consider for my travel?")
+        print("- Any interesting events in Paris around next year.")
+        print("- Can you give precise details of when is Paris Fashion Week happening?")
+        print("- Find me some hotels in Paris that offer free breakfast")
+        print("- When are the rooms available for the Hôtel de Crillon (Rosewood) in Paris")
+        print("- book hotel at Hôtel de Crillon (Rosewood)")
+        print("- view reservation replace_this_string_with_reservation_id")
+        print("- update reservation replace_this_string_with_reservation_id")
+        print("- cancel reservation replace_this_string_with_reservation_id")
+        print("\n\nReservation Commands:")
         print("- book hotel: Create a new hotel reservation")
         print("- view reservation [id]: View details of a specific reservation")
         print("- update reservation [id]: Update an existing reservation")
@@ -958,6 +970,19 @@ async def main():
         print("Error: ES_URL and ES_API_KEY must be set in the .env file")
         sys.exit(1)
 
+    # Get AWS SES MCP configuration from environment variables
+    aws_access_key_id = os.getenv("AWS_ACCESS_KEY_ID")
+    aws_secret_access_key = os.getenv("AWS_SECRET_ACCESS_KEY")
+    aws_region = os.getenv("AWS_REGION", "us-west-2")
+    sender_email = os.getenv("SENDER_EMAIL_ADDRESS")
+    reply_to_email = os.getenv("REPLY_TO_EMAIL_ADDRESSES")
+    aws_ses_mcp_server_path=os.getenv("AWS_SES_MCP_SERVER_PATH")
+    
+    # Validate required environment variables
+    if not all([aws_access_key_id, aws_secret_access_key, sender_email]):
+        print("Error: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and SENDER_EMAIL_ADDRESS must be set in the .env file")
+        sys.exit(1)
+    
     server_configs = {
         "weather": {
             "command": "python",
@@ -970,6 +995,17 @@ async def main():
             "env": {
                 "ES_URL": es_url,
                 "ES_API_KEY": es_api_key
+            }
+        },
+        "aws-ses-mcp": {
+            "command": "node",
+            "args": [aws_ses_mcp_server_path],
+            "env": {
+                "AWS_ACCESS_KEY_ID": aws_access_key_id,
+                "AWS_SECRET_ACCESS_KEY": aws_secret_access_key,
+                "AWS_REGION": aws_region,
+                "SENDER_EMAIL_ADDRESS": sender_email,
+                "REPLY_TO_EMAIL_ADDRESSES": reply_to_email or sender_email
             }
         }
     }
