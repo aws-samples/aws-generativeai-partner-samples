@@ -1,0 +1,9 @@
+{
+  "snowflake": {
+    "secretName": "<SnowflakeSecretUserPrivateKey>",
+    "accountUrl": "https://<account>.snowflakecomputing.com",
+    "database": "<SnowflakeDatabase>",
+    "table": "<SnowflakeTable>",
+    "schema": "<SnowflakeSchema>"
+  }
+}
