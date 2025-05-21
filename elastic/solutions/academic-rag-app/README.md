@@ -94,7 +94,7 @@ Copy .env.example & save as .env: `cp .env.example .env` (then edit with your cr
 
 4. **Run the bulk uploader**:
    ```
-   python bulk_load_into_elastic.py
+   python bulk_load_data_into_elastic.py
    ```
 
 5. **Run the application**:

@@ -153,28 +153,35 @@ class Search:
         return sources
 
 
+    @staticmethod
     def create_bedrock_prompt(result):
         index = os.getenv("ELASTIC_INDEX")
-        index_source_fields = {
-            index: [
-                "semantic_content"
-            ]
-        }
         context = ""
-        #print(result['hits']['hits'][0]['_source']['semantic_content']['inference']['chunks'][0]['text'])
-        for hit in result:
-            inner_hit_path = f"{hit['_index']}.{index_source_fields.get(hit['_index'])[0]}"
-            ## For semantic_text matches, we need to extract the text from the inner_hits
-            if 'inner_hits' in hit and inner_hit_path in hit['inner_hits']:
-                context += '\n --- \n'.join(
-                    inner_hit['_source']['text'] for inner_hit in hit['inner_hits'][inner_hit_path]['hits']['hits'])
-
-            else:
-                source_field = index_source_fields.get(hit["_index"])[0]
-                hit_context = hit["_source"][source_field]
-                context += f"{hit_context}\n"
-            context = context.replace('\\n', '')
-            context = context.replace('\n', '')
+        
+        try:
+            for hit in result:
+                # Extract content from attachment if available
+                if '_source' in hit and 'attachment' in hit['_source'] and 'content' in hit['_source']['attachment']:
+                    content = hit['_source']['attachment']['content']
+                    if content:
+                        context += content + " "
+                        continue
+                
+                # Try to extract from inner_hits if available
+                if '_index' in hit and 'inner_hits' in hit:
+                    inner_hit_path = f"{hit['_index']}.semantic_content"
+                    if inner_hit_path in hit['inner_hits']:
+                        inner_hits = hit['inner_hits'][inner_hit_path]['hits']['hits']
+                        for inner_hit in inner_hits:
+                            if '_source' in inner_hit and 'text' in inner_hit['_source']:
+                                context += inner_hit['_source']['text'] + " "
+            
+            # Clean up the context
+            context = context.replace('\\n', ' ')
+            context = context.replace('\n', ' ')
+        except Exception as e:
+            print(f"Error creating prompt: {e}")
+            context = "No relevant content found."
 
 
         prompt = f"""Instructions:
