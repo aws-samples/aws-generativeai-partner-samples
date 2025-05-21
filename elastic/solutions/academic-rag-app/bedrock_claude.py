@@ -1,18 +1,27 @@
 import boto3
 import json
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 from botocore.exceptions import ClientError
 
 """
-Script to call Claude 3 Sonnet on AWS Bedrock with a predefined prompt.
+Script to call Claude 3.7 Sonnet on Amazon Bedrock with a predefined prompt.
 """
-# Load environment variables from .env file
-load_dotenv()
 
 def connect_to_aws():
     try:
-        # Connect to AWS Bedrock
+        # Load environment variables from .env file in the script directory
+        script_dir = Path(__file__).parent.absolute()
+        print(script_dir)
+        dotenv_path = os.path.join(script_dir, '.env')
+        with open(dotenv_path, 'r') as file:
+            for line in file:
+                line = line.strip()
+                if line and not line.startswith('#'):
+                    key, value = line.split('=', 1)
+                    os.environ[key.strip()] = value.strip()
+        # Connect to Amazon Bedrock
         bedrock_client = boto3.client(
             service_name='bedrock-runtime',
             region_name=os.getenv("AWS_REGION"),
@@ -27,7 +36,7 @@ def invoke_model(user_prompt, context=None):
     bedrock_client = connect_to_aws()
 
     # Claude model settings
-    model_id = "anthropic.claude-3-sonnet-20240229-v1:0"
+    model_id = os.getenv("BEDROCK_MODEL_ID", "us.anthropic.claude-3-5-haiku-20241022-v1:0")
     system_prompt = "You are Claude, a helpful AI assistant."
     max_tokens = 1000
     completion = ""
@@ -57,7 +66,7 @@ def invoke_model(user_prompt, context=None):
 
     except ClientError as err:
         print(f"Error: {err.response['Error']['Message']}")
-        completion = "I encountered an error accessing AWS Bedrock. Please check your AWS credentials and try again."
+        completion = "I encountered an error accessing Amazon Bedrock. Please check your AWS credentials and try again."
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         completion = "I encountered an error generating a response. Please try again later."

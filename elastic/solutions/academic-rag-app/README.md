@@ -54,19 +54,21 @@ This diagram illustrates the architecture of an academic question-answering syst
 - Flask
 - Elasticsearch Python client
 - AWS SDK for Python (boto3)
-- An Elasticsearch instance with academic_documents index with ELSER
+- Elastic Cloud Hosted Instance version 8.17.6 with academic_documents indexed with ELSER
+- Setup machine learning node (8gb). On Elastic console, go to Manage this deployement > Actions > Edit Deployment > ML add capacity 8gb
+- In Kibana > Stack Managment > Trained Models > Deploy trained model .elser_model_2_linux-x86_64
 - Amazon Bedrock access with permissions to use Claude models
 
 ## Setup Instructions
 
 1. **Clone the repository**:
    ```bash
-   git clone --depth 1 --no-checkout https://github.com/aws-samples aws-generativeai-partner-samples.git
+   git clone --depth 1 --no-checkout https://github.com/aws-samples/aws-generativeai-partner-samples.git
    cd aws-generativeai-partner-samples/
    git sparse-checkout set elastic
    git checkout
 
-   cd solutions/acamedic-rag-app
+   cd elastic/solutions/acamedic-rag-app/
    ```
 
 2. **Install dependencies**:
@@ -89,12 +91,12 @@ Copy .env.example & save as .env: `cp .env.example .env` (then edit with your cr
    - `AWS_REGION`: AWS region (e.g., us-east-1)
    - `AWS_ACCESS_KEY_ID`: Your AWS access key
    - `AWS_SECRET_ACCESS_KEY`: Your AWS secret access key
-   - `CLAUDE_MODEL_ID`: Claude model ID (default: anthropic.claude-3-7-sonnet-20250219-v1:0)
+   - `BEDROCK_MODEL_ID`: Bedrock model ID (default: us.anthropic.claude-3-5-haiku-20241022-v1:0)
 
 
 4. **Run the bulk uploader**:
    ```
-   python bulk_load_into_elastic.py
+   python bulk_load_data_into_elastic.py
    ```
 
 5. **Run the application**:
