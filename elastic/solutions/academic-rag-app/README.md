@@ -55,8 +55,8 @@ This diagram illustrates the architecture of an academic question-answering syst
 - Elasticsearch Python client
 - AWS SDK for Python (boto3)
 - Elastic Cloud Hosted Instance version 8.17.6 with academic_documents indexed with ELSER
-- Setup machine learning node (8gb). On Elastic console, go to Manage this deployement > Actions > Edit Deployment > ML add capacity 8gb
-- In Kibana > Stack Managment > Trained Models > Deploy trained model .elser_model_2_linux-x86_64
+- Setup machine learning node (8gb). On Elastic console, go to Manage this deployement > Actions > Edit Deployment > ML add capacity 8gb.
+- In Kibana > Stack Managment > Trained Models > Deploy trained model .elser_model_2_linux-x86_64. Make sure to choose search optimized.
 - Amazon Bedrock access with permissions to use Claude models
 
 ## Setup Instructions
