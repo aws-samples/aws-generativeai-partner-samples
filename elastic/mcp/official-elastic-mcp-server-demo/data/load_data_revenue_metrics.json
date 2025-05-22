@@ -1,0 +1,422 @@
+PUT travel.revenue_metrics
+{
+  "mappings": {
+    "properties": {
+      "hotel_id": { "type": "keyword" },
+      "date": { "type": "date" },
+      "occupancy_rate": { "type": "float" },
+      "adr": { "type": "float" },
+      "revpar": { "type": "float" },
+      "revenue": {
+        "type": "object",
+        "properties": {
+          "rooms": { "type": "float" },
+          "f&b": { "type": "float" },
+          "activities": { "type": "float" },
+          "other": { "type": "float" }
+        }
+      },
+      "weather_conditions": {
+        "type": "object",
+        "properties": {
+          "temperature": { "type": "float" },
+          "precipitation": { "type": "float" },
+          "weather_type": { "type": "keyword" },
+          "humidity": { "type": "float" },
+          "wind_speed": { "type": "float" }
+        }
+      },
+      "daily_metrics": {
+        "type": "nested",
+        "properties": {
+          "hour": { "type": "integer" },
+          "occupancy": { "type": "float" },
+          "revenue": { "type": "float" },
+          "weather_condition": { "type": "keyword" }
+        }
+      },
+      "created_at": { "type": "date" },
+      "updated_at": { "type": "date" }
+    }
+  }
+}
+
+POST travel.revenue_metrics/_doc/1
+{
+  "hotel_id": "HTL001",
+  "date": "2023-06-17",
+  "occupancy_rate": 0.95,
+  "adr": 525,
+  "revpar": 498.75,
+  "revenue": {
+    "rooms": 49875,
+    "f&b": 15000,
+    "activities": 5000,
+    "other": 2000
+  },
+  "weather_conditions": {
+    "temperature": 28,
+    "precipitation": 0,
+    "weather_type": "sunny",
+    "humidity": 65,
+    "wind_speed": 10
+  },
+  "daily_metrics": [
+    {
+      "hour": 12,
+      "occupancy": 0.90,
+      "revenue": 25000,
+      "weather_condition": "sunny"
+    },
+    {
+      "hour": 18,
+      "occupancy": 1.00,
+      "revenue": 35000,
+      "weather_condition": "clear"
+    }
+  ],
+  "created_at": "2023-06-18",
+  "updated_at": "2023-06-18"
+}
+
+POST travel.revenue_metrics/_doc/2
+{
+  "hotel_id": "HTL003",
+  "date": "2023-07-12",
+  "occupancy_rate": 0.85,
+  "adr": 475,
+  "revpar": 403.75,
+  "revenue": {
+    "rooms": 40375,
+    "f&b": 10000,
+    "activities": 8000,
+    "other": 1500
+  },
+  "weather_conditions": {
+    "temperature": 22,
+    "precipitation": 5,
+    "weather_type": "light rain",
+    "humidity": 75,
+    "wind_speed": 15
+  },
+  "daily_metrics": [
+    {
+      "hour": 12,
+      "occupancy": 0.80,
+      "revenue": 20000,
+      "weather_condition": "cloudy"
+    },
+    {
+      "hour": 18,
+      "occupancy": 0.90,
+      "revenue": 30000,
+      "weather_condition": "light rain"
+    }
+  ],
+  "created_at": "2023-07-13",
+  "updated_at": "2023-07-13"
+}
+
+POST travel.revenue_metrics/_doc/3
+{
+  "hotel_id": "HTL006",
+  "date": "2023-08-03",
+  "occupancy_rate": 0.98,
+  "adr": 1150,
+  "revpar": 1127,
+  "revenue": {
+    "rooms": 112700,
+    "f&b": 30000,
+    "activities": 15000,
+    "other": 5000
+  },
+  "weather_conditions": {
+    "temperature": 30,
+    "precipitation": 0,
+    "weather_type": "sunny",
+    "humidity": 70,
+    "wind_speed": 8
+  },
+  "daily_metrics": [
+    {
+      "hour": 12,
+      "occupancy": 0.95,
+      "revenue": 70000,
+      "weather_condition": "sunny"
+    },
+    {
+      "hour": 18,
+      "occupancy": 1.00,
+      "revenue": 80000,
+      "weather_condition": "clear"
+    }
+  ],
+  "created_at": "2023-08-04",
+  "updated_at": "2023-08-04"
+}
+
+POST travel.revenue_metrics/_doc/4
+{
+  "hotel_id": "HTL002",
+  "date": "2023-09-06",
+  "occupancy_rate": 0.90,
+  "adr": 320,
+  "revpar": 288,
+  "revenue": {
+    "rooms": 28800,
+    "f&b": 8000,
+    "activities": 2000,
+    "other": 1000
+  },
+  "weather_conditions": {
+    "temperature": 25,
+    "precipitation": 0,
+    "weather_type": "partly cloudy",
+    "humidity": 60,
+    "wind_speed": 12
+  },
+  "daily_metrics": [
+    {
+      "hour": 12,
+      "occupancy": 0.85,
+      "revenue": 15000,
+      "weather_condition": "partly cloudy"
+    },
+    {
+      "hour": 18,
+      "occupancy": 0.95,
+      "revenue": 20000,
+      "weather_condition": "clear"
+    }
+  ],
+  "created_at": "2023-09-07",
+  "updated_at": "2023-09-07"
+}
+
+POST travel.revenue_metrics/_doc/5
+{
+  "hotel_id": "HTL008",
+  "date": "2023-12-22",
+  "occupancy_rate": 1.00,
+  "adr": 680,
+  "revpar": 680,
+  "revenue": {
+    "rooms": 68000,
+    "f&b": 20000,
+    "activities": 25000,
+    "other": 5000
+  },
+  "weather_conditions": {
+    "temperature": -5,
+    "precipitation": 10,
+    "weather_type": "snow",
+    "humidity": 85,
+    "wind_speed": 20
+  },
+  "daily_metrics": [
+    {
+      "hour": 12,
+      "occupancy": 1.00,
+      "revenue": 50000,
+      "weather_condition": "heavy snow"
+    },
+    {
+      "hour": 18,
+      "occupancy": 1.00,
+      "revenue": 60000,
+      "weather_condition": "light snow"
+    }
+  ],
+  "created_at": "2023-12-23",
+  "updated_at": "2023-12-23"
+}
+
+POST travel.revenue_metrics/_doc/6
+{
+  "hotel_id": "HTL004",
+  "date": "2023-10-03",
+  "occupancy_rate": 0.75,
+  "adr": 550,
+  "revpar": 412.5,
+  "revenue": {
+    "rooms": 41250,
+    "f&b": 18000,
+    "activities": 7000,
+    "other": 3000
+  },
+  "weather_conditions": {
+    "temperature": 26,
+    "precipitation": 15,
+    "weather_type": "scattered showers",
+    "humidity": 80,
+    "wind_speed": 25
+  },
+  "daily_metrics": [
+    {
+      "hour": 12,
+      "occupancy": 0.70,
+      "revenue": 30000,
+      "weather_condition": "rain"
+    },
+    {
+      "hour": 18,
+      "occupancy": 0.80,
+      "revenue": 35000,
+      "weather_condition": "scattered showers"
+    }
+  ],
+  "created_at": "2023-10-04",
+  "updated_at": "2023-10-04"
+}
+
+POST travel.revenue_metrics/_doc/7
+{
+  "hotel_id": "HTL009",
+  "date": "2023-11-16",
+  "occupancy_rate": 0.88,
+  "adr": 480,
+  "revpar": 422.4,
+  "revenue": {
+    "rooms": 42240,
+    "f&b": 12000,
+    "activities": 8000,
+    "other": 2000
+  },
+  "weather_conditions": {
+    "temperature": 22,
+    "precipitation": 0,
+    "weather_type": "clear",
+    "humidity": 30,
+    "wind_speed": 5
+  },
+  "daily_metrics": [
+    {
+      "hour": 12,
+      "occupancy": 0.85,
+      "revenue": 25000,
+      "weather_condition": "sunny"
+    },
+    {
+      "hour": 18,
+      "occupancy": 0.90,
+      "revenue": 35000,
+      "weather_condition": "clear"
+    }
+  ],
+  "created_at": "2023-11-17",
+  "updated_at": "2023-11-17"
+}
+
+POST travel.revenue_metrics/_doc/8
+{
+  "hotel_id": "HTL005",
+  "date": "2023-07-04",
+  "occupancy_rate": 1.00,
+  "adr": 490,
+  "revpar": 490,
+  "revenue": {
+    "rooms": 49000,
+    "f&b": 25000,
+    "activities": 10000,
+    "other": 5000
+  },
+  "weather_conditions": {
+    "temperature": 32,
+    "precipitation": 0,
+    "weather_type": "clear",
+    "humidity": 55,
+    "wind_speed": 8
+  },
+  "daily_metrics": [
+    {
+      "hour": 12,
+      "occupancy": 1.00,
+      "revenue": 40000,
+      "weather_condition": "sunny"
+    },
+    {
+      "hour": 18,
+      "occupancy": 1.00,
+      "revenue": 45000,
+      "weather_condition": "clear"
+    }
+  ],
+  "created_at": "2023-07-05",
+  "updated_at": "2023-07-05"
+}
+
+POST travel.revenue_metrics/_doc/9
+{
+  "hotel_id": "HTL010",
+  "date": "2023-08-23",
+  "occupancy_rate": 0.80,
+  "adr": 420,
+  "revpar": 336,
+  "revenue": {
+    "rooms": 33600,
+    "f&b": 8000,
+    "activities": 12000,
+    "other": 1500
+  },
+  "weather_conditions": {
+    "temperature": 27,
+    "precipitation": 10,
+    "weather_type": "light rain",
+    "humidity": 85,
+    "wind_speed": 10
+  },
+  "daily_metrics": [
+    {
+      "hour": 12,
+      "occupancy": 0.75,
+      "revenue": 20000,
+      "weather_condition": "overcast"
+    },
+    {
+      "hour": 18,
+      "occupancy": 0.85,
+      "revenue": 30000,
+      "weather_condition": "light rain"
+    }
+  ],
+  "created_at": "2023-08-24",
+  "updated_at": "2023-08-24"
+}
+
+POST travel.revenue_metrics/_doc/10
+{
+  "hotel_id": "HTL007",
+  "date": "2023-09-16",
+  "occupancy_rate": 0.92,
+  "adr": 385,
+  "revpar": 354.2,
+  "revenue": {
+    "rooms": 35420,
+    "f&b": 10000,
+    "activities": 5000,
+    "other": 2000
+  },
+  "weather_conditions": {
+    "temperature": 24,
+    "precipitation": 0,
+    "weather_type": "clear",
+    "humidity": 65,
+    "wind_speed": 12
+  },
+  "daily_metrics": [
+    {
+      "hour": 12,
+      "occupancy": 0.90,
+      "revenue": 25000,
+      "weather_condition": "sunny"
+    },
+    {
+      "hour": 18,
+      "occupancy": 0.95,
+      "revenue": 22000,
+      "weather_condition": "clear"
+    }
+  ],
+  "created_at": "2023-09-17",
+  "updated_at": "2023-09-17"
+}
