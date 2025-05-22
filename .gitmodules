@@ -1,0 +1,3 @@
+[submodule "mongodb/atlas-landing-zone"]
+	path = mongodb/atlas-landing-zone
+	url = https://github.com/mongodb-partners/AWS-MongoDB-Atlas-Landing-Zone.git
