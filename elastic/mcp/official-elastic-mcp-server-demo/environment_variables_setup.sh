@@ -57,6 +57,13 @@ update_env_var "SENDER_EMAIL_ADDRESS" "$sender_email"
 update_env_var "REPLY_TO_EMAIL_ADDRESSES" "$reply_to_email"
 update_env_var "AWS_SES_MCP_SERVER_PATH" "$aws_ses_mcp_path"
 
+
+# Weather MCP Server Configuration
+read -p "Weather MCP Server Script Absolute Path (path to mcp-servers/weather/weather.py, default: /home/ec2-user/aws-generativeai-partner-samples/elastic/mcp/official-elastic-mcp-server-demo/mcp-servers/weather/weather.py):" weather_mcp_server_script_path
+default_weather_mcp_server_script_path="/home/ec2-user/aws-generativeai-partner-samples/elastic/mcp/official-elastic-mcp-server-demo/mcp-servers/weather/weather.py"
+weather_mcp_server_script_path=${weather_mcp_server_script_path:-$default_weather_mcp_server_script_path}
+update_env_var "WEATHER_MCP_SERVER_SCRIPT_PATH" "$weather_mcp_server_script_path"
+
 # Elasticsearch Configuration
 echo -e "\n=== Elasticsearch Configuration ==="
 read -p "Elasticsearch URL: " es_url

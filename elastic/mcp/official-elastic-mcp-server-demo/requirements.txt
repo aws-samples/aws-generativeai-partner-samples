@@ -4,3 +4,5 @@ httpx
 mcp[cli]
 boto3
 dotenv
+strands-agents
+strands-agents-tools
