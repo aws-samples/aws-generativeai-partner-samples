@@ -1,0 +1,5 @@
+streamlit>=1.22.0
+pymongo>=4.3.3
+boto3>=1.26.0
+python-dotenv>=1.0.0
+pandas>=1.5.0

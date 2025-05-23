@@ -1,0 +1,10 @@
+{
+  "Parameters": {
+    "MongoDBSecretName": "MONGODB_ATLAS_URI",
+    "MongoDBDatabase": "travel",
+    "MongoDBCollection": "asia",
+    "QBusinessAppId": "your-app-id",
+    "QBusinessRetrieverId": "your-retriever-id",
+    "BedrockModelId": "anthropic.claude-3-sonnet-20240229-v1:0"
+  }
+}

@@ -8,3 +8,4 @@
 .idea
 common/bedrock_access_patterns/config.local.yaml
 mongodb/confluent-mdb-genai/.aws-sam/*
+mongodb/mongodb-q-index/AmazonQ.md
