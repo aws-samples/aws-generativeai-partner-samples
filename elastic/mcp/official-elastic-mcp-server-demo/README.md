@@ -2,32 +2,24 @@
 
 ## Travel & Tourism Advisory application powered by Amazon Bedrock and Elastic MCP Server
 
-This project implements a travel advisory application that uses MCP (Model Context Protocol) servers to integrate with Elasticsearch and weather services. The application provides information about tourist destinations, attractions, hotels, travel advisories, weather forecasts, and events. It also supports user profiles and hotel reservations.
+This project implements a travel advisory application that uses MCP (Model Context Protocol) servers to integrate with Elasticsearch and weather services. The application leverages Amazon's Open Source [Strands SDK](https://github.com/strands-agents/sdk-python), to orchestrate an Agentic workflow that leverages tools from MCP servers and custom Strands Agent tools. The application provides information about tourist destinations, attractions, hotels, travel advisories, weather forecasts, and events. It also supports user profiles and hotel reservations.
 
+## Product Demo
+
+https://github.com/user-attachments/assets/d07149b9-5bdf-48e0-97da-b99ec521d3e3
 
 ## Overview 
 
 The application provides intelligent analysis and information about tourist destinations, attractions, hotel etc and provides advisory to plan a travel, leverating: 
-- Amazon Bedrock's Claude 3 Sonnet for natural language understanding and reasoning 
+- Amazon's opensource [Strands SDK](https://github.com/strands-agents/sdk-python) based Agentic AI application
+- Amazon Bedrock's Claude 3.x Sonnet for natural language understanding and reasoning 
 - Elasticsearch's official MCP server for efficient data querying and analytics 
 - Custom Weather MCP server for real-time weather data 
 - Multi-server architecture for scalable and modular functionality 
 
-                                 ┌────────────────────────┐
-                                 │  Amazon Bedrock 	  │
-                                 │  (Claude Sonnet 3)     │
-                                 └────────┬───────────────┘
-                                          │
-                              ┌───────────┴──────────┐
-                              │                      │
-                     ┌────────┴───────┐    ┌─────────┴────────┐
-                     │ Weather MCP    │    │ Elastic MCP      │
-                     │ Server         │    │ Server           │
-                     └────────────────┘    └───────┬──────────┘
-                                                   │
-                                          ┌────────┴────────┐
-                                          │  Elasticsearch  │
-                                          └─────────────────┘
+## Reference Architecture
+
+![Agentic AI Architecture with Elastic](static/agentic-ai-strands-sdk-elastic.png)
 
 ### Key Features 
 - Natural language queries for complex travel advisory, recommendations and reservations 
@@ -166,7 +158,7 @@ chmod +x environment_variables_setup.sh
 ### Setup MCP Servers
 There are 3 MCP servers needed for this app.
 - Official MCP Server from Elastic: There are no additional steps needed to configure and run this. During runtime of this application, the MCP server is automatically downloaded and run.
-- Weather MCP Server: Again, no additional steps needed. Its already pre-packaged in the `mcp-servers\weather` folder.
+- Weather MCP Server: Again, no additional steps needed. Its already pre-packaged in the `mcp-servers\weather` folder. While setting up the environment variables using the `environment_variables_setup.sh` script, give the absolute path to the `mcp-servers\weather\weather.py` script.
 - Amazon SES MCP Server: In the `mcp-servers\aws-ses-mcp` folder, you have all the bits to run the MCP server. However it requires following configurations:
 
 ```
@@ -210,10 +202,10 @@ python multi_server_client_travel_analytics.py ../mcp-servers/weather/weather.py
 - Can you give precise details of when is Paris Fashion Week happening?
 - Find me some hotels in Paris that offer free breakfast
 - When are the rooms available for the Hôtel de Crillon (Rosewood) in Paris
-- book hotel at Hôtel de Crillon (Rosewood)
-- view reservation replace_this_string_with_reservation_id
+- book hotel at Hôtel de Crillon (Rosewood) for 2 adults during the Paris Fashion Show week. I prefer a Deluxe room and a special request of 2 additional water bottles every day
+- View all of my reservations
 - update reservation replace_this_string_with_reservation_id
-- cancel reservation replace_this_string_with_reservation_id
+- Send me a confirmation email with my reservation details
 
 ##  Data Model
 The application uses the following Elasticsearch indices:
