@@ -4,6 +4,10 @@
 
 This project implements a travel advisory application that uses MCP (Model Context Protocol) servers to integrate with Elasticsearch and weather services. The application leverages Amazon's Open Source [Strands SDK](https://github.com/strands-agents/sdk-python), to orchestrate an Agentic workflow that leverages tools from MCP servers and custom Strands Agent tools. The application provides information about tourist destinations, attractions, hotels, travel advisories, weather forecasts, and events. It also supports user profiles and hotel reservations.
 
+## Product Demo
+
+https://github.com/user-attachments/assets/d07149b9-5bdf-48e0-97da-b99ec521d3e3
+
 ## Overview 
 
 The application provides intelligent analysis and information about tourist destinations, attractions, hotel etc and provides advisory to plan a travel, leverating: 
@@ -198,10 +202,10 @@ python multi_server_client_travel_analytics.py ../mcp-servers/weather/weather.py
 - Can you give precise details of when is Paris Fashion Week happening?
 - Find me some hotels in Paris that offer free breakfast
 - When are the rooms available for the Hôtel de Crillon (Rosewood) in Paris
-- book hotel at Hôtel de Crillon (Rosewood)
-- view reservation replace_this_string_with_reservation_id
+- book hotel at Hôtel de Crillon (Rosewood) for 2 adults during the Paris Fashion Show week. I prefer a Deluxe room and a special request of 2 additional water bottles every day
+- View all of my reservations
 - update reservation replace_this_string_with_reservation_id
-- cancel reservation replace_this_string_with_reservation_id
+- Send me a confirmation email with my reservation details
 
 ##  Data Model
 The application uses the following Elasticsearch indices:
