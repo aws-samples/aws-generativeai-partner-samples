@@ -1,0 +1,579 @@
+##
+##This data loader prepares the data using KNN + Geo-filtering with Elastic inference API for Amazon Bedrock
+## This data loader uses a custom pipeline to create embeddings.
+## There are sample KNN queries you can run at the end.
+
+# Step 1: Create a regular index with all text data.
+PUT any_company_property_listings_reg
+{
+  "mappings": {
+    "properties": {
+      "propertyAddress": {
+        "type": "text"
+      },
+      "propertyCity": {
+        "type": "text"
+      },
+      "propertyCoordinates": {
+        "type": "geo_point"
+      },
+      "propertyFeatures": {
+        "type": "text"
+      },
+      "propertyId": {
+        "type": "long"
+      },
+      "propertyName": {
+        "type": "text"
+      },
+      "propertyState": {
+        "type": "text"
+      },
+      "propertyType": {
+        "type": "text"
+      },
+      "propertyZip": {
+        "type": "text"
+      }
+    }
+  }
+}
+
+# Step 2: Load data into this index
+PUT any_company_property_listings_reg/_doc/1
+{
+  "propertyId": 1,
+    "propertyName": "The Chase At Stonebriar",
+    "propertyAddress": "5331 Balmoral Dr, Frisco,TX 75034",
+    "propertyCity" : "Frisco",
+    "propertyState" : "TX",
+    "propertyZip" : "75034",
+    "propertyType" : "Townhouse",
+    "propertyCoordinates" : "33.09881266671791, -96.84133881349327",
+    "propertyFeatures" : "What's special | This beautiful townhome is in the sought-after private gated community in a great Frisco location. It is an end unit having a lot of windows for natural light. Beautiful formal dining room with bay windows welcomes you to this great home and is open to the living room with high ceiling, soaring windows, a gorgeous fireplace, built-in shelves, plantation shutters, upscaled finished-out & access to the backyard. The gourmet kitchen has an island, granite countertops and a spacious breakfast area with counter space & cabinet. The master suite is downstairs with a view of the backyard and has a nice master bath with double vanity, separated shower, tub and a good-sized closet. The study, game room, 3 bedrooms and 2 baths are upstairs.  The game room has 2 skylights to bring in a lot of natural light. The charming study has built-in shelves. Low maintenance, conveniently located, close to freeway, nice restaurant, Stonebriar Mall, Shop of Legacy and Legacy West. Make this great home yours. | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 4 | Bathrooms: 4 | Full bathrooms: 3 | 1/2 bathrooms: 1 | Primary bedroom | Level: First | Bedroom | Level: Second | Bedroom | Level: Second | Bedroom | Level: Second | Dining room | Level: First | Game room | Features: Ceiling Fan(s) | Level: Second | Kitchen | Features: Built-in Features, Eat-in Kitchen, Granite Counters, Kitchen Island, Pantry | Level: First | Living room | Level: First | Office | Level: Second | Utility room | Features: Built-in Features, Utility Room, Utility Sink | Level: Second | Heating | Central, Fireplace(s), Natural Gas | Cooling | Central Air, Ceiling Fan(s), Electric | Appliances | Included: Dishwasher, Electric Oven, Disposal, Gas Range, Microwave, Vented Exhaust Fan | Features | Decorative/Designer Lighting Fixtures, Eat-in Kitchen, Granite Counters, Kitchen Island, Pantry, Vaulted Ceiling(s), Walk-In Closet(s) | Flooring: Carpet, Ceramic Tile, Wood | Has basement: No | Number of fireplaces: 2 | Fireplace features: Gas Log, Gas Starter | Interior area | Total interior livable area: 2,994 sqft | Property | Parking | Total spaces: 2 | Parking features: Garage Faces Front, Garage, Garage Door Opener | Attached garage spaces: 2 | Features | Levels: Two | Stories: 2 | Exterior features: Rain Gutters | Pool features: None | Fencing: Back Yard,Fenced,Metal | Lot | Size: 3,920 sqft | Features: Interior Lot, Landscaped, Subdivision, Sprinkler System, Few Trees | Details | Parcel number: R490700A06501 | Special conditions: Standard | Construction | Type & style | Home type: Townhouse | Architectural style: Traditional | Property subtype: Townhouse | Materials | Brick, Rock, Stone | Foundation: Slab | Roof: Composition | Condition | Year built: 2005 | Utilities & green energy | Sewer: Public Sewer | Water: Public | Utilities for property: Sewer Available, Water Available | Community & HOA | Community | Features: Community Mailbox | Security: Smoke Detector(s) | Subdivision: Chase At Stonebriar The | HOA | Has HOA: Yes | Amenities included: Maintenance Front Yard | Services included: Association Management, Maintenance Grounds, Maintenance Structure | HOA fee: $309 monthly | Location | Region: Frisco | Financial & listing details | Price per square foot: $225/sqft | Tax assessed value: $635,600 | Annual tax amount: $9,854 | Date on market: 9/1/2024"
+}
+
+PUT any_company_property_listings_reg/_doc/2
+  {
+    "propertyId": 2, 
+    "propertyName": "The Canals At Grand Park",
+    "propertyAddress": "8209 Canal St, Frisco,TX 75034",
+    "propertyCity" : "Frisco",
+    "propertyState" : "TX",
+    "propertyZip" : "75034",
+    "propertyType" : "Townhouse",
+    "propertyCoordinates" : "33.147151, -96.852607",
+    "propertyFeatures" : "What's special | Granite countertops Serene retreat Bonus game room Culinary delight Gas cooktop White cabinets Jack and jill baths | Stunning Colonial-Style Townhome in Heart of the Sought-After Canals Neighborhood.  This exquisite colonial-style townhome offers a perfect blend of elegance and convenience. Boasting a prime location, you’ll enjoy easy access to premier shopping, dining, and the DNT making it ideal for modern living. This beautiful home features 3 spacious bedrooms, 2 full baths, and 2 half baths, providing an abundance of space for comfort and privacy. The island kitchen is a culinary delight with SS appliances, gas cooktop, granite countertops and white cabinets. The primary suite is ideally located on the main floor, offering a serene retreat, while two generously sized secondary bedrooms with Jack and Jill baths are thoughtfully situated upstairs. A bonus game room adds versatility and extra space for entertainment or relaxation. This home is designed for both casual and formal gatherings. Experience the perfect combination of classic charm and contemporary amenities in this exceptional property. | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 3 | Bathrooms: 4 | Full bathrooms: 2 | 1/2 bathrooms: 2 | Primary bedroom | Features: Dual Sinks, Double Vanity, Separate Shower, Walk-In Closet(s) | Level: First | Dimensions: 13 x 16 | Bedroom | Features: Split Bedrooms | Level: Second | Dimensions: 10 x 12 | Bedroom | Features: Split Bedrooms | Level: Second | Dimensions: 11 x 13 | Game room | Level: Second | Dimensions: 15 x 15 | Kitchen | Level: First | Dimensions: 15 x 17 | Living room | Level: First | Dimensions: 14 x 23 | Heating | Central, Electric | Cooling | Central Air, Ceiling Fan(s) | Appliances | Included: Dishwasher, Electric Water Heater, Disposal, Microwave | Laundry: Laundry in Utility Room | Features | Decorative/Designer Lighting Fixtures, Eat-in Kitchen, High Speed Internet, Kitchen Island, Open Floorplan, Cable TV, Vaulted Ceiling(s), Walk-In Closet(s) | Flooring: Carpet, Ceramic Tile, Wood | Windows: Window Coverings | Has basement: No | Has fireplace: No | Interior area | Total interior livable area: 2,585 sqft | Virtual tour | View virtual tour | Property | Parking | Total spaces: 2 | Parking features: Alley Access, Driveway, Garage Faces Rear | Attached garage spaces: 2 | Features | Levels: Two | Stories: 2 | Patio & porch: Covered | Exterior features: Rain Gutters | Pool features: None | Lot | Size: 3,659 sqft | Features: Landscaped, Subdivision, Sprinkler System | Details | Parcel number: R658900 | Special conditions: Standard | Construction | Type & style | Home type: Townhouse | Architectural style: Traditional | Property subtype: Townhouse | Attached to another structure: Yes | Materials | Brick, Wood Siding | Roof: Composition | Condition | Year built: 2016 | Utilities & green energy | Sewer: Public Sewer | Water: Public | Utilities for property: Sewer Available, Underground Utilities, Water Available, Cable Available | Community & HOA | Community | Features: Curbs, Sidewalks | Subdivision: The Canals At Grand Park | HOA | Has HOA: Yes | Services included: All Facilities, Association Management | HOA fee: $1,262 quarterly | Location | Region: Frisco | Financial & listing details | Price per square foot: $246/sqft | Tax assessed value: $665,208 | Annual tax amount: $9,057 | Date on market: 8/8/2024 | Exclusions: TV's and wall mounts. Refrigerator in kitchen will stay"
+  }
+  
+  
+PUT any_company_property_listings_reg/_doc/3
+  {
+    "propertyId": 3, 
+    "propertyName": "Hickory Street Village Ph I",
+    "propertyAddress": "8400 Hickory St UNIT 2103, Frisco,TX 75034",
+    "propertyCity" : "Frisco",
+    "propertyState" : "TX",
+    "propertyZip" : "75034",
+    "propertyType" : "Townhouse",
+    "propertyCoordinates" : "33.14626895091003, -96.80888721636894",
+    "propertyFeatures" : "What's special | Custom fireplace Lighting options on dimmers Community pool Custom-built cabinetry | Location, location, location! This gorgeous townhome is centrally located off Preston and Main and has a great location within the community (right across the street from the community pool). It boasts tons of custom-built cabinetry, lighting options on dimmers, and a custom fireplace with unique features throughout.  This is the perfect spot for someone starting out or starting over. Quick close property. HOA covers all yard work and exterior maintenance. Seller is Agent and Owner. | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 1 | Bathrooms: 2 | Full bathrooms: 1 | 1/2 bathrooms: 1 | Primary bedroom | Features: Linen Closet, Sitting Area in Primary, Walk-In Closet(s) | Level: Second | Dimensions: 18 x 16 | Living room | Features: Fireplace | Level: First | Dimensions: 18 x 13 | Appliances | Included: Dishwasher, Wine Cooler | Features | Built-in Features, Decorative/Designer Lighting Fixtures, Granite Counters, High Speed Internet, Pantry, Cable TV, Walk-In Closet(s) | Flooring: Laminate, Wood | Has basement: No | Number of fireplaces: 1 | Fireplace features: Living Room | Interior area | Total interior livable area: 884 sqft | Virtual tour | View virtual tour | Property | Parking | Total spaces: 1 | Parking features: Garage Faces Front, Garage, Garage Door Opener | Attached garage spaces: 1 | Features | Levels: Two | Stories: 2 | Patio & porch: Covered, Patio | Pool features: None, Community | Lot | Size: 1,742 sqft | Features: Backs to Greenbelt/Park, Subdivision, Few Trees | Details | Parcel number: R296500201101 | Special conditions: Standard | Construction | Type & style | Home type: Townhouse | Property subtype: Townhouse | Condition | Year built: 1987 | Utilities & green energy | Sewer: Public Sewer | Water: Public | Utilities for property: Sewer Available, Separate Meters, Water Available, Cable Available | Community & HOA | Community | Features: Clubhouse, Pool | Subdivision: Hickory Street Village Ph I | HOA | Has HOA: Yes | Services included: Maintenance Grounds | HOA fee: $321 monthly | Location | Region: Frisco | Financial & listing details | Price per square foot: $305/sqft | Tax assessed value: $268,796 | Annual tax amount: $3,625 | Date on market: 4/27/2024"
+  }
+  
+PUT any_company_property_listings_reg/_doc/4
+  {
+    "propertyId": 4, 
+    "propertyName": "Robins Place",
+    "propertyAddress": "9229 Flores Dr, Frisco, TX 75035",
+    "propertyCity" : "Frisco",
+    "propertyState" : "TX",
+    "propertyZip" : "75035",
+    "propertyType" : "Multi Family",
+    "propertyCoordinates" : "33.183548695188094, -96.80060261636773",
+    "propertyFeatures" : "What's special | Fresh paint Recently installed fence Recently installed carpet Recently installed flooring Recently installed roof | Perfect Investment Opportunity.  Move in ready, fresh paint, recently installed carpet, recently installed roof, recently installed flooring in living area for one side  and recently installed fence on one unit. Each unit features 4 bedroom, two and a half bathrooms. Prime area location minutes away from George Bush-190 Tollway. | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 6 | Bathrooms: 6 | Full bathrooms: 4 | 1/2 bathrooms: 2 | Heating | Central, Natural Gas | Cooling | Central Air, Electric | Appliances | Included: Disposal | Features | Decorative/Designer Lighting Fixtures, High Speed Internet, Open Floorplan, Pantry, Cable TV, Walk-In Closet(s) | Flooring: Carpet, Ceramic Tile | Number of fireplaces: 2 | Fireplace features: Gas, Living Room | Interior area | Total structure area: 3,210 | Total interior livable area: 3,210 sqft | Virtual tour | View virtual tour | Property | Parking | Total spaces: 8 | Parking features: Alley Access, Concrete, Garage | Attached garage spaces: 2 | Carport spaces: 2 | Covered spaces: 4 | Features | Levels: Two | Stories: 2 | Pool features: None | Lot | Size: 10,454 sqft | Details | Parcel number: R131500200901 | Special conditions: Standard | Construction | Type & style | Home type: MultiFamily | Property subtype: Duplex, Multi Family | Materials | Brick | Foundation: Slab | Roof: Composition,Shingle | Condition | Year built: 2000 | Utilities & green energy | Sewer: Public Sewer | Water: Public | Utilities for property: Electricity Available, Sewer Available, Water Available, Cable Available | Community & HOA | Community | Security: Smoke Detector(s) | Subdivision: Robins Place | HOA | Has HOA: No | Location | Region: Frisco | Financial & listing details | Price per square foot: $255/sqft | Annual tax amount: $10,678 | Date on market: 9/13/2024"
+  }
+  
+PUT any_company_property_listings_reg/_doc/5
+  {
+    "propertyId": 5, 
+    "propertyName": "South Village Add",
+    "propertyAddress": "11108 Newport Dr, Frisco, TX 75035",
+    "propertyCity" : "Frisco",
+    "propertyState" : "TX",
+    "propertyZip" : "75035",
+    "propertyType" : "Multi Family",
+    "propertyCoordinates" : "33.13060758919033, -96.7819189875334",
+    "propertyFeatures" : "What's special | Contemporary living space Charming balcony Beautifully designed condos Additional storage Generously sized bedrooms | Welcome to 206 South Village Way, a modern multi-family complex nestled in the heart of Lewisville, TX. Great Investment opportunity with fully occupied tenants. These newly Built in 2023 condos will make a great addition to your portfolio or to start your portfolio. If you are needing a 1031 exchange deal this one is it.  These elegant building features eight beautifully designed condos, each offering 1,029 square feet of contemporary living space. Each unit boasts 2 generously sized bedrooms and 2 full bathrooms, perfect for comfortable living. Enjoy the convenience of a private garage, providing secure parking and additional storage. Each condo includes a charming balcony, ideal for relaxing with a morning coffee or unwinding in the evening.  Do not miss the opportunity to walk this property, make an offer and start your Landlord, investment journey in this particular growing area in Lewisville. Buyer and Buyers agent to verify all information herein. Seller open to seller finance. | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 16 | Bathrooms: 16 | Full bathrooms: 16 | Heating | Central, Electric | Cooling | Central Air, Ceiling Fan(s), Electric | Appliances | Included: Electric Cooktop, Electric Oven | Features | Granite Counters, Kitchen Island, Multiple Staircases, Open Floorplan, Pantry | Flooring: Luxury Vinyl, Luxury VinylPlank | Has basement: No | Interior area | Total structure area: 9,978 | Total interior livable area: 9,978 sqft | Virtual tour | View virtual tour | Property | Parking | Total spaces: 8 | Parking features: Garage, On Site, On Street | Attached garage spaces: 8 | Features | Levels: Three Or More | Pool features: None | Lot | Size: 5,314 sqft | Details | Parcel number: R1004261 | Special conditions: Standard | Construction | Type & style | Home type: MultiFamily | Property subtype: Multi Family | Materials | Brick | Foundation: Slab | Roof: Composition,Shingle | Condition | Year built: 2023 | Utilities & green energy | Sewer: Public Sewer | Water: Public | Utilities for property: Sewer Available, Water Available | Community & HOA | Community | Subdivision: South Village Add | HOA | Has HOA: Yes | Services included: Water | HOA fee: $560 monthly | Location | Region: Frisco | Financial & listing details | Price per square foot: $298/sqft | Annual tax amount: $20,045 | Date on market: 7/19/2024"
+  }
+  
+PUT any_company_property_listings_reg/_doc/6
+  {
+    "propertyId": 6, 
+    "propertyName": "Kathryn Commons Add",
+    "propertyAddress": "10417 Burgundy Dr, Frisco, TX 75035",
+    "propertyCity" : "Frisco",
+    "propertyState" : "TX",
+    "propertyZip" : "75035",
+    "propertyType" : "Multi Family",
+    "propertyCoordinates" : "33.13536257702173, -96.79069781636936",
+    "propertyFeatures" : "What's special | Amazing Income Property!  5  Beautiful Townhomes, 1,281 Sq. Ft. in the heart of historic downtown Lewisville.  3 Stories, 2 bedrooms, 2.5 bathrooms, 2 car garage, living or studio.  A story from the past is waiting for you to discover it.  The restaurants, entertainment, train station, medical, and shopping are all just minutes away.  Universities TWU and UNT.  A must-see, a great addition to your portfolio. | Facts & features | Interior | Heating | Electric | Cooling | Zoned | Appliances | Included: Dishwasher | Features | Cable TV | Flooring: Ceramic Tile, Hardwood | Has basement: No | Has fireplace: No | Interior area | Total structure area: 1,281 | Total interior livable area: 1,281 sqft | Virtual tour | View virtual tour | Property | Parking | Total spaces: 10 | Parking features: Enclosed, Garage, Garage Door Opener, Inside Entrance | Attached garage spaces: 2 | Features | Levels: Three Or More | Pool features: None | Lot | Size: 6,969 sqft | Features: Corner Lot | Details | Parcel number: R336352 | Special conditions: Standard | Construction | Type & style | Home type: MultiFamily | Property subtype: Multi Family | Materials | Brick | Foundation: Slab | Roof: Composition | Condition | Year built: 2011 | Utilities & green energy | Sewer: Public Sewer | Water: Public | Utilities for property: Electricity Available, Sewer Available, Separate Meters, Water Available, Cable Available | Community & HOA | Community | Security: Fire Sprinkler System | Subdivision: Kathryn Commons Add | HOA | Has HOA: No | Location | Region: Frisco | Financial & listing details | Price per square foot: $1,776/sqft | Tax assessed value: $159,423 | Annual tax amount: $13,305 | Date on market: 9/14/2024 | Exclusions: Personal items."
+  }
+  
+PUT any_company_property_listings_reg/_doc/7
+  {
+    "propertyId": 7, 
+    "propertyName": "Frisco Square Ph 5",
+    "propertyAddress": "8285 Short St, Frisco, TX 75034",
+    "propertyCity" : "Frisco",
+    "propertyState" : "TX",
+    "propertyZip" : "75034",
+    "propertyType" : "Condos",
+    "propertyCoordinates" : "33.14673451388992, -96.83242100287711",
+    "propertyFeatures" : "What's special | Modern luxe cabinets Corner townhouse Bosch appliances Quartz countertops Spa bathSoaring ceilings Oversized walk-in closet | Beautifully corner townhouse with 3 sides windows for the maximum in natural sunlight. Newly remodeled with a modern design. URBAN Living at its best in this TOWNHOME Located in the Downtown Frisco surrounded by all the famous restaurants, activities and much more. This 3 story townhouse comes with a low HOA. The latest in an open-concept design with soaring ceilings, 8 ft doors, Luxury vinyl flooring, modern luxe cabinets, GOURMET KITCHENS, quartz countertops, LED can lights, and 2nd floor opens up to a large gourmet kitchen with Bosch appliances and beautiful quartz countertops. The third floor opens to a spacious master retreat with OVERSIZED walk-in closet, Spa Bath with an walk-in shower. Large 2-car side with rear entry garage. Seller can convert the 1st floor living area to a bedroom or an office, cost of conversion will be based on design and material used. HAVE YOUR SMALL BUSINESS IN YOUR HOME WITH THE LIVE-WORK CONCEPT! DOWNTOWN URBAN LIVING at it's finest! | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 3 | Bathrooms: 4 | Full bathrooms: 3 | 1/2 bathrooms: 1 | Primary bedroom | Level: First | Dimensions: 13 x 12 | Primary bedroom | Level: Third | Dimensions: 20 x 18 | Bedroom | Level: Third | Dimensions: 13 x 12 | Dining room | Level: Second | Dimensions: 14 x 12 | Kitchen | Level: Second | Dimensions: 17 x 15 | Living room | Level: Second | Dimensions: 20 x 17 | Living room | Level: Second | Dimensions: 17 x 14 | Living room | Level: First | Dimensions: 16 x 16 | Utility room | Level: Third | Dimensions: 8 x 6 | Heating | Fireplace(s), Gas | Cooling | Central Air, Ceiling Fan(s), Electric | Appliances | Included: Some Gas Appliances, Dishwasher, Disposal, Gas Range, Microwave, Plumbed For Gas | Laundry: Laundry in Utility Room | Features | Chandelier, Decorative/Designer Lighting Fixtures, Eat-in Kitchen, Granite Counters, High Speed Internet, Kitchen Island, Pantry, Cable TV, Wired for Data | Flooring: Ceramic Tile, Luxury Vinyl, Luxury VinylPlank | Has basement: Yes | Number of fireplaces: 1 | Fireplace features: Decorative, Electric, Insert | Interior area | Total interior livable area: 3,239 sqft | Virtual tour | View virtual tour | Property | Parking | Total spaces: 2 | Parking features: Garage, Garage Door Opener, Garage Faces Rear | Attached garage spaces: 2 | Features | Levels: Three Or More | Patio & porch: Balcony | Exterior features: Balcony | Pool features: None | Lot | Size: 2,613 sqft | Features: Corner Lot, Landscaped, Few Trees | Details | Parcel number: R86530F801901 | Special conditions: Standard | Construction | Type & style | Home type: Condo | Property subtype: Condominium | Attached to another structure: Yes | Materials | Foundation: Slab | Roof: Composition | Condition | Year built: 2005 | Utilities & green energy | Sewer: Public Sewer | Water: Public | Utilities for property: Electricity Connected, Natural Gas Available, Phone Available, Sewer Available, Separate Meters, Underground Utilities, Water Available, Cable Available | Green energy | Energy efficient items: Construction, HVAC, Insulation, Lighting, Windows | Water conservation: Low-Flow Fixtures | Community & HOA | Community | Features: Community Mailbox, Curbs, Sidewalks | Subdivision: Frisco Square Ph 5 | HOA | Has HOA: Yes | Amenities included: Maintenance Front Yard | Services included: Association Management, Maintenance Grounds | HOA fee: $179 monthly | Location | Region: Frisco | Financial & listing details | Price per square foot: $178/sqft | Tax assessed value: $503,092 | Annual tax amount: $9,533 | Date on market: 4/18/2024"
+  }
+  
+PUT any_company_property_listings_reg/_doc/8
+  {
+    "propertyId": 8, 
+    "propertyName": "Wade Settlement Ph One",
+    "propertyAddress": "8081 Snowmass Dr, Frisco, TX 75034",
+    "propertyCity" : "Frisco",
+    "propertyState" : "TX",
+    "propertyZip" : "75034",
+    "propertyType" : "Condos",
+    "propertyCoordinates" : "33.1138993275236, -96.81460822986183",
+    "propertyFeatures" : "What's special | Refreshing pool Lush greenbelt | Welcome to 8081 Snowmass Drive in Frisco, TX! This stunning 3-story townhome located across from a lush greenbelt offers convenience and style, located close to schools, dining, and entertainment options including The Star. With 3 spacious bedrooms and 3.5 luxurious bathrooms, this residence provides ample space for comfortable living. Enjoy the versatility of 2 inviting living areas, perfect for relaxation and entertainment. The home boasts over 1,900 square feet of beautifully designed living space, complemented by a 2-car garage for your convenience. The community features a refreshing pool, adding to the appeal of this fantastic property. Don't miss out on this exceptional opportunity! | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 3 | Bathrooms: 4 | Full bathrooms: 3 | 1/2 bathrooms: 1 | Primary bedroom | Level: Second | Dimensions: 16 x 13 | Bedroom | Level: Second | Dimensions: 11 x 13 | Bedroom | Level: Second | Dimensions: 10 x 10 | Bonus room | Level: Third | Dimensions: 15 x 20 | Dining room | Level: First | Dimensions: 11 x 12 | Kitchen | Level: First | Dimensions: 11 x 9 | Living room | Level: First | Dimensions: 14 x 21 | Heating | Central | Cooling | Central Air, Ceiling Fan(s), Electric | Appliances | Included: Dishwasher, Electric Oven, Gas Cooktop, Microwave | Features | Double Vanity, Granite Counters, Multiple Staircases, Open Floorplan | Flooring: Carpet, Luxury Vinyl Plank, Tile | Has basement: No | Has fireplace: No | Interior area | Total interior livable area: 1,992 sqft | Virtual tour | View virtual tour | Property | Parking | Total spaces: 2 | Parking features: Additional Parking, Concrete, Driveway, On Street | Attached garage spaces: 2 | Features | Levels: Three Or More | Patio & porch: Awning(s), Deck, Covered | Exterior features: Rain Gutters | Pool features: Community | Fencing: None | Lot | Size: 1,524 sqft | Features: Backs to Greenbelt/Park, Landscaped, Few Trees | Details | Parcel number: R1142200B00601 | Special conditions: Standard | Construction | Type & style | Home type: Condo | Architectural style: Traditional | Property subtype: Condominium | Materials | Brick | Foundation: Slab | Roof: Composition | Condition | Year built: 2018 | Utilities & green energy | Sewer: Public Sewer | Water: Public | Utilities for property: Sewer Available, Water Available | Community & HOA | Community | Features: Pool, Community Mailbox, Sidewalks | Security: Smoke Detector(s) | Subdivision: Wade Settlement Ph One | HOA | Has HOA: Yes | Amenities included: Maintenance Front Yard | Services included: All Facilities, Association Management, Maintenance Grounds | HOA fee: $525 quarterly | Location | Region: Frisco | Financial & listing details | Price per square foot: $266/sqft | Tax assessed value: $530,186 | Annual tax amount: $8,275 | Date on market: 7/3/2024"
+  }
+  
+PUT any_company_property_listings_reg/_doc/9
+  {
+    "propertyId": 9, 
+    "propertyName": "Corvalla Condos Bldg B",
+    "propertyAddress": "5270 Town And Country Blvd UNIT 215, Frisco, TX 75034",
+    "propertyCity" : "Frisco",
+    "propertyState" : "TX",
+    "propertyZip" : "75034",
+    "propertyType" : "Condos",
+    "propertyCoordinates" : "33.090298703523615, -96.84371066055112",
+    "propertyFeatures" : "What's special | Gas fireplace High ceilings Comfortable sitting area Luxurious marble master bath Oversized primary bedroom | Corvalla Condominiums claims to be in the process of remediating both the interior and exterior components of the property.This is an excellent investment opportunity to purchase a pre-remediated unit at Corvalla.The property is sold AS IS.This unit has been inspected and tested positive for mold and is in the process of remediation.The process is expected to be cleared soon.Currently, there is no plenum in the unit for heat or air conditioning.Once completed, this gorgeous property will allow a lucky owner to wake up each morning to an oversized primary bedroom with a comfortable sitting area and a luxurious marble master bath.High ceilings and a gas fireplace enhance the elegant living space.Also includes social membership to Stonebriar Country Club included in your HOA dues.Please review all documents provided in the listing before making an appointment.Contact agent to see any and all documents.8x10 storage unit in parking garage is also for sale and not included in this price. | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 2 | Bathrooms: 3 | Full bathrooms: 2 | 1/2 bathrooms: 1 | Primary bedroom | Features: Garden Tub/Roman Tub, Separate Shower, Walk-In Closet(s) | Level: First | Dimensions: 19 x 14 | Bedroom | Level: First | Dimensions: 17 x 13 | Kitchen | Features: Built-in Features, Eat-in Kitchen, Kitchen Island, Stone Counters | Level: First | Dimensions: 21 x 9 | Living room | Level: First | Dimensions: 29 x 16 | Office | Level: First | Dimensions: 11 x 11 | Heating | Central, Geothermal, Natural Gas | Cooling | Central Air, Electric, Geothermal | Appliances | Included: Some Gas Appliances, Built-In Refrigerator, Convection Oven, Dishwasher, Electric Oven, Gas Cooktop, Disposal, Plumbed For Gas, Refrigerator, Vented Exhaust Fan, Wine Cooler | Features | Decorative/Designer Lighting Fixtures, Eat-in Kitchen, High Speed Internet, Kitchen Island, Open Floorplan, Cable TV, Walk-In Closet(s), Wired for Sound | Flooring: Carpet, Ceramic Tile, Luxury Vinyl Plank | Has basement: No | Number of fireplaces: 1 | Fireplace features: Electric, Gas Log, Heatilator, Metal | Interior area | Total interior livable area: 2,427 sqft | Virtual tour | View virtual tour | Property | Parking | Total spaces: 2 | Parking features: Assigned, Common, Covered, Underground, Garage, Garage Door Opener | Attached garage spaces: 2 | Accessibility | Accessibility features: Accessible Elevator Installed, Accessible Approach with Ramp, Accessible Doors | Features | Levels: One | Stories: 1 | Pool features: Gunite, Heated, In Ground, Water Feature | Fencing: Metal | Lot | Size: 4.02 Acres | Details | Parcel number: R770666 | Special conditions: Standard | Construction | Type & style | Home type: Condo | Architectural style: Contemporary/Modern | Property subtype: Condominium | Attached to another structure: Yes | Materials | Block, Rock, Stone, Stucco, Wood Siding | Foundation: Other | Roof: Metal,Other | Condition | Year built: 2019 | Utilities & green energy | Sewer: Public Sewer | Water: Public | Utilities for property: Electricity Available, Sewer Available, Separate Meters, Water Available, Cable Available | Community & HOA | Community | Features: Community Mailbox | Subdivision: Corvalla Condos Bldg B | HOA | Has HOA: Yes | Services included: All Facilities, Association Management, Gas, Maintenance Grounds, Maintenance Structure | HOA fee: $1,612 monthly | Location | Region: Frisco | Financial & listing details | Price per square foot: $307/sqft | Annual tax amount: $16,596 | Date on market: 6/10/2024"
+  }
+  
+PUT any_company_property_listings_reg/_doc/10
+  {
+    "propertyId": 10, 
+    "propertyName": "The Village At Panther Creek Ph One",
+    "propertyAddress": "9829 Clancy Dr, Frisco, TX 75035",
+    "propertyCity" : "Frisco",
+    "propertyState" : "TX",
+    "propertyZip" : "75035",
+    "propertyType" : "Single Family Residence",
+    "propertyCoordinates" : "33.17782776827841, -96.79583521822032",
+    "propertyFeatures" : "What's special | Sparkling pool Stone fireplace High ceilings Private backyard paradise Wide plank hardwood floors Sleek kitchen Soaking tub | Welcome to a luxurious retreat in the heart of Frisco, where elegance meets sophisticated charm. Step inside to light-filled spaces with high ceilings, a sweeping staircase. The sleek kitchen's modern toned cabinetry and pristine countertops is perfect for hosting dinners that impress. The downstairs primary suite is a peaceful oasis, complete with a soaking tub for ultimate relaxation. A second bedroom suite downstairs provides living flexibility. The living room’s stone fireplace anchors the space, while wide plank hardwood floors add warmth throughout. Upstairs second living, theater compliment the remaining bedrooms. Step outside to your private backyard paradise with a sparkling pool, spa, lush landscaping, perfect for sun-kissed and evening swims. Vibrant lifestyle awaits; premier shopping, top-rated schools, easy access to The Star. Experience the perfect blend of suburban tranquility and modern convenience in highly desired Dominion at Panther Creek, crafted by Darling Homes. | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 5 | Bathrooms: 6 | Full bathrooms: 4 | 1/2 bathrooms: 2 | Primary bedroom | Level: First | Dimensions: 16 x 17 | Bedroom | Level: Second | Dimensions: 10 x 13 | Bedroom | Level: Second | Dimensions: 12 x 7 | Bedroom | Level: First | Dimensions: 14 x 14 | Bedroom | Level: Second | Dimensions: 16 x 17 | Primary bathroom | Level: First | Dimensions: 11 x 15 | Dining room | Level: First | Dimensions: 12 x 14 | Kitchen | Level: First | Dimensions: 16 x 14 | Laundry | Level: First | Dimensions: 9 x 10 | Living room | Level: Second | Dimensions: 14 x 26 | Living room | Level: First | Dimensions: 20 x 23 | Mud room | Level: First | Dimensions: 11 x 13 | Office | Level: First | Dimensions: 11 x 14 | Heating | Central, Natural Gas | Cooling | Central Air, Electric | Appliances | Included: Double Oven, Dishwasher, Electric Oven, Gas Cooktop, Disposal, Microwave | Laundry: Washer Hookup, Electric Dryer Hookup, Laundry in Utility Room | Features | Wet Bar, Built-in Features, Chandelier, Decorative/Designer Lighting Fixtures, Double Vanity, High Speed Internet, Kitchen Island, Multiple Staircases, Open Floorplan, Pantry, Smart Home, Walk-In Closet(s), Wired for Sound | Flooring: Carpet, Ceramic Tile, Hardwood | Windows: Plantation Shutters, Window Coverings | Has basement: No | Number of fireplaces: 1 | Fireplace features: Gas, Living Room | Interior area | Total interior livable area: 4,733 sqft | Virtual tour | View virtual tour | Property | Parking | Total spaces: 3 | Parking features: Additional Parking, Alley Access, Converted Garage, Door-Multi, Driveway, Garage, Golf Cart Garage, Garage Door Opener, Kitchen Level, Garage Faces Rear | Attached garage spaces: 3 | Features | Levels: Two | Stories: 2 | Patio & porch: Covered | Exterior features: Lighting, Outdoor Grill | Pool features: Gunite, Heated, In Ground, Outdoor Pool, Pool, Pool Sweep, Community | Fencing: Back Yard,Fenced,Stone,Wood | Lot | Size: 0.27 Acres | Dimensions: 143 x 90 | Features: Landscaped, Many Trees, Few Trees | Details | Parcel number: R837000D02101 | Special conditions: Standard | Other equipment: Home Theater, Irrigation Equipment | Construction | Type & style | Home type: SingleFamily | Architectural style: Traditional,Detached | Property subtype: Single Family Residence | Materials | Brick, Rock, Stone, Stone Veneer, Wood Siding | Foundation: Slab | Roof: Asphalt,Composition,Shingle | Condition | Year built: 2004 | Utilities & green energy | Sewer: Public Sewer | Water: Public | Utilities for property: Electricity Available, Electricity Connected, Natural Gas Available, Sewer Available, Separate Meters, Water Available | Community & HOA | Community | Features: Curbs, Playground, Park, Pool, Trails/Paths | Security: Prewired, Carbon Monoxide Detector(s), Fire Alarm | Subdivision: Village At Panther Creek Ph One The | HOA | Has HOA: Yes | Services included: All Facilities, Association Management | HOA fee: $555 annually | Location | Region: Frisco | Financial & listing details | Price per square foot: $195/sqft | Tax assessed value: $867,333 | Date on market: 9/19/2024"
+  }
+
+PUT any_company_property_listings_reg/_doc/11
+  {
+    "propertyId": 11, 
+    "propertyName": "Christie & Wester Add",
+    "propertyAddress": "9480 N County Rd, Frisco, TX 75033",
+    "propertyCity" : "Frisco",
+    "propertyState" : "TX",
+    "propertyZip" : "75033",
+    "propertyType" : "Single Family Residence",
+    "propertyCoordinates" : "33.155111080080395, -96.82040232986047",
+    "propertyFeatures" : "What's special | Heated screened-in-porch Lots of natural light Beautiful trees Open floor plan Outdoor fire-pit Wood floors Wall of built-ins | One-of-a-kind home & treed corner lot in the highly sought-after Frisco Rail District! Upgrades include wood floors, brick fireplace & hearth with wood mantle, built-ins, upgraded cabinets with gold hardware, curtains, & granite. Additional 272 sqft with the screened-in-porch. Open floor plan with lots of natural light. Primary bedroom with wall of built-ins. NEW Hvac, electrical panel, windows, roof, carpet, and more! Watch football games & movies in your heated screened-in-porch. Hangout around the outdoor fire-pit. Cook pizza, steaks, and more on your new professional grade outdoor oven, the Gozney Dome. Brick patio with outdoor dining table. Walk to the Rail District for coffee, eats, & shopping. Exemplary Frisco ISD schools. Enjoy beautiful trees! Workshop with electricity. Walk to the 63-acre Frisco Commons Park with fishing, trails, playground, & splash pad. Frisco Rail District is getting even better with Main Street updates & new Plaza with an outdoor stage. No HOA. Come see! | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 4 | Bathrooms: 3 | Full bathrooms: 2 | 1/2 bathrooms: 1 | Primary bedroom | Features: Ceiling Fan(s) | Level: First | Dimensions: 14 x 13 | Bedroom | Features: Ceiling Fan(s) | Level: First | Dimensions: 15 x 10 | Bedroom | Features: Ceiling Fan(s), Split Bedrooms | Level: First | Dimensions: 14 x 11 | Bedroom | Features: Ceiling Fan(s), Split Bedrooms | Level: First | Dimensions: 12 x 11 | Dining room | Level: First | Dimensions: 17 x 11 | Kitchen | Features: Breakfast Bar, Built-in Features, Granite Counters, Walk-In Pantry | Level: First | Dimensions: 18 x 10 | Living room | Features: Built-in Features, Ceiling Fan(s), Fireplace | Level: First | Dimensions: 17 x 13 | Utility room | Features: Built-in Features, Utility Room | Level: First | Dimensions: 13 x 12 | Heating | Central, Natural Gas | Cooling | Central Air, Electric | Appliances | Included: Dishwasher, Electric Cooktop, Electric Oven, Disposal, Gas Water Heater, Microwave, Refrigerator | Laundry: Washer Hookup, Electric Dryer Hookup, Laundry in Utility Room | Features | Decorative/Designer Lighting Fixtures, Granite Counters, High Speed Internet, Open Floorplan, Pantry, Paneling/Wainscoting, Natural Woodwork, Wired for Sound | Flooring: Carpet, Ceramic Tile, Wood | Windows: Window Coverings | Has basement: No | Number of fireplaces: 1 | Fireplace features: Gas Starter, Masonry, Raised Hearth, Wood Burning | Interior area | Total interior livable area: 1,908 sqft | Virtual tour | View virtual tour | Property | Parking | Total spaces: 1 | Parking features: Concrete, Garage | Garage spaces: 1 | Features | Levels: One | Stories: 1 | Patio & porch: Enclosed, Screened, Covered | Exterior features: Basketball Court, Courtyard, Fire Pit, Lighting, Other, Playground, Storage | Pool features: None | Fencing: Fenced,Wood | Lot | Size: 10,715 sqft | Dimensions: 143 x 75 | Features: Corner Lot, Landscaped, Many Trees | Details | Additional structures: Garage(s), Shed(s), Workshop | Parcel number: R098400900501 | Special conditions: Standard | Other equipment: Other | Construction | Type & style | Home type: SingleFamily | Architectural style: Ranch,Detached | Property subtype: Single Family Residence | Materials | Brick | Foundation: Combination, Pillar/Post/Pier, Slab | Roof: Composition | Condition | Year built: 1968 | Utilities & green energy | Sewer: Public Sewer | Water: Public | Utilities for property: Cable Available, Electricity Available, Natural Gas Available, Sewer Available, Separate Meters, Water Available | Community & HOA | Community | Features: Curbs | Subdivision: Christie & Wester Add | HOA | Has HOA: No | Location | Region: Frisco | Financial & listing details | Price per square foot: $277/sqft | Tax assessed value: $431,821 | Annual tax amount: $5,665 | Date on market: 8/19/2024"
+  }
+  
+PUT any_company_property_listings_reg/_doc/12
+  {
+    "propertyId": 12, 
+    "propertyName": "Preston Gables Ph 4",
+    "propertyAddress": "9880 Queens Rd, Frisco, TX 75035",
+    "propertyCity" : "Frisco",
+    "propertyState" : "TX",
+    "propertyZip" : "75035",
+    "propertyType" : "Single Family Residence",
+    "propertyCoordinates" : "33.147245963668674, -96.79515911636886",
+    "propertyFeatures" : "What's special | Brick fire place Private patio Corner lot Mature trees Delightful breakfast nook | Welcome to this charming 3-bedroom, 2-bathroom home nestled on a coveted corner lot in the heart of Frisco. This property boasts exceptional curb appeal with mature trees adorning the front yard. As you step inside, you're greeted by a cozy living room featuring a brick fireplace, that adds warmth and character to the space. The kitchen offers a delightful breakfast nook. The primary bedroom is complete with an ensuite 5-piece bath featuring dual sinks, a garden tub, a separate shower, and a generous walk-in closet. Two additional bedrooms share a full bathroom. Step outside to enjoy the private patio, a pergola, and a 6-person hot tub—perfect for outdoor entertaining. Conveniently located near Stonebriar Centre, shopping, and a variety of restaurants, this home offers both comfort and convenience in a prime location. Don't miss it! Click the Virtual Tour link to view the 3D walkthrough. | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 3 | Bathrooms: 2 | Full bathrooms: 2 | Primary bedroom | Features: Ceiling Fan(s), En Suite Bathroom, Walk-In Closet(s) | Level: First | Dimensions: 13 x 15 | Bedroom | Features: Ceiling Fan(s) | Level: First | Dimensions: 10 x 13 | Bedroom | Features: Ceiling Fan(s) | Level: First | Dimensions: 10 x 11 | Primary bathroom | Features: Dual Sinks, En Suite Bathroom, Garden Tub/Roman Tub, Separate Shower | Level: First | Dimensions: 11 x 8 | Kitchen | Features: Breakfast Bar, Eat-in Kitchen | Level: First | Dimensions: 11 x 10 | Laundry | Level: First | Dimensions: 8 x 3 | Living room | Features: Ceiling Fan(s), Fireplace | Level: First | Dimensions: 15 x 17 | Heating | Central, Electric | Cooling | Central Air, Ceiling Fan(s), Electric | Appliances | Included: Dishwasher, Electric Range, Microwave | Laundry: Common Area | Features | Eat-in Kitchen, High Speed Internet, Open Floorplan, Cable TV, Walk-In Closet(s) | Flooring: Carpet, Tile | Windows: Window Coverings | Has basement: No | Number of fireplaces: 1 | Fireplace features: Living Room, Masonry | Interior area | Total interior livable area: 1,339 sqft | Virtual tour | View virtual tour | Property | Parking | Total spaces: 2 | Parking features: Concrete, Door-Multi, Driveway, On Site, Private, Garage Faces Rear | Attached garage spaces: 2 | Features | Levels: One | Stories: 1 | Patio & porch: Patio | Exterior features: Lighting, Private Entrance, Private Yard, Rain Gutters | Pool features: None | Fencing: Back Yard,Fenced,Full,Wood | Lot | Size: 7,840 sqft | Features: Corner Lot, Landscaped, Many Trees | Residential vegetation: Grassed | Details | Parcel number: R339500B01201 | Special conditions: Standard | Construction | Type & style | Home type: SingleFamily | Architectural style: Traditional,Detached | Property subtype: Single Family Residence | Materials | Brick | Foundation: Slab | Roof: Composition | Condition | Year built: 1998 | Utilities & green energy | Sewer: Public Sewer | Water: Public | Utilities for property: Electricity Available, Phone Available, Sewer Available, Water Available, Cable Available | Community & HOA | Community | Features: Curbs, Sidewalks | Subdivision: Preston Gables Ph 4 | HOA | Has HOA: No | Location | Region: Frisco | Financial & listing details | Price per square foot: $280/sqft | Tax assessed value: $383,005 | Annual tax amount: $5,419 | Date on market: 9/25/2024 | Exclusions: Personal property."
+  }
+  
+PUT any_company_property_listings_reg/_doc/13
+  {
+    "propertyId": 13, 
+    "propertyName": "Townhome at Parish Place",
+    "propertyAddress": "10221 Parish Pl, Cupertino, CA 95014",
+    "propertyCity" : "Cupertino",
+    "propertyState" : "CA",
+    "propertyZip" : "95014",
+    "propertyType" : "Townhouse",
+    "propertyCoordinates" : "37.32590032458903, -122.029115705061",
+    "propertyFeatures" : "What's special | Private backyards Hardwood floors Central hvac system Double pane windows | Do not miss out this well established ownership since 2007, a rarely available a single family house like detached townhome is located at a desired North Blaney neighborhood. two stories, 3 bed 2.5 bath, Central HVAC System Double pane windows, Hardwood floors, New bathroom cabinets & sinks, Fresh painted interior walls & ceilings. A 2 car attached garage with full size driveway, guest parkings, Private backyards, center location in the complex, near to community pool.  No one is behind of the property, a great privacy. Closed to Schools, Super markets, Restaurants, Main street, APPLE . | Top Cupertino schools. Easy to access to HYW 85 & 280 | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 3 | Bathrooms: 3 | Full bathrooms: 2 | 1/2 bathrooms: 1 | Bathroom | Features: ShowerandTub | Dining room | Features: BreakfastNook, DiningAreainLivingRoom | Family room | Features: NoFamilyRoom | Kitchen | Features: _220VoltOutlet, Countertop_Granite, ExhaustFan, Pantry | Heating | Central Forced Air Gas | Cooling | Central Air | Appliances | Included: Dishwasher, Exhaust Fan, Disposal, Oven/Range, Built In Gas Oven/Range, Electric Oven/Range, Refrigerator, Washer/Dryer | Laundry: Inside | Features | Flooring: Hardwood, Laminate | Number of fireplaces: 1 | Fireplace features: Living Room | Interior area | Total structure area: 1,625 | Total interior livable area: 1,625 sqft | Virtual tour | View virtual tour | Property | Parking | Total spaces: 2 | Parking features: Attached, Guest | Attached garage spaces: 2 | Features | Stories: 2 | Pool features: Community, Fenced, Heated | Fencing: Back Yard | Has view: Yes | View description: City Lights, Garden/Greenbelt | Lot | Size: 1,742 sqft | Details | Parcel number: 31644007 | Zoning: R1 | Special conditions: Standard | Construction | Type & style | Home type: Townhouse | Property subtype: Townhouse, | Materials | Foundation: Crawl Space | Roof: Clay | Condition | New construction: No | Year built: 1976 | Utilities & green energy | Gas: PublicUtilities | Sewer: Public Sewer | Water: Public | Utilities for property: Public Utilities, Water Public | Community & HOA | HOA | Has HOA: Yes | Amenities included: Community Pool, Garden Greenbelt Trails | HOA fee: $515 monthly | Location | Region: Cupertino | Financial & listing details | Price per square foot: $1,230/sqft | Tax assessed value: $1,140,944 | Date on market: 9/23/2024 | Listing agreement: ExclusiveRightToSell | Listing terms: CashorConventionalLoan"
+  }
+  
+PUT any_company_property_listings_reg/_doc/14
+  {
+    "propertyId": 14, 
+    "propertyName": "Towhhouse at Northshore square",
+    "propertyAddress": "10989 Northshore Sq, Cupertino, CA 95014",
+    "propertyCity" : "Cupertino",
+    "propertyState" : "CA",
+    "propertyZip" : "95014",
+    "propertyType" : "Townhouse",
+    "propertyCoordinates" : "37.33750605606064, -122.02571083389569",
+    "propertyFeatures" : "What's special | Two swimming pools Tennis courts Children play area Gaming room Bbq and picnic area Clubhouse with exercise facility Private fenced backyard patio | Elegant Contemporary Townhouse in the Heart of Prestigious Cupertino!  Welcome home to this updated end unit townhome in highly desirable North Point community. Large master suite bedroom with lots of natural sunlight opens to the balcony. The kitchen has been renovated with new Quartz, white cabinets and stainless appliances, new smart range hood controlled by voice and gesture. The living room is bright and airy with vaulted high ceilings. Other features include dual pane windows, central A/C and heating, a private fenced backyard patio and 2 car side by side garage offering electric car charger ready, plenty of storage. Smart home with Nest, Ring doorbell camera, smart recessed lightings.  Top notch all 3 Cupertino schools. Moments to Apple park, Ranch 99 and plenty of shops/restaurants. Marina Market, Target, Whole Foods nearby. Expansive community offers country club style amenities including two swimming pools, spas, playgrounds, tennis courts, children play area, BBQ & Picnic area, clubhouse with exercise facility & gaming room, billards, pingpong, Sauna. Easy access ( 280, 101 & 85) to major tech companies like Apple, Google, Amazon, Nvidia, Uber, AMD, Broadcom and LinkedIn. A must see! | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 2 | Bathrooms: 1 | Full bathrooms: 1 | Bathroom | Features: ShoweroverTub1, SolidSurface | Dining room | Features: BreakfastBar, DiningL, DiningAreainLivingRoom | Family room | Features: KitchenFamilyRoomCombo | Heating | Central Forced Air Gas | Cooling | Central Air | Appliances | Included: Range Hood, Electric Oven/Range, Refrigerator | Features | Flooring: Wood | Fireplace features: Family Room, Wood Burning | Interior area | Total structure area: 1,062 | Total interior livable area: 1,062 sqft | Property | Parking | Total spaces: 2 | Parking features: Attached, Garage Door Opener, Guest | Attached garage spaces: 2 | Features | Stories: 2 | Pool features: Community, Fenced, In Ground, Sauna or Steam Room | Lot | Size: 1,680 sqft | Features: Level | Details | Parcel number: 31638023 | Zoning: R1C7 | Special conditions: Standard | Construction | Type & style | Home type: Townhouse | Property subtype: Townhouse, | Materials | Foundation: Concrete Perimeter, Concrete Perimeter and Slab | Roof: Composition | Condition | New construction: No | Year built: 1973 | Utilities & green energy | Gas: PublicUtilities | Sewer: Public Sewer | Water: Public | Utilities for property: Public Utilities, Water Public | Community & HOA | HOA | Has HOA: Yes | Amenities included: Barbecue Area, Billiard Room, Club House, Community Pool, Gym Exercise Facility, Playground | HOA fee: $504 monthly | Location | Region: Cupertino | Financial & listing details | Price per square foot: $1,036/sqft | Tax assessed value: $1,093,950 | Date on market: 9/26/2024 | Listing agreement: ExclusiveRightToSell"
+  }
+  
+PUT any_company_property_listings_reg/_doc/15
+  {
+    "propertyId": 15, 
+    "propertyName": "Towhhouse at Northseal Square",
+    "propertyAddress": "10985 Northseal Sq, Cupertino, CA 95014",
+    "propertyCity" : "Cupertino",
+    "propertyState" : "CA",
+    "propertyZip" : "95014",
+    "propertyType" : "Townhouse",
+    "propertyCoordinates" : "37.337608697908884, -122.02742867622487",
+    "propertyFeatures" : "What's special | Two swimming pools Tennis courts Children play area Gaming room Clubhouse with exercise facility Huge backyard Corner lot | Charming Two-Story End-Unit Townhouse with Expansive Outdoor Spaces, offering an abundance of natural light and a sense of spaciousness. Enjoy a bright and airy living room with vaulted ceilings that seamlessly connect to the L-shaped patio, perfect for relaxing. The large living space features plenty of sunlight and opens directly onto a private balcony.  This unique end-unit benefits from a generous corner lot, providing a HUGE backyard for additional outdoor enjoyment. The property includes central A/C and heating, a private fenced patio, and a 2-car attached side-by-side garage with an additional carport, ensuring ample storage space. Located in the top-rated Cupertino school district, this home is conveniently close to Apple Park, Ranch 99, Safeway and a variety of shops/restaurants. Marina Market, Target, and Whole Foods are just moments away. One of the bedrooms has been converted (without permit) to offer extra space for guests.The expansive community boasts country club-style amenities, including 2 swimming pools, a spa/sauna, playgrounds, tennis courts, a children’s play area, a clubhouse with an exercise facility, and a gaming room. With easy access to major highways (280/101/85), commuting to tech hubs like Google, Amazon, and LinkedIn is a breeze. This is a must-see property with the perfect blend of comfort, convenience, and community amenities! | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 2 | Bathrooms: 1 | Full bathrooms: 1 | Main level bathrooms: 1 | Main level bedrooms: 1 | Cooling | Central Air | Appliances | Included: Electric Range | Laundry: In Garage | Features | Balcony, Living Room | Has fireplace: No | Fireplace features: None | Common walls with other units/homes: 1 Common Wall | Interior area | Total interior livable area: 1,062 sqft | Property | Parking | Total spaces: 2 | Parking features: Garage | Attached garage spaces: 2 | Features | Levels: Two | Stories: 2 | Entry location: 1st floor | Pool features: Community | Has view: Yes | View description: None | Lot | Size: 1,686 sqft | Details | Parcel number: 31640010 | Zoning: R1 | Special conditions: Standard | Construction | Type & style | Home type: Townhouse | Property subtype: Townhouse | Attached to another structure: Yes | Condition | New construction: No | Year built: 1973 | Utilities & green energy | Sewer: Public Sewer | Water: Public | Community & HOA | Community | Features: Sidewalks, Street Lights | HOA | Has HOA: Yes | Amenities included: Pool, Spa/Hot Tub, Barbecue, Outdoor Cooking Area, Picnic Area, Playground, Tennis Court(s), Fitness Center, Clubhouse, Billiard Room | HOA fee: $504 monthly | HOA name: Northpoint | Location | Region: Cupertino | Financial & listing details | Price per square foot: $1,195/sqft | Tax assessed value: $1,016,444 | Date on market: 9/4/2024"
+  }
+  
+PUT any_company_property_listings_reg/_doc/16
+  {
+    "propertyId": 16, 
+    "propertyName": "Triplex at Alpine",
+    "propertyAddress": "10296 Alpine Dr, Cupertino, CA 95014",
+    "propertyCity" : "Cupertino",
+    "propertyState" : "CA",
+    "propertyZip" : "95014",
+    "propertyType" : "Multi Family",
+    "propertyCoordinates" : "37.327676793594335, -122.06690212040249",
+    "propertyFeatures" : "What's special | Thoughtful layouts Private back patio In-unit washer and dryer Generous floor plans Sizable two-bedroom one-and-a-half-bath units Private garage | Jimmy Castellanos is pleased to present 10296 Alpine Drive, a rare investment opportunity that offers unparalleled value and flexibility. This expansive 4,332-square-foot triplex boasts premier views of Silicon Valley. Each unit is priced at an incredible One Million per unit, well below Cupertino's average home price of over $3,000,000. With the property being delivered 100% vacant, investors and first-time homebuyers alike have the flexibility to renovate, lease, or occupy the units immediately, offering an adaptable investment strategy that's hard to come by in this high-demand rental market. |  | The property consists of three large townhome-style units, including a spacious three-bedroom, two-and-a-half-bath owners unit with a private back patio and in-unit washer and dryer. The two additional units are sizable two-bedroom, one-and-a-half-bath units, each equipped with in-unit washers and dryers, offering the comforts of home with the convenience of multi-family living. Each unit also includes a private garage, enhancing the living experience for tenants or future owners. With their generous floor plans and thoughtful layouts, these units stand out as some of the largest and most comfortable multi-family offerings in Cupertino. |  | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 7 | Bathrooms: 7 | Heating | Central Forced Air Gas | Cooling | Other | Features | Doors: Other | Interior area | Total structure area: 4,332 | Total interior livable area: 4,332 sqft | Property | Parking | Total spaces: 8 | Parking features: Attached | Garage spaces: 3 | Has carport: Yes | Accessibility | Accessibility features: Other | Features | Stories: 2 | Lot | Size: 9,500 sqft | Details | Parcel number: 32615070 | Zoning: R322 | Special conditions: Standard | Construction | Type & style | Home type: MultiFamily | Property subtype: Triplex, | Materials | Foundation: Concrete Perimeter | Roof: TarGravel | Condition | Year built: 1967 | Utilities & green energy | Gas: PublicUtilities | Sewer: Public Sewer | Water: Public | Utilities for property: Public Utilities, Water Public | Community & HOA | Location | Region: Cupertino | Financial & listing details | Price per square foot: $693/sqft | Date on market: 9/22/2024 | Listing agreement: ExclusiveRightToSell | Inclusions: Building, Land, LeaseholdImprovements | Lease term: Other"
+  }
+  
+PUT any_company_property_listings_reg/_doc/17
+  {
+    "propertyId": 17, 
+    "propertyName": "Quadruplex at Miller",
+    "propertyAddress": "10337 Miller Ave, Cupertino, CA 95014",
+    "propertyCity" : "Cupertino",
+    "propertyState" : "CA",
+    "propertyZip" : "95014",
+    "propertyType" : "Multi Family",
+    "propertyCoordinates" : "37.318691384655274,-122.01376376273224",
+    "propertyFeatures" : "What's special | Large lot Large private backyard Kitchen with dining area Inside laundry | Fantastic investment opportunity to own this Cupertino four-plex in the heart of Cupertino! Property has a large lot with three buildings-the large single-story unit has 3 bedrooms/2 baths, spacious living room, kitchen with dining area and sliding glass doors to the expansive private backyard plus direct access into the garage-move in yourself or rent out for added income.  Upstairs is a single-level two bedroom/one bath unit; Building two has two side-by-side two-story units -each with 2 bedrooms and 1.5 bathrooms- each has a formal living room, kitchen and dining area plus half bath and inside laundry downstairs; bedrooms and full bath located upstairs.  There is a separate third building which is the private garages for these units.  The property also has a large, private backyard for the tenants to relax and enjoy. Excellent location - minutes to Cupertino Main Street, Santana Row, Westfield Mall, major tech companies such as Apple, local parks and commute routes! Cupertino Schools as well!  Don't miss this opportunity! | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 9 | Bathrooms: 7 | Heating | Forced Air, Wall Furnace | Cooling | None | Features | Flooring: Carpet, Vinyl Linoleum | Doors: Other | Interior area | Total structure area: 4,156 | Total interior livable area: 4,156 sqft | Virtual tour | View virtual tour | Property | Parking | Total spaces: 4 | Parking features: Assigned, Detached | Garage spaces: 4 | Has carport: Yes | Accessibility | Accessibility features: Other | Features | Stories: 2 | Lot | Size: 9,583 sqft | Details | Parcel number: 36914034 | Zoning: R3H | Special conditions: Standard | Construction | Type & style | Home type: MultiFamily | Property subtype: Quadruplex, | Materials | Foundation: Crawl Space | Roof: Composition | Condition | Year built: 1963 | Utilities & green energy | Gas: PublicUtilities | Sewer: Public Sewer | Water: Public | Utilities for property: Public Utilities, Water Public | Community & HOA | Location | Region: Cupertino | Financial & listing details | Price per square foot: $628/sqft | Annual tax amount: $5,072 | Date on market: 9/4/2024 | Listing agreement: ExclusiveRightToSell | Inclusions: Other"
+  }
+  
+PUT any_company_property_listings_reg/_doc/18
+  {
+    "propertyId": 18, 
+    "propertyName": "Triplex at Vaughn",
+    "propertyAddress": "10985 Northseal Sq, Cupertino, CA 95014",
+    "propertyCity" : "Cupertino",
+    "propertyState" : "CA",
+    "propertyZip" : "95014",
+    "propertyType" : "Multi Family",
+    "propertyCoordinates" : "37.33759163743701, -122.02748232040177",
+    "propertyFeatures" : "What's special | Indoor laundry Laminate flooring | This centrally located triplex offers flexibility for those seeking an investment, a place to live, or both. Each unit includes 1 bedroom and 1 bathroom, with separate meters for each unit. The unit at 447 features indoor laundry. The property includes shared outdoor space with a brick patio, and two units have laminate flooring. Additional shared storage is available in the basement. Located in the Burbank neighborhood of San Jose, the property provides convenient access to amenities, dining, shopping, and entertainment, including Valley Fair, Santana Row, and the SAP Center. With easy access to highways 880, 280, and public transportation, this property presents a versatile opportunity for ownership in a well-connected area. | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 3 | Bathrooms: 3 | Kitchen | Features: Countertop_Formica, ExhaustFan | Heating | Wall Furnace | Cooling | Ceiling Fan(s) | Appliances | Included: Exhaust Fan, Washer/Dryer Some Units | Features | Flooring: Carpet, Laminate, Vinyl Linoleum | Doors: None | Interior area | Total structure area: 1,706 | Total interior livable area: 1,706 sqft | Virtual tour | View virtual tour | Property | Parking | Total spaces: 2 | Parking features: No Garage, On Street, Tandem | Has carport: Yes | Accessibility | Accessibility features: None | Features | Stories: 1 | Lot | Size: 3,920 sqft | Details | Parcel number: 27706039 | Zoning: R1-N2 | Special conditions: Standard | Construction | Type & style | Home type: MultiFamily | Property subtype: Triplex, | Materials | Foundation: Concrete Perimeter and Slab, Mudsill | Roof: Composition, RolledHotMop | Condition | Year built: 1900 | Utilities & green energy | Gas: IndividualGasMeters | Utilities for property: Individual Electric Meters, Individual Gas Meters | Community & HOA | Location | Region: Cupertino | Financial & listing details | Price per square foot: $468/sqft | Annual tax amount: $4,200 | Date on market: 9/9/2024 | Listing agreement: ExclusiveRightToSell | Inclusions: OvenRangeAllUnits | Lease term: Month To Month | "
+  }
+  
+PUT any_company_property_listings_reg/_doc/19
+  {
+    "propertyId": 19, 
+    "propertyName": "Luxury Condos at Stevens Creek",
+    "propertyAddress": "20488 Stevens Creek Blvd APT 1703, Cupertino, CA 95014",
+    "propertyCity" : "Cupertino",
+    "propertyState" : "CA",
+    "propertyZip" : "95014",
+    "propertyType" : "Condos",
+    "propertyCoordinates" : "37.322352375618955, -122.03070684710427",
+    "propertyFeatures" : "What's special | Outdoor pool Private balcony Open kitchen Spacious primary bedroom suite Stunning panoramic views Granite countertops In-unit laundry | Discover your ideal home with stunning panoramic views of the cityscape and hills in this bright and open luxury Montebello condo. The spacious primary bedroom suite and a second bedroom both offer beautiful views and a private balcony, perfect for relaxing. The open kitchen features granite countertops, a gas range, and in-unit laundry for your convenience. |  | Located in vibrant Cupertino, this condo is just minutes from the Apple Campus, tech companies, Cupertino Main Street, De Anza College, and top-rated schools. Enjoy a variety of dining options, markets, and beautiful parks nearby. |  | Association amenities include elevators, a fitness center, spa/sauna, a clubhouse for entertaining, and an outdoor pool set in lush grounds. With secured gated parking and ample guest parking, this home offers both luxury and convenience. Your dream lifestyle awaits! Please respect the tenants' privacy. | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 2 | Bathrooms: 2 | Full bathrooms: 2 | Bathroom | Features: Granite, ShoweroverTub1 | Dining room | Features: DiningAreainLivingRoom, NoFormalDiningRoom | Family room | Features: KitchenFamilyRoomCombo | Kitchen | Features: Countertop_Granite | Heating | Central Forced Air | Cooling | Central Air | Appliances | Included: Dishwasher, Disposal, Range Hood, Microwave, Gas Oven/Range, Refrigerator, Washer/Dryer | Laundry: Inside | Features | Flooring: Carpet, Tile | Interior area | Total structure area: 1,182 | Total interior livable area: 1,182 sqft | Property | Parking | Total spaces: 2 | Parking features: Covered, Guest | Garage spaces: 2 | Features | Stories: 1 | Pool features: Community | Details | Parcel number: 36953187 | Zoning: APD | Special conditions: Standard | Construction | Type & style | Home type: Condo | Property subtype: Condominium, | Materials | Foundation: Slab | Roof: Tile | Condition | New construction: No | Year built: 2003 | Utilities & green energy | Gas: PublicUtilities | Water: Public | Utilities for property: Public Utilities, Water Public | Community & HOA | HOA | Has HOA: Yes | Amenities included: Club House, Elevator, Gym Exercise Facility | HOA fee: $724 monthly | Location | Region: Cupertino | Financial & listing details | Price per square foot: $971/sqft | Tax assessed value: $1,025,096 | Date on market: 9/25/2024 | Listing agreement: ExclusiveRightToSell"
+  }
+  
+PUT any_company_property_listings_reg/_doc/20
+  {
+    "propertyId": 20, 
+    "propertyName": "Homestead Apartments",
+    "propertyAddress": "22330 Homestead Rd APT 107, Cupertino, CA 95014",
+    "propertyCity" : "Cupertino",
+    "propertyState" : "CA",
+    "propertyZip" : "95014",
+    "propertyType" : "Condos",
+    "propertyCoordinates" : "37.33733779875557, -122.06530768943172",
+    "propertyFeatures" : "What's special | Private patio Serene courtyard Ensuite bath Elegantly finished bathrooms Newly painted interiors New quartz countertops Crown molding | Luxurious executive-style condo in an unbeatable location with top-rated Cupertino schools, including Homestead High, all within walking distance. Situated on the border of Los Altos, Homestead/Foothill Crossing shopping center is right outside your door, so you can easily walk to Trader Joe's or grab a coffee. This bright end unit features crown molding, luxury vinyl plank floors, fresh paint, double-paned windows, in-unit laundry, and an AC unit. The updated kitchen boasts stainless steel appliances, quartz countertops, ample cabinet space, and a dining area overlooking the peaceful community courtyard. The spacious main bedroom offers an ensuite bath with an enclosed shower over tub, two closets, and new carpet. The second bedroom includes a large closet, and the remodeled second bathroom also features a shower over tub. Additional amenities include two gated parking spaces with storage, elevator access, a community pool, hot tub, and clubhouse. Enjoy easy access to HWYs 85, 280, Caltrain, DeAnza College, and major employers like Apple and Kaiser, with downtown Los Altos and Sunnyvale just 10 minutes away. Don't miss this rare opportunity! | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 2 | Bathrooms: 2 | Full bathrooms: 2 | Bathroom | Features: ShowersoverTubs2plus | Dining room | Features: DiningArea | Family room | Features: NoFamilyRoom | Kitchen | Features: Pantry | Heating | Baseboard | Cooling | Ceiling Fan(s), Wall/Window Unit(s) | Appliances | Included: Dishwasher, Electric Oven/Range, Refrigerator, Washer/Dryer | Laundry: Inside | Features | Flooring: Carpet, Vinyl Linoleum | Interior area | Total structure area: 1,249 | Total interior livable area: 1,249 sqft | Virtual tour | View virtual tour | Property | Parking | Total spaces: 2 | Parking features: Common | Garage spaces: 2 | Features | Stories: 1 | Pool features: Community | Spa features: Other, Spa/HotTub | Details | Parcel number: 32659007 | Zoning: P | Special conditions: Standard | Construction | Type & style | Home type: Condo | Property subtype: Condominium, | Materials | Foundation: Other | Roof: Other | Condition | New construction: No | Year built: 1984 | Utilities & green energy | Gas: PublicUtilities | Sewer: Public Sewer | Water: Public | Utilities for property: Public Utilities, Water Public | Community & HOA | HOA | Has HOA: Yes | Amenities included: Community Pool, Elevator | HOA fee: $768 monthly | Location | Region: Cupertino | Financial & listing details | Price per square foot: $773/sqft | Tax assessed value: $539,199 | Date on market: 8/20/2024 | Listing agreement: ExclusiveAgency | Listing terms: CashorConventionalLoan"
+  }
+  
+PUT any_company_property_listings_reg/_doc/21
+  {
+    "propertyId": 21, 
+    "propertyName": "Condos at Celeste Circle",
+    "propertyAddress": "20677 Celeste Cir, Cupertino, CA 95014",
+    "propertyCity" : "Cupertino",
+    "propertyState" : "CA",
+    "propertyZip" : "95014",
+    "propertyType" : "Condos",
+    "propertyCoordinates" : "37.33573311172051, -122.03487536059606",
+    "propertyFeatures" : "What's special | Corner unit Gorgeous durable quartz counter High-end stainless steel appliances Tiled shower Water-proof lvp floor Wrap-around patio Modern kitchen | Spacious & Beautiful flat in Prime Silicon Valley location!! This 2bdrm CORNER unit sits on bottom floor with attached 2-car garage right below. It offers wrap-around patio for your gardening desire. This home is packed with upgrades: few-year-new central heating & a/c, modern kitchen with gorgeous durable quartz counter & high-end stainless steel appliances, water-proof LVP floor throughout, abundant recessed lighting, double-sink vanity, tiled shower, fresh paint & more. It also comes with full-sized washer & dryer and dual closets in master bedroom. Tight-knit community with a pool. Reasonable HOA dues of $495 covers a whole lot, including water, hot water, garbage, structural insurance, exterior maintenance, etc. Walking distance to park, groceries & restaurants. Short drive or bike to many high-tech offices. EZ access to I-280/85. Plus top Cupertino schools!! Come see it now!! | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 2 | Bathrooms: 2 | Full bathrooms: 2 | Bathroom | Features: Bidet, DoubleSinks, PrimaryStallShowers, ShoweroverTub1, StallShower, Tile, UpdatedBaths | Dining room | Features: DiningL | Family room | Features: NoFamilyRoom | Heating | Central Forced Air Gas | Cooling | Ceiling Fan(s), Central Air | Appliances | Included: Dishwasher, Disposal, Range Hood, Microwave, Electric Oven/Range, Refrigerator, Washer/Dryer | Features | Flooring: Other, Tile | Number of fireplaces: 1 | Fireplace features: Living Room, Other | Interior area | Total structure area: 1,206 | Total interior livable area: 1,206 sqft | Virtual tour | View virtual tour | Property | Parking | Total spaces: 2 | Parking features: Attached | Attached garage spaces: 2 | Features | Stories: 1 | Pool features: Community, In Ground | Details | Parcel number: 32658071 | Zoning: CU | Special conditions: Standard | Construction | Type & style | Home type: Condo | Property subtype: Condominium, | Materials | Foundation: Crawl Space | Roof: Tile | Condition | New construction: No | Year built: 1984 | Utilities & green energy | Gas: PublicUtilities | Sewer: Public Sewer | Water: Public | Utilities for property: Public Utilities, Water Public | Community & HOA | HOA | Has HOA: Yes | Amenities included: Community Pool, Garden Greenbelt Trails | HOA fee: $495 monthly | Location | Region: Cupertino | Financial & listing details | Price per square foot: $869/sqft | Tax assessed value: $1,025,000 | Date on market: 9/19/2024 | Listing agreement: ExclusiveRightToSell | Listing terms: CashorConventionalLoan"
+  }
+  
+PUT any_company_property_listings_reg/_doc/22
+  {
+    "propertyId": 22, 
+    "propertyName": "Single Family at Tuggle",
+    "propertyAddress": "10630 Tuggle Pl, Cupertino, CA 95014",
+    "propertyCity" : "Cupertino",
+    "propertyState" : "CA",
+    "propertyZip" : "95014",
+    "propertyType" : "Single Family Residence",
+    "propertyCoordinates" : "37.31351569667027, -122.00352427594066",
+    "propertyFeatures" : "What's special | Fenced backyard Peaceful cul-de-sac Grand arched porch Arched indoor details Ceiling fan Stainless steel appliances Recessed lighting | A 2002 built 2-story high ceilings home in the heart of Cupertino. Nestled in a peaceful cul-de-sac, with a spacious back & front yard  | Close to the Apple Spaceship campus, & walking distance to award-winning Cupertino schools, Sedgwick Elem., Hyde Middle, & Cupertino High | This home features a grand arched porch & double-lited door | Arched indoor details abound, from doorways to transom windows to niches & Fireplace mantels. | It also has a mezzanine, coffered ceilings, recessed lighting & new staircase carpet. Skylights, chandeliers & sconces. | The family room has a ceiling fan, fireplace & a sliding glass door. | The kitchen boasts stainless steel appliances,  granite countertops, cabinetry, pantry & garden window. | 2 Ensuite, features high ceilings, bay windows, & skylight | Bathrooms showcase earth-toned tiles, vanities, showers & tubs.  | There is a dedicated laundry area & a spacious storage room. | 2-car garage with epoxy floor & fenced backyard. | With convenient access to major highways, Cupertino Main Street, shopping & dining | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 5 | Bathrooms: 4 | Full bathrooms: 3 | 1/2 bathrooms: 1 | Rooms | Room types: Laundry | Bedroom | Features: PrimarySuiteRetreat2plus | Bathroom | Features: DoubleSinks, ShowerandTub, StallShower, Tile, OversizedTub | Dining room | Features: BreakfastNook, FormalDiningRoom, Skylights | Family room | Features: SeparateFamilyRoom | Kitchen | Features: Countertop_Granite, ExhaustFan, Pantry, Skylights | Heating | Central Forced Air | Cooling | Central Air | Appliances | Included: Dishwasher, Exhaust Fan, Range Hood, Double Oven, Oven/Range, Refrigerator, Washer/Dryer | Laundry: In Utility Room | Features | High Ceilings, One Or More Skylights, Vaulted Ceiling(s) | Flooring: Carpet, Hardwood, Other, Tile | Number of fireplaces: 2 | Fireplace features: Family Room, Living Room | Interior area | Total structure area: 2,823 | Total interior livable area: 2,823 sqft | Property | Parking | Total spaces: 2 | Parking features: Attached | Attached garage spaces: 2 | Features | Stories: 2 | Exterior features: Back Yard | Lot | Size: 7,370 sqft | Details | Parcel number: 37534068 | Zoning: R1 | Special conditions: Standard | Construction | Type & style | Home type: SingleFamily | Property subtype: Single Family Residence, | Materials | Foundation: Crawl Space | Roof: Concrete, Tile | Condition | New construction: No | Year built: 2002 | Utilities & green energy | Gas: IndividualGasMeters | Sewer: Public Sewer | Community & HOA | Location | Region: Cupertino | Financial & listing details | Price per square foot: $1,268/sqft | Tax assessed value: $1,339,696 | Date on market: 9/25/2024 | Listing agreement: ExclusiveAgency | Listing terms: CashorConventionalLoan | "
+  }
+  
+PUT any_company_property_listings_reg/_doc/23
+  {
+    "propertyId": 23, 
+    "propertyName": "Single Family at Cheryl",
+    "propertyAddress": "20692 Cheryl Dr, Cupertino, CA 95014",
+    "propertyCity" : "Cupertino",
+    "propertyState" : "CA",
+    "propertyZip" : "95014",
+    "propertyType" : "Single Family Residence",
+    "propertyCoordinates" : "37.31634328864527, -122.03650466059734",
+    "propertyFeatures" : "What's special | New roof New garage door New flooring New bathrooms New windows Quiet street Great floor plan | Welcome to this stunning single family home that epitomizes elegance, boasting luxurious finishes and meticulous attention to detail. Fully renovation done with new stucco siding, new roof, new garage door, new windows, new sliding doors, new flooring, new kitchen, new bathrooms, new landscaping for both front and backyard. Great floor plan with a full bathroom and a bedroom on 1st floor. 3 bedrooms and 2 bathroom on 2nd floor. 7,904 sqft size lot. Great school district. Convenient location with easy access to shops and HWY. | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 4 | Bathrooms: 3 | Full bathrooms: 3 | Bedroom | Features: GroundFloorBedroom | Dining room | Features: FormalDiningRoom | Family room | Features: KitchenFamilyRoomCombo | Heating | Forced Air | Cooling | None | Appliances | Laundry: In Garage | Features | Flooring: Wood | Fireplace features: Living Room | Interior area | Total structure area: 1,779 | Total interior livable area: 1,779 sqft | Property | Parking | Total spaces: 2 | Parking features: Attached | Attached garage spaces: 2 | Features | Stories: 2 | Lot | Size: 7,904 sqft | Details | Parcel number: 35916017 | Zoning: R1 | Special conditions: Standard | Construction | Type & style | Home type: SingleFamily | Property subtype: Single Family Residence, | Materials | Foundation: Crawl Space | Roof: Composition | Condition | New construction: No | Year built: 1963 | Utilities & green energy | Gas: PublicUtilities | Sewer: Public Sewer | Water: Public | Utilities for property: Public Utilities, Water Public | Community & HOA | Location | Region: Cupertino | Financial & listing details | Price per square foot: $1,675/sqft | Tax assessed value: $3,355,290 | Date on market: 9/25/2024 | Listing agreement: ExclusiveRightToSell | "
+  }
+  
+PUT any_company_property_listings_reg/_doc/24
+  {
+    "propertyId": 24, 
+    "propertyName": "Single Family at Sterling",
+    "propertyAddress": "10270 Sterling Blvd, Cupertino, CA 95014",
+    "propertyCity" : "Cupertino",
+    "propertyState" : "CA",
+    "propertyZip" : "95014",
+    "propertyType" : "Single Family Residence",
+    "propertyCoordinates" : "37.31929682158578, -121.99636066244764",
+    "propertyFeatures" : "What's special | Cozy electric fireplace Fully enclosed sunroom Covered porch Gourmet kitchen High ceilings Quartz countertops Stainless steel appliances | This stunning, newly constructed, single-family residence combines modern design with luxury finishes, encompasses 2,300 sq ft of living space, with a 430 sq ft garage and 180 sq ft covered porch, offering a perfect blend of comfort and sophistication. Main house features 3 bedrooms, 3 bathrooms, total 1800 sq ft, with high ceilings, ranging from 9 ft to 10 ft, and engineered white oak hardwood flooring throughout. Gourmet kitchen outfitted with stainless steel appliances, quartz countertops, an open layout. Living area features a cozy electric fireplace and modern LED lightings, perfect for entertaining. The covered porch offers the flexibility to be converted into a fully enclosed sunroom with additional living space. The attached 500 sq ft ADU features a separate entrance, fully equipped kitchen with stainless steel appliances, has 1 bedroom, 1 bathroom with a bonus laundry room, ideal for guests, in- laws, or rental income. Central heat and air conditioning, owned solar panels, Ring video doorbell and Nest thermostats. Professionally designed front and backyard landscaping. EV charging outlet in garage. Prime location with top-rated schools, Sedgwick Elementary, Hyde Middle, and Cupertino High. Close to Apple campus, easy access to highways and expressways. | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 4 | Bathrooms: 4 | Full bathrooms: 4 | Rooms | Room types: Great Room, Laundry | Bedroom | Features: GroundFloorBedroom, PrimarySuiteRetreat, WalkinCloset | Bathroom | Features: FullonGroundFloor | Dining room | Features: FormalDiningRoom | Family room | Features: KitchenFamilyRoomCombo | Kitchen | Features: IslandwithSink, Pantry | Heating | Forced Air | Cooling | Central Air | Appliances | Included: Range Hood, Microwave, Electric Oven/Range, Refrigerator | Laundry: Upper Floor | Features | High Ceilings | Flooring: Wood | Number of fireplaces: 1 | Fireplace features: Living Room | Interior area | Total structure area: 2,308 | Total interior livable area: 2,308 sqft | Virtual tour | View virtual tour | Property | Parking | Total spaces: 2 | Parking features: Attached | Attached garage spaces: 2 | Features | Stories: 2 | Exterior features: Back Yard, Fenced | Lot | Size: 5,100 sqft | Details | Parcel number: 37524021 | Zoning: R1 | Special conditions: Standard | Construction | Type & style | Home type: SingleFamily | Architectural style: Contemporary | Property subtype: Single Family Residence, | Materials | Foundation: Concrete Perimeter and Slab | Roof: Composition, Metal | Condition | New construction: Yes | Year built: 2024 | Utilities & green energy | Gas: PublicUtilities | Sewer: Public Sewer | Water: Public | Utilities for property: Public Utilities, Water Public, Solar | Community & HOA | Location | Region: Cupertino | Financial & listing details | Price per square foot: $1,299/sqft | Tax assessed value: $2,051,850 | Date on market: 9/25/2024 | Listing agreement: ExclusiveRightToSell | "
+  }
+
+PUT any_company_property_listings_reg/_doc/25
+  {
+    "propertyId": 25, 
+    "propertyName": "Towhhouse at Hillebrant Pl",
+    "propertyAddress": "1777 Hillebrant Pl, Santa Clara, CA 95050",
+    "propertyCity" : "Santa Clara",
+    "propertyState" : "CA",
+    "propertyZip" : "95050",
+    "propertyType" : "Townhouse",
+    "propertyCoordinates" : "37.354042811943955, -121.9576941047695",
+    "propertyFeatures" : "What's special | Rooftop terrace with city views Fitness center with yoga studio Underground parking Electric car charging stations Pet grooming station Concierge service Package receiving room | Luxurious Urban Oasis in Downtown Santa Clara! | Welcome to this stunning corner unit Townhouse in the heart of Santa Clara's vibrant SoMa district. This modern 2-bedroom, 2-bathroom home boasts floor-to-ceiling windows offering breathtaking city views. The gourmet kitchen features top-of-the-line appliances, quartz countertops, and a spacious island perfect for entertaining. The primary suite includes a walk-in closet and a spa-like bathroom with a rainfall shower. Smart home features include Nest thermostats, keyless entry, and automated window treatments. | Located in a LEED-certified building, this property offers an array of amenities including a state-of-the-art fitness center with a yoga studio, a rooftop terrace with panoramic views, and a 24/7 concierge service. Enjoy the convenience of underground parking with electric car charging stations and a dedicated pet grooming area. Minutes away from tech hubs, world-class dining, and cultural attractions. Easy access to public transportation and major freeways. | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 2 | Bathrooms: 2 | Full bathrooms: 2 | Bathroom | Features: DoubleVanity, Shower, Tub | Dining room | Features: OpenFloorPlan | Kitchen | Features: Breakfast Bar, Island, Quartz Countertops | Heating | Central Heat Pump | Cooling | Central Air | Appliances | Included: Dishwasher, Microwave, Refrigerator, Washer, Dryer | Features | Flooring: Hardwood | Interior area | Total interior livable area: 1,250 sqft | Property | Parking | Total spaces: 1 | Parking features: Assigned, Underground, Electric Vehicle Charging | Assigned parking spaces: 1 | Features | Stories: 1 | Details | Parcel number: 3745012 | Zoning: C-3-O | Special conditions: Standard | Construction | Type & style | Home type: Townhouse | Property subtype: Townhouse | Materials | Foundation: Concrete | Roof: Built-up | Condition | New construction: No | Year built: 2018 | Utilities & green energy | Gas: None | Sewer: Public Sewer | Water: Public | Utilities for property: Public Utilities, Water Public | Community & HOA | HOA | Has HOA: Yes | Amenities included: Concierge, Fitness Center, Rooftop Deck, Storage | HOA fee: $875 monthly | Location | Region: Santa Clara | Financial & listing details | Price per square foot: $1,600/sqft | Tax assessed value: $1,875,000 | Date on market: 10/15/2024 | Listing agreement: ExclusiveRightToSell"
+  }
+
+PUT any_company_property_listings_reg/_doc/26
+  {
+    "propertyId": 26, 
+    "propertyName": "Towhhouse at Meadowlark Lane",
+    "propertyAddress": "1677 Meadowlark Ln, Sunnyvale, CA 94087",
+    "propertyCity" : "Sunnyvale",
+    "propertyState" : "CA",
+    "propertyZip" : "94087",
+    "propertyType" : "Townhouse",
+    "propertyCoordinates" : "37.33928275400296, -122.01359820298963",
+    "propertyFeatures" : "What's special | One swimming pool Tennis courts Children play area Gaming room Clubhouse with exercise facility Huge backyard Corner lot | Charming Two-Story End-Unit Townhouse with Expansive Outdoor Spaces, offering an abundance of natural light and a sense of spaciousness. Enjoy a bright and airy living room with vaulted ceilings that seamlessly connect to the L-shaped patio, perfect for relaxing. The large living space features plenty of sunlight and opens directly onto a private balcony.  This unique end-unit benefits from a generous corner lot, providing a HUGE backyard for additional outdoor enjoyment. The property includes central A/C and heating, a private fenced patio, and a 2-car attached side-by-side garage with an additional carport, ensuring ample storage space. Located in the top-rated Cupertino school district, this home is conveniently close to Apple Park, Ranch 99, Safeway and a variety of shops/restaurants. Marina Market, Target, and Whole Foods are just moments away. One of the bedrooms has been converted (without permit) to offer extra space for guests.The expansive community boasts country club-style amenities, including 2 swimming pools, a spa/sauna, playgrounds, tennis courts, a children’s play area, a clubhouse with an exercise facility, and a gaming room. With easy access to major highways (280/101/85), commuting to tech hubs like Google, Amazon, and LinkedIn is a breeze. This is a must-see property with the perfect blend of comfort, convenience, and community amenities! | Facts & features | Interior | Bedrooms & bathrooms | Bedrooms: 2 | Bathrooms: 1 | Full bathrooms: 1 | Main level bathrooms: 1 | Main level bedrooms: 1 | Cooling | Central Air | Appliances | Included: Electric Range | Laundry: In Garage | Features | Balcony, Living Room | Has fireplace: No | Fireplace features: None | Common walls with other units/homes: 1 Common Wall | Interior area | Total interior livable area: 1,062 sqft | Property | Parking | Total spaces: 2 | Parking features: Garage | Attached garage spaces: 2 | Features | Levels: Two | Stories: 2 | Entry location: 1st floor | Pool features: Community | Has view: Yes | View description: None | Lot | Size: 1,686 sqft | Details | Parcel number: 31640010 | Zoning: R1 | Special conditions: Standard | Construction | Type & style | Home type: Townhouse | Property subtype: Townhouse | Attached to another structure: Yes | Condition | New construction: No | Year built: 1973 | Utilities & green energy | Sewer: Public Sewer | Water: Public | Community & HOA | Community | Features: Sidewalks, Street Lights | HOA | Has HOA: Yes | Amenities included: Pool, Spa/Hot Tub, Barbecue, Outdoor Cooking Area, Picnic Area, Playground, Tennis Court(s), Fitness Center, Clubhouse, Billiard Room | HOA fee: $504 monthly | HOA name: Northpoint | Location | Region: Cupertino | Financial & listing details | Price per square foot: $1,195/sqft | Tax assessed value: $1,016,444 | Date on market: 9/4/2024"
+  }
+
+# Step 3:  Now create the destination index that will have vector embeddings in it for propertyFeatures.
+
+PUT any_company_property_listings_dense
+{
+  "mappings": {
+    "properties": {
+      "propertyFeatures_v": { 
+        "type": "dense_vector", 
+        "dims": 1024, 
+        "element_type": "float",
+        "similarity": "cosine" 
+      },
+      "propertyCoordinates": {
+        "type": "geo_point"
+      }
+    }
+  }
+}
+
+# Step 4: Create an Inference Point for Amazon Bedrock Embedding model
+PUT _inference/text_embedding/amazon_bedrock_embedding_model
+{
+    "service": "amazonbedrock",
+    "service_settings": {
+        "access_key": "<replace_with_aws_access_key>",
+        "secret_key": "<replace_with_aws_secret_key>",
+        "region": "us-east-1",
+        "provider": "amazontitan",
+        "model": "amazon.titan-embed-text-v2:0"
+    }
+}
+
+# Step 5: Make sure the inference end point is successfully created.
+GET _inference
+
+# Step 6: Now lets create a pipeline that reads data from propertyFeatures and creates embeddings in to propertyFeatures_v  
+
+PUT _ingest/pipeline/amazon_bedrock_embeddings_pipeline
+{
+  "processors": [
+    {
+      "inference": {
+        "model_id": "amazon_bedrock_embedding_model", 
+        "input_output": { 
+          "input_field": "propertyFeatures",
+          "output_field": "propertyFeatures_v"
+        }
+      }
+    }
+  ]
+}
+
+# Step 7: Now lets re-index
+
+POST _reindex?wait_for_completion=false
+{
+  "source": {
+    "index": "any_company_property_listings_reg",
+    "size": 50 
+  },
+  "dest": {
+    "index": "any_company_property_listings_dense",
+    "pipeline": "amazon_bedrock_embeddings_pipeline"
+  }
+}
+
+# Step 8: Check the status of your reindexing task.
+GET _tasks/<task_id>
+
+
+# Now lets run a few queries.
+
+GET any_company_property_listings_dense/_search
+{
+  "knn": {
+    "field": "propertyFeatures_v",
+    "query_vector_builder": {
+      "text_embedding": {
+        "model_id": "amazon_bedrock_embedding_model",
+        "model_text": "has swimming pool access"
+      }
+    },
+    "k": 3,
+    "num_candidates": 100
+  },
+  "_source": [
+    "propertyId",
+    "propertyName",
+    "propertyAddress",
+    "propertyFeatures"
+  ]
+}
+
+
+# Hybrid Query
+GET any_company_property_listings_dense/_search
+{
+  "knn": {
+    "field": "propertyFeatures_v",
+    "query_vector_builder": {
+      "text_embedding": {
+        "model_id": "amazon_bedrock_embedding_model",
+        "model_text": "has swimming pool access"
+      }
+    },
+    "k": 3,
+    "num_candidates": 100,
+      "filter": {
+        "geo_distance": {
+          "distance": "6mi",  
+          "propertyCoordinates": {
+            "lat": "33.13751770365218", "lon": "-96.8700661751898"
+          }
+        }
+      }
+  },
+  "_source": [
+    "propertyId",
+    "propertyName",
+    "propertyAddress"
+  ]
+}
+
+
+# Another one
+GET any_company_property_listings_dense/_search
+{
+  "query": {
+    "match": {
+      "propertyType": "Townhouse"
+    }
+  },
+  "knn": {
+    "field": "propertyFeatures_v",
+    "query_vector_builder": {
+      "text_embedding": {
+        "model_id": "amazon_bedrock_embedding_model",
+        "model_text": "has swimming pool access"
+      }
+    },
+    "k": 3,
+    "num_candidates": 100,
+      "filter": {
+        "geo_distance": {
+          "distance": "6mi",  
+          "propertyCoordinates": {
+            "lat": "33.13751770365218", "lon": "-96.8700661751898"
+          }
+        }
+      }
+  },
+  "_source": [
+    "propertyId",
+    "propertyName",
+    "propertyType", 
+    "propertyAddress"
+  ]
+}
+
+## RRF Hybrid Query
+GET any_company_property_listings_dense/_search
+{
+  "query" : {
+    "match" : {
+      "propertyType": "Townhouse"
+    }
+  },//end-query
+  "knn" :[ 
+    {
+      "field": "propertyFeatures_v",
+      "query_vector_builder": {
+        "text_embedding": {
+          "model_id": "amazon_bedrock_embedding_model",
+          "model_text": "has swimming pool access"
+        }
+      },
+      "k" : 3,
+      "num_candidates" : 100,
+      "filter": {
+        "geo_distance": {
+          "distance": "6mi",  
+          "propertyCoordinates": {
+            "lat": "33.13751770365218", "lon": "-96.8700661751898"
+          }
+        }
+      }
+    }
+  ],
+  "rank" : {
+    "rrf":{}
+  },
+  "_source": [
+    "propertyId",
+    "propertyName",
+    "propertyType", 
+    "propertyAddress"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "event_type": { "type": "string" },
+      "trade_id": { "type": "string" },
+      "symbol": { "type": "string" },
+      "stampedtime": { "type": "string" },
+      "price": { "type": "number" },
+      "quantity": { "type": "integer" },
+      "side": { "type": "string", "enum": ["buy", "sell"] },
+      "order_type": { "type": "string" },
+      "trader_id": { "type": "string" },
+      "execution_venue": { "type": "string" }
+    },
+    "required": ["event_type", "trade_id", "symbol", "timestamp", "price", "quantity", "side", "order_type", "trader_id", "execution_venue"]
+  }

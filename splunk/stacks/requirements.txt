@@ -1,0 +1,9 @@
+aws-cdk-lib
+cdk-nag>=2.10.0
+constructs>=10.0.0,<11.0.0
+requests
+splunk_sdk
+opensearch-py
+requests_aws4auth
+boto3
+aws-lambda-powertools

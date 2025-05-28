@@ -1,0 +1,56 @@
+# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - awsAccessKeyId
+      - awsSecretAccessKey
+      - awsRegion
+      - senderEmail
+      - replyToEmails
+    properties:
+      awsAccessKeyId:
+        type: string
+        description: AWS SES Access Key ID
+      awsSecretAccessKey:
+        type: string
+        description: AWS SES Secret Access Key
+      awsRegion:
+        type: string
+        description: AWS Region for SES
+      senderEmail:
+        type: string
+        description: Verified sender email address
+      replyToEmails:
+        type: string
+        description: Comma-separated reply-to email addresses
+  commandFunction:
+    # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
+    |-
+    (config) => ({
+      command: 'node',
+      args: [
+        'build/index.js',
+        `--aws-access-key-id=${config.awsAccessKeyId}`,
+        `--aws-secret-access-key=${config.awsSecretAccessKey}`,
+        `--aws-region=${config.awsRegion}`,
+        `--sender=${config.senderEmail}`,
+        `--reply-to=${config.replyToEmails}`
+      ],
+      env: {
+        AWS_ACCESS_KEY_ID: config.awsAccessKeyId,
+        AWS_SECRET_ACCESS_KEY: config.awsSecretAccessKey,
+        AWS_REGION: config.awsRegion,
+        SENDER_EMAIL_ADDRESS: config.senderEmail,
+        REPLY_TO_EMAIL_ADDRESSES: config.replyToEmails
+      }
+    })
+  exampleConfig:
+    awsAccessKeyId: AKIAEXAMPLE
+    awsSecretAccessKey: secretExampleKey
+    awsRegion: us-east-1
+    senderEmail: verified@example.com
+    replyToEmails: reply@example.com

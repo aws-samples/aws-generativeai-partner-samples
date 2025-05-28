@@ -1,0 +1,8 @@
+elasticsearch==8.15.1
+aiohttp
+httpx
+mcp[cli]
+boto3
+dotenv
+strands-agents
+strands-agents-tools

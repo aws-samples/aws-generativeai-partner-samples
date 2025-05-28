@@ -1,0 +1,22 @@
+{
+  "function": "search_aws_sourcetypes",
+  "parameters": [
+    {
+      "name": "awssourcetype",
+      "type": "string",
+      "value": "aws:vpc:flowlogs"
+    }
+  ],
+  "sessionId": "078209247224622",
+  "agent": {
+    "name": "saas-acs-bedrock-agent",
+    "version": "1",
+    "id": "LUG8BNETRW",
+    "alias": "J0LQLYOL2N"
+  },
+  "actionGroup": "actionGroupName",
+  "sessionAttributes": {},
+  "promptSessionAttributes": {},
+  "inputText": "Can you write and execute SPL to query VPC Flow logs, in index     kdf_vpc_flow_logs, for top 10 IP list targetting ssh port and getting     traffic rejected.",
+  "messageVersion": "1.0"
+}

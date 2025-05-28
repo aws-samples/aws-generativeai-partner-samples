@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elastic and AWS Q&A Chatbot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <header class="bg-gradient-to-r from-blue-700 to-purple-700 text-white py-4 px-4 shadow-lg">
+        <div class="container mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="pulse-animation">
+                    <img src="https://brand.elastic.co/uploads/YxRMVgeFNJEJwq5hrXY96A.png" alt="Elastic Logo" width="64" height="64">
+                </div>
+                <h1 class="text-xl font-bold">Elastic + AWS Q&A Chatbot</h1>
+            </div>
+            <div class="flex items-center space-x-2 bg-white/20 px-3 py-1 rounded-full">
+                <i class="fab fa-aws text-yellow-300"></i>
+                <span class="text-sm font-medium">Powered by AWS & Elasticsearch</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 container mx-auto py-6 px-4 flex flex-col">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-gray-800 text-white py-3 text-center text-sm">
+        <p>Q&A Chatbot &copy; {{ now().year }} - Elasticsearch + AWS Bedrock </p>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

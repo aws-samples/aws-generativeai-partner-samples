@@ -1,0 +1,5 @@
+requests
+splunk_sdk
+opensearch-py
+requests_aws4auth
+botocore

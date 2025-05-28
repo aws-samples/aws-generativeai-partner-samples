@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "event_type": { "type": "string" },
+      "symbol": { "type": "string" },
+      "stampedtime": { "type": "string" },
+      "price": { "type": "number" },
+      "volume": { "type": "integer" },
+      "bid": { "type": "number" },
+      "ask": { "type": "number" },
+      "exchange": { "type": "string" },
+      "volatility": { "type": "number" }
+    },
+    "required": ["event_type", "symbol", "timestamp", "price", "volume", "bid", "ask", "exchange", "volatility"]
+  }

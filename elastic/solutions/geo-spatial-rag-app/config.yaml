@@ -1,0 +1,4 @@
+#Example settings. Please edit this file to reflect your Elastic Search endpoints.
+cloud_id: SomeDeployment:dXMtZWFzdC0xLmF3cy5mb3VuZC5pbyRiZWZmMTljZDdjMTQ0YzlmYjc3MWQzMjZjNjRiMWM4Ndfdfd343yQwNTEwOTBiYTlkNzQ0ZDYyOTU1ZTkzMjJmZmNjYTAzMw==
+cloud_api_key: some_cloud_api_key_like-elo5anc1RUI1Sm9wUklaYW5IX3A6ZndfdfdfdfdRpV2oxVVNRNE9NQU44VGljTFFSdw==
+index_name: some_index_name
