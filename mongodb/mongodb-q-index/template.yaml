@@ -1,0 +1,78 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Q Index MongoDB Integration with LangChain
+
+Parameters:
+  MongoDBSecretName:
+    Type: String
+    Description: Name of the secret in AWS Secrets Manager that contains the MongoDB URI
+    Default: MONGODB_URI
+
+  MongoDBDatabase:
+    Type: String
+    Description: MongoDB database name
+    Default: travel
+
+  MongoDBCollection:
+    Type: String
+    Description: MongoDB collection name
+    Default: asia
+
+  QBusinessAppId:
+    Type: String
+    Description: Q Business application ID
+
+  QBusinessRetrieverId:
+    Type: String
+    Description: Q Business retriever ID
+
+  BedrockModelId:
+    Type: String
+    Description: Bedrock model ID for embeddings and text generation
+    Default: anthropic.claude-3-sonnet-20240229-v1:0
+
+Resources:
+  QIndexMongoDBIntegrationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: QIndexMongoDBIntegration
+      CodeUri: ./lambda/
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.9
+      Timeout: 60
+      MemorySize: 256
+      Environment:
+        Variables:
+          MONGODB_SECRET_NAME: !Ref MongoDBSecretName
+          MONGODB_DATABASE: !Ref MongoDBDatabase
+          MONGODB_COLLECTION: !Ref MongoDBCollection
+          Q_BUSINESS_APP_ID: !Ref QBusinessAppId
+          Q_BUSINESS_RETRIEVER_ID: !Ref QBusinessRetrieverId
+          LLM_MODEL_ID: !Ref BedrockModelId
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - qbusiness:*
+              Resource:
+                - !Sub "arn:aws:qbusiness:${AWS::Region}:${AWS::AccountId}:application/${QBusinessAppId}"
+                - !Sub "arn:aws:qbusiness:${AWS::Region}:${AWS::AccountId}:application/${QBusinessAppId}/retriever/*"
+                - !Sub "arn:aws:qbusiness:${AWS::Region}:${AWS::AccountId}:application/${QBusinessAppId}/index/*"
+            - Effect: Allow
+              Action: bedrock:InvokeModel
+              Resource: "*"
+            - Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource:
+                - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${MongoDBSecretName}-*"
+
+Outputs:
+  QIndexMongoDBIntegrationFunction:
+    Description: "Q Index MongoDB Integration Lambda Function ARN"
+    Value: !GetAtt QIndexMongoDBIntegrationFunction.Arn
+  QIndexMongoDBIntegrationFunctionIamRole:
+    Description: "Implicit IAM Role created for the function"
+    Value: !GetAtt QIndexMongoDBIntegrationFunctionRole.Arn

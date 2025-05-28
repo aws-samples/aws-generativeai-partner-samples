@@ -1,0 +1,108 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudFormation template for Q Business App with Q Index for Countries Data'
+
+Parameters:
+  Environment:
+    Type: String
+    Description: Environment name (e.g., dev, prod)
+    Default: dev
+    AllowedValues:
+      - dev
+      - staging
+      - prod
+  
+  BucketNamePrefix:
+    Type: String
+    Description: Prefix for the S3 bucket name
+    Default: qindex-countries
+  
+  ApplicationNamePrefix:
+    Type: String
+    Description: Prefix for the Q Business application name
+    Default: CountriesKB
+  
+  DataSourcePrefix:
+    Type: String
+    Description: Prefix for the data source name
+    Default: Countries
+  
+  RetrieverPrefix:
+    Type: String
+    Description: Prefix for the Q Index retriever name
+    Default: Countries
+
+Resources:
+  # IAM Role for Q Business
+  QBusinessServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: qbusiness.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonQFullAccess
+      Policies:
+        - PolicyName: QBusinessS3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:ListBucket
+                Resource:
+                  - !Sub arn:aws:s3:::${BucketName}
+                  - !Sub arn:aws:s3:::${BucketName}/*
+
+  # S3 Bucket for Countries Data
+  CountriesDataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${BucketNamePrefix}-${Environment}-${AWS::Region}-${AWS::AccountId}
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  # S3 Bucket Policy
+  CountriesDataBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref CountriesDataBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !GetAtt QBusinessServiceRole.Arn
+            Action:
+              - s3:GetObject
+              - s3:ListBucket
+            Resource:
+              - !Sub arn:aws:s3:::${CountriesDataBucket}
+              - !Sub arn:aws:s3:::${CountriesDataBucket}/*
+
+Outputs:
+  BucketName:
+    Description: Name of the S3 bucket containing countries data
+    Value: !Ref CountriesDataBucket
+    Export:
+      Name: !Sub ${AWS::StackName}-BucketName
+  
+  BucketArn:
+    Description: ARN of the S3 bucket
+    Value: !GetAtt CountriesDataBucket.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-BucketArn
+  
+  QBusinessServiceRoleArn:
+    Description: ARN of the Q Business service role
+    Value: !GetAtt QBusinessServiceRole.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-QBusinessServiceRoleArn
