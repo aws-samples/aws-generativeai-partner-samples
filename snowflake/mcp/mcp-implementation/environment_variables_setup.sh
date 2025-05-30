@@ -49,37 +49,15 @@ read -p "Sender Email Address: " sender_email
 read -p "Reply-To Email Addresses (comma-separated, default: same as sender): " reply_to_email
 reply_to_email=${reply_to_email:-$sender_email}
 
-read -p "Amazon SES MCP Server Absolute Path (path to aws-ses-mcp/build/index.js file, default: /home/ec2-user/aws-generativeai-partner-samples/elastic/mcp/official-elastic-mcp-server-demo/mcp-servers/aws-ses-mcp/build/index.js):" aws_ses_mcp_path
-default_aws_ses_mcp_path="/home/ec2-user/aws-generativeai-partner-samples/elastic/mcp/official-elastic-mcp-server-demo/mcp-servers/aws-ses-mcp/build/index.js"
-aws_ses_mcp_path=${aws_ses_mcp_path:-$default_aws_ses_mcp_path}
-
 update_env_var "SENDER_EMAIL_ADDRESS" "$sender_email"
 update_env_var "REPLY_TO_EMAIL_ADDRESSES" "$reply_to_email"
 update_env_var "AWS_SES_MCP_SERVER_PATH" "$aws_ses_mcp_path"
-
-
-# # Weather MCP Server Configuration
-# read -p "Weather MCP Server Script Absolute Path (path to mcp-servers/weather/weather.py, default: /home/ec2-user/aws-generativeai-partner-samples/elastic/mcp/official-elastic-mcp-server-demo/mcp-servers/weather/weather.py):" weather_mcp_server_script_path
-# default_weather_mcp_server_script_path="/home/ec2-user/aws-generativeai-partner-samples/elastic/mcp/official-elastic-mcp-server-demo/mcp-servers/weather/weather.py"
-# weather_mcp_server_script_path=${weather_mcp_server_script_path:-$default_weather_mcp_server_script_path}
-# update_env_var "WEATHER_MCP_SERVER_SCRIPT_PATH" "$weather_mcp_server_script_path"
 
 # Snowflake MCP Server Configuration
 read -p "Snowflake MCP Server Script Absolute Path (path to mcp-servers/mcp-snowflake-server/src/server.py, default: /path/aws-generativeai-partner-samples/snowflake/mcp/mcp-implementation/mcp-servers/mcp-snowflake-server/src/mcp_snowflake_server/server.py):" snowflake_mcp_server_script_path
 default_snowflake_mcp_server_script_path="/path/aws-generativeai-partner-samples/snowflake/mcp/mcp-implementation/mcp-servers/mcp-snowflake-server/src/mcp_snowflake_server/server.py"
 snowflake_mcp_server_script_path=${snowflake_mcp_server_script_path:-$default_snowflake_mcp_server_script_path}
 update_env_var "SNOWFLAKE_MCP_SERVER_SCRIPT_PATH" "$snowflake_mcp_server_script_path"
-
-# # Elasticsearch Configuration
-# echo -e "\n=== Elasticsearch Configuration ==="
-# read -p "Elasticsearch URL: " es_url
-# read -p "Elasticsearch Cloud ID: " es_cloud_id
-# read -p "Elasticsearch API Key: " es_api_key
-
-# update_env_var "ES_URL" "$es_url"
-# update_env_var "ES_CLOUD_ID" "$es_cloud_id"
-# update_env_var "ES_API_KEY" "$es_api_key"
-
 
 echo -e "\n=== Configuration Complete ==="
 echo "All environment variables have been updated in the .env file."
