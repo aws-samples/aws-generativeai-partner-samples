@@ -55,7 +55,9 @@ Currently we are using Custom Snowflake MCP Server pre-packaged in the mcp-serve
 
 Go ahead and run the application. You are supplying the Snowflake MCP server path as an argument.
 
+```bash
 python mcp-clients/fraud_analytics.py mcp-servers/mcp_snowflake_server/src/mcp_snowflake_server/server_run.py
+```
 
 Sample Queries to ask
 - you are an analyst detecting fraud transactions based on data in tables in Snowflake database. Can you list fradulent transactions?
