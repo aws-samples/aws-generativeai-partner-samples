@@ -107,7 +107,7 @@ async def main():
     custom_tool = [
         send_email
     ]
-    MODEL_ID = "us.anthropic.claude-3-5-sonnet-20241022-v2:0" # Using Claude 3.5 Sonnet
+    MODEL_ID = "us.anthropic.claude-3-7-sonnet-20250219-v1:0" # Using Claude 3.5 Sonnet
     
     model = BedrockModel (
         model_id=MODEL_ID,
