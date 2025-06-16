@@ -44,6 +44,8 @@ Demonstrates how to instrument Amazon Bedrock API calls with Datadog's APM to tr
 
 Shows how to implement observability for Bedrock Agents, including custom metrics for agent performance and tracing for agent actions.
 
+- [Simple Bedrock Agent with Datadog](https://github.com/jasonmimick-aws/simple-bedrock-agent-datadog) - A reference implementation demonstrating how to instrument Amazon Bedrock Agents with Datadog observability, providing insights into agent performance, latency, and behavior.
+
 ### MCP Integration with Datadog
 
 Examples of monitoring Model Context Protocol applications with Datadog, including distributed tracing across MCP server boundaries.
