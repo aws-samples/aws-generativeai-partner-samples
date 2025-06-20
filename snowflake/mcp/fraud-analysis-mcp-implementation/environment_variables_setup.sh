@@ -65,8 +65,8 @@ update_env_var "AWS_SES_MCP_SERVER_PATH" "$aws_ses_mcp_path"
 # update_env_var "WEATHER_MCP_SERVER_SCRIPT_PATH" "$weather_mcp_server_script_path"
 
 # Snowflake MCP Server Configuration
-read -p "Snowflake MCP Server Script Absolute Path (path to mcp-servers/mcp-snowflake-server/src/server.py, default: /Users/nidhigva/git/aws-generativeai-partner-samples/snowflake/mcp/mcp-implementation/mcp-servers/mcp-snowflake-server/src/mcp_snowflake_server/server.py):" snowflake_mcp_server_script_path
-default_snowflake_mcp_server_script_path="/Users/nidhigva/git/aws-generativeai-partner-samples/snowflake/mcp/mcp-implementation/mcp-servers/mcp-snowflake-server/src/mcp_snowflake_server/server.py"
+read -p "Snowflake MCP Server Script Absolute Path (path to mcp-servers/mcp-snowflake-server/src/server.py, default: /Users/nidhigva/git/aws-generativeai-partner-samples/snowflake/mcp/fraud-analysis-mcp-implementation/mcp-servers/mcp-snowflake-server/src/mcp_snowflake_server/server.py):" snowflake_mcp_server_script_path
+default_snowflake_mcp_server_script_path="/Users/nidhigva/git/aws-generativeai-partner-samples/snowflake/mcp/fraud-analysis-mcp-implementation/mcp-servers/mcp-snowflake-server/src/mcp_snowflake_server/server.py"
 snowflake_mcp_server_script_path=${snowflake_mcp_server_script_path:-$default_snowflake_mcp_server_script_path}
 update_env_var "SNOWFLAKE_MCP_SERVER_SCRIPT_PATH" "$snowflake_mcp_server_script_path"
 
