@@ -1,0 +1,8 @@
+aiohttp
+httpx
+mcp[cli]
+boto3
+dotenv
+pyyaml
+strands-agents
+strands-agents-tools
