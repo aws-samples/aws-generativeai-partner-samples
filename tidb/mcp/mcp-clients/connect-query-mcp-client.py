@@ -15,7 +15,7 @@ async def main():
             env={
                 "TIDB_HOST": os.getenv("TIDB_HOST", "gateway01.us-west-2.prod.aws.tidbcloud.com"),
                 "TIDB_PORT": os.getenv("TIDB_PORT", "4000"),
-                "TIDB_USERNAME": os.getenv("TIDB_USERNAME", "xxx.root"),
+                "TIDB_USERNAME": os.getenv("TIDB_USERNAME", "xxx"),
                 "TIDB_PASSWORD": os.getenv("TIDB_PASSWORD", "yyyy"),
                 "TIDB_DATABASE": os.getenv("TIDB_DATABASE", "test")
            }
