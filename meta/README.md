@@ -2,6 +2,7 @@
 # Meta's LLaMA Models on AWS
 
 This project includes sample notebooks that demonstrate how to use Meta's LLaMA models via Amazon Bedrock for natural language tasks such as question answering and PDF interaction. It leverages Bedrock, S3 and SageMaker Studio for development and execution.
+
 ---
 
 ## Sample Notebooks
