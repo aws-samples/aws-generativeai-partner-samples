@@ -1,5 +1,5 @@
 
-# Meta's LLaMA Models on AWS
+# Meta's Llama Models on AWS
 
 This project includes sample notebooks that demonstrate how to use Meta's LLaMA models via Amazon Bedrock for natural language tasks such as question answering and PDF interaction. It leverages Bedrock, S3 and SageMaker Studio for development and execution.
 
@@ -10,7 +10,7 @@ This project includes sample notebooks that demonstrate how to use Meta's LLaMA 
 | Notebook             | Description |
 |----------------------|-------------|
 | [`rag-chatbot.ipynb`](samples/rag-chatbot.ipynb) | Demonstrates how to build a simple RAG (Retrieval-Augmented Generation) chatbot using Meta's LLM via Amazon Bedrock, with documents stored in Amazon S3 and vector embeddings generated using Amazon Titan. Uses **LangChain** for document loading, embedding, and retrieval logic. |
-| [`summarize-pdf.ipynb`](samples/summarize-pdf.ipynb) | Shows how to use Meta's LLaMA 3 model via Amazon Bedrock to summarize content extracted from a PDF document.  |
+| [`summarize-pdf.ipynb`](samples/summarize-pdf.ipynb) | Shows how to use Meta's Llama 3 model via Amazon Bedrock to summarize content extracted from a PDF document.  |
 
 ---
 
