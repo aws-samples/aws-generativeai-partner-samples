@@ -305,12 +305,9 @@ def connect_to_elasticsearch(args):
         load_dotenv()
         es_api_key = os.getenv("ES_API_KEY")
         es_url = os.getenv("ES_URL")
-        
-        #not needed for serverless
         #es_cloud_id = os.getenv("ES_CLOUD_ID")
-        
         if es_api_key and es_url:
-            print("Connecting to Elasticsearch Cloud...")
+            print("Connecting to Elasticsearch Serverless...")
             return Elasticsearch(hosts=[es_url],
             api_key=es_api_key,
             verify_certs=True,

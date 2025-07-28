@@ -114,23 +114,34 @@ python3 --version
 ### Elasticsearch Setup
 
 Sign up for Elastic Cloud (Serverless offering) on AWS using the free trial [here](https://cloud.elastic.co/registration?fromURI=%2Fhome). 
+Please note, if you want to use Elastic cloud deployment , you choose to setup Elastic cloud deployment as the deployment type. The snapshots below covers serverless deployment only
+
 
 After signing up with your email. Select Elastic search as the use case
+
 ![After signup](static/Elastic-signup1.png)
  
 Select Elastic cloud serverless as the deployement type
+
 ![Step2](static/Elastic-signup2.png)
 
 Select AWS for cloud and us-west-2 for region
+
 ![Step3](static/Elastic-signup3.png)
 
 Select General purpose as the configuration
+
 ![Step4](static/Elastic-signup4.png)
 
 Wait for the project to be created. Skip creating Index 
+
 ![Step5](static/Elastic-signup5.png)
 
 Note the following details to connect to Elastic Cloud from your application.
+
+For elastic cloud deployment type you can find endpoint URL and API key as shown below
+
+![ElasticCloud](static/Elastic-signup6.png)
 
 - Elasticsearch endpoint URL
 - Elasticsearch API key
@@ -139,6 +150,7 @@ Note the following details to connect to Elastic Cloud from your application.
         ES_URL=your-elasticsearch-url 
         ES_API_KEY=your-api-key
 ```
+
 
 ### Set Up Python Environment & install Python dependencies
 
