@@ -89,14 +89,14 @@ cd aws-generativeai-partner-samples/elastic/mcp/official-elastic-mcp-server-demo
 # Set environment variables (temporary)
 export AWS_ACCESS_KEY_ID=your_access_key_id
 export AWS_SECRET_ACCESS_KEY=your_secret_access_key
-export AWS_REGION=us-east-1
+export AWS_REGION=us-west-2
 
 # Or configure AWS CLI (permanent)
 aws configure
 ```
 
 ### Install Dependencies
-If you are not running Python3.10+, here is how you can upgrade for Amazon Linux as an example:
+validate Python version. if you are not running Python3.10+, here is how you can upgrade for Amazon Linux as an example:
 
 ```bash
 sudo dnf upgrade --releasever=2023.7.20250331
@@ -113,10 +113,37 @@ python3 --version
 
 ### Elasticsearch Setup
 
-Setup Elastic Cloud on AWS using the free trial [here](https://cloud.elastic.co/registration?fromURI=%2Fhome).
+Sign up for Elastic Cloud (Serverless offering) on AWS using the free trial [here](https://cloud.elastic.co/registration?fromURI=%2Fhome). 
+Please note, if you want to use Elastic cloud deployment , you choose to setup Elastic cloud deployment as the deployment type. The snapshots below covers serverless deployment only
+
+
+After signing up with your email. Select Elastic search as the use case
+
+![After signup](static/Elastic-signup1.png)
+ 
+Select Elastic cloud serverless as the deployement type
+
+![Step2](static/Elastic-signup2.png)
+
+Select AWS for cloud and us-west-2 for region
+
+![Step3](static/Elastic-signup3.png)
+
+Select General purpose as the configuration
+
+![Step4](static/Elastic-signup4.png)
+
+Wait for the project to be created. Skip creating Index 
+
+![Step5](static/Elastic-signup5.png)
+
 Note the following details to connect to Elastic Cloud from your application.
 
-- Elasticsearch deployment (cloud or local)
+For elastic cloud deployment type you can find endpoint URL and API key as shown below
+
+![ElasticCloud](static/Elastic-signup6.png)
+
+- Elasticsearch endpoint URL
 - Elasticsearch API key
 - In the next step (not now) you will create .env file. Please make a note of the following credentials that you will use in the next step :
 ```    
@@ -124,11 +151,13 @@ Note the following details to connect to Elastic Cloud from your application.
         ES_API_KEY=your-api-key
 ```
 
+
 ### Set Up Python Environment & install Python dependencies
 
 ```bash
-# install uv
+# ensure you are in /official-elastic-mcp-server-demo directory, if not then change directory by using following command
 cd aws-generativeai-partner-samples/elastic/mcp/official-elastic-mcp-server-demo
+# install uv
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Create a new environment
@@ -143,23 +172,11 @@ source elastic-mcp-official-env/bin/activate  # On Unix/Mac
 uv pip install -r requirements.txt
 ```
 
-### Set Up Environment Variables
-
-Run the script `environment_variables_setup.sh` to setup `.env` file with the following credentials:
-- Confluent Cloud credentials
-- Elasticsearch credentials
-- AWS credentials (for Bedrock access)
-
-Make the script executable by adding execute permissions:
-```
-chmod +x environment_variables_setup.sh
-./environment_variables_setup.sh
-```
 ### Setup MCP Servers
 There are 3 MCP servers needed for this app.
-- Official MCP Server from Elastic: There are no additional steps needed to configure and run this. During runtime of this application, the MCP server is automatically downloaded and run.
-- Weather MCP Server: Again, no additional steps needed. Its already pre-packaged in the `mcp-servers\weather` folder. While setting up the environment variables using the `environment_variables_setup.sh` script, give the absolute path to the `mcp-servers\weather\weather.py` script.
-- Amazon SES MCP Server: In the `mcp-servers\aws-ses-mcp` folder, you have all the bits to run the MCP server. However it requires following configurations:
+- Official MCP Server from Elastic. This is the official MCP server implementation that connects AI agents to Elasticsearch clusters. It provides standardized methods for search operations, index management, and data retrieval. This server enables the agent to query hotel data, search destinations, and retrieve travel information efficiently from our Elasticsearch deployment. There are no additional steps needed to configure and run this. During runtime of this application, the MCP server is automatically downloaded and run. 
+- Weather MCP Server: A custom MCP server implementation that integrates with Weather.gov APIs to provide weather data and forecasting capabilities. Weather.gov is the official weather service of the United States government, providing reliable meteorological data. The agent uses this to analyze weather patterns and recommend optimal travel dates. This service currently works only for US and no other country is supported. No additional steps needed for setup. Its already pre-packaged in the `mcp-servers\weather` folder. While setting up the environment variables using the `environment_variables_setup.sh` script (next step below), give the absolute path to the `mcp-servers\weather\weather.py` script.
+- Amazon SES MCP Server: Amazon Simple Email Service (SES) is AWS's cloud-based email sending service designed for marketers and application developers. This MCP server provides email functionality that enables the agent to send confirmations and updates, completing the workflow by delivering booking details and travel information to users.In the `mcp-servers\aws-ses-mcp` folder, you have all the bits to run the MCP server. However it requires following configurations:
 
 ```
 cd mcp-servers/aws-ses-mcp/
@@ -167,9 +184,21 @@ npm install
 npm run build
 ```
 
+### Set Up Environment Variables
+
+Run the script `environment_variables_setup.sh` to setup `.env` file with the following credentials:
+- Elasticsearch credentials
+- AWS credentials (for Bedrock access)
+
+Ensure you are in 'aws-generativeai-partner-samples/elastic/mcp/official-elastic-mcp-server-demo' directory. Locate the script 'environment_variables_setup.s.  Make the script executable by adding execute permissions (if running this setup on local machine and not on ec2, please do double check the MCP Server absolute paths, he default paths are configured for ec2):
+```
+chmod +x environment_variables_setup.sh
+./environment_variables_setup.sh
+```
+
 
 ### Data Loading
-1. Generate destination and travel data:
+1. Go to 'aws-generativeai-partner-samples/elastic/mcp/official-elastic-mcp-server-demo/data' directory. Generate destination and travel data. The first 2 commands will generate data locally and you can view how the sample data looks like and next commnads will laod the data in Elastic search index:
    ```
    python generate_data.py --save-json
    ```
@@ -186,11 +215,10 @@ npm run build
    ```
 
 ## Running the Application
-Go ahead and run the application. You are supplying the weather MCP server path as an argument. There is no need to run Elasticsearch MCP server locally as you are directly using the official MCP server.
+Go ahead and run the application. Go to the directory 'aws-generativeai-partner-samples/elastic/mcp/official-elastic-mcp-server-demo/mcp-clients'. You are supplying the weather MCP server path as an argument. There is no need to run Elasticsearch MCP server locally as you are directly using the official MCP server.
 
 ```bash
-cd mcp-clients
-python multi_server_client_travel_analytics.py ../mcp-servers/weather/weather.py
+python multi_server_mcp_client_travel_reservations.py ../mcp-servers/weather/weather.py
 ```
 
 #### Sample Queries to ask
@@ -241,9 +269,23 @@ This project demonstrates how to create MCP-compliant servers for data retrieval
 
 The application now includes functionality to clean up Elasticsearch indices before loading new data:
 
+
+### Cleaning Up User-Related Indices
+
+Go to 'aws-generativeai-partner-samples/elastic/mcp/official-elastic-mcp-server-demo/data' directory. To delete only user-related indices before loading user data:
+```
+python generate_user_data.py --cleanup --load-es
+```
+
+To only delete user-related indices without loading new data:
+```
+python generate_user_data.py --delete-indices
+```
+Note that you should not delete non user-related data before deleting user-related data as there is some data dependencies. 
+
 ### Cleaning Up All Indices
 
-To delete all indices before loading new data:
+Go to 'aws-generativeai-partner-samples/elastic/mcp/official-elastic-mcp-server-demo/data' directory. To delete all indices before loading new data:
 ```
 python generate_data.py --cleanup --load-es
 ```
@@ -253,14 +295,3 @@ To only delete all indices without loading new data:
 python generate_data.py --delete-indices
 ```
 
-### Cleaning Up User-Related Indices
-
-To delete only user-related indices before loading user data:
-```
-python generate_user_data.py --cleanup --load-es
-```
-
-To only delete user-related indices without loading new data:
-```
-python generate_user_data.py --delete-indices
-```

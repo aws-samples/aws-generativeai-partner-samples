@@ -709,17 +709,22 @@ def connect_to_elasticsearch(args):
         # Try to load environment variables for cloud connection
         load_dotenv()
         es_api_key = os.getenv("ES_API_KEY")
-        es_cloud_id = os.getenv("ES_CLOUD_ID")
-        
-        if es_api_key and es_cloud_id:
+        es_url = os.getenv("ES_URL")
+        #es_cloud_id = os.getenv("ES_CLOUD_ID")
+        if es_api_key and es_url:
             print("Connecting to Elasticsearch Cloud...")
-            return Elasticsearch(cloud_id=es_cloud_id, api_key=es_api_key)
+            return Elasticsearch(hosts=[es_url],
+            api_key=es_api_key,
+            verify_certs=True,
+            request_timeout=30)
         else:
             print(f"Connecting to Elasticsearch at {args.es_host}:{args.es_port}...")
             return Elasticsearch([{'host': args.es_host, 'port': args.es_port, 'scheme': 'http'}])
     except Exception as e:
         print(f"Error connecting to Elasticsearch: {e}")
         return None
+
+
 
 def main():
     parser = argparse.ArgumentParser(description='Generate synthetic travel data for Elasticsearch')
@@ -744,6 +749,11 @@ def main():
         if es is None:
             print("Failed to connect to Elasticsearch. Exiting.")
             return
+        else:
+            info = es.info()
+            print("✅ Successfully connected to Elastic Cloud Serverless")
+            print(f"Cluster name: {info['cluster_name']}")
+            print(f"Version: {info['version']['number']}")
         
         # Delete indices if requested
         if args.cleanup or args.delete_indices:
@@ -779,6 +789,11 @@ def main():
             if es is None:
                 print("Failed to connect to Elasticsearch. Exiting.")
                 return
+            else:
+                info = es.info()
+                print("✅ Successfully connected to Elastic Cloud Serverless")
+                print(f"Cluster name: {info['cluster_name']}")
+                print(f"Version: {info['version']['number']}")
         
         # Create indices
         create_index(es, 'destinations', schemas['destinations'])

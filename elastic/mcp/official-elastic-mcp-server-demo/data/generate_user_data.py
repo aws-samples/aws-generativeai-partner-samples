@@ -298,6 +298,28 @@ def save_to_json(data, filename):
         json.dump(data, f, indent=2)
     print(f"Saved data to {filename}")
 
+def connect_to_elasticsearch(args):
+    """Connect to Elasticsearch using either local connection or cloud credentials."""
+    try:
+        # Try to load environment variables for cloud connection
+        load_dotenv()
+        es_api_key = os.getenv("ES_API_KEY")
+        es_url = os.getenv("ES_URL")
+        #es_cloud_id = os.getenv("ES_CLOUD_ID")
+        if es_api_key and es_url:
+            print("Connecting to Elasticsearch Serverless...")
+            return Elasticsearch(hosts=[es_url],
+            api_key=es_api_key,
+            verify_certs=True,
+            request_timeout=30)
+            
+        else:
+            print(f"Connecting to Elasticsearch at {args.es_host}:{args.es_port}...")
+            return Elasticsearch([{'host': args.es_host, 'port': args.es_port, 'scheme': 'http'}])
+    except Exception as e:
+        print(f"Error connecting to Elasticsearch: {e}")
+        return None
+
 def main():
     parser = argparse.ArgumentParser(description='Generate user profiles and reservations for Travel Advisory Application')
     parser.add_argument('--es-host', default='localhost', help='Elasticsearch host')
@@ -311,16 +333,17 @@ def main():
     
     # Connect to Elasticsearch if needed for cleanup or loading
     if args.cleanup or args.load_es or args.delete_indices:
-        load_dotenv()
-        es_api_key = os.getenv("ES_API_KEY")
-        es_cloud_id = os.getenv("ES_CLOUD_ID")
+        #load_dotenv()
+        es = connect_to_elasticsearch(args)
+        #es_api_key = os.getenv("ES_API_KEY")
+        #es_cloud_id = os.getenv("ES_CLOUD_ID")
         
-        if es_api_key and es_cloud_id:
-            print("Connecting to Elasticsearch Cloud...")
-            es = Elasticsearch(cloud_id=es_cloud_id, api_key=es_api_key)
-        else:
-            print(f"Connecting to Elasticsearch at {args.es_host}:{args.es_port}...")
-            es = Elasticsearch([{'host': args.es_host, 'port': args.es_port, 'scheme': 'http'}])
+        #if es_api_key and es_cloud_id:
+        #    print("Connecting to Elasticsearch Cloud...")
+        #    es = Elasticsearch(cloud_id=es_cloud_id, api_key=es_api_key)
+        #else:
+        #    print(f"Connecting to Elasticsearch at {args.es_host}:{args.es_port}...")
+        #    es = Elasticsearch([{'host': args.es_host, 'port': args.es_port, 'scheme': 'http'}])
         
         # Delete indices if requested
         if args.cleanup or args.delete_indices:
@@ -334,16 +357,17 @@ def main():
     # Connect to Elasticsearch to load hotels
     if args.load_es:
         if 'es' not in locals():
-            load_dotenv()
-            es_api_key = os.getenv("ES_API_KEY")
-            es_cloud_id = os.getenv("ES_CLOUD_ID")
+            es = connect_to_elasticsearch(args)
+            #load_dotenv()
+            #es_api_key = os.getenv("ES_API_KEY")
+            #es_cloud_id = os.getenv("ES_CLOUD_ID")
             
-            if es_api_key and es_cloud_id:
-                print("Connecting to Elasticsearch Cloud...")
-                es = Elasticsearch(cloud_id=es_cloud_id, api_key=es_api_key)
-            else:
-                print(f"Connecting to Elasticsearch at {args.es_host}:{args.es_port}...")
-                es = Elasticsearch([{'host': args.es_host, 'port': args.es_port, 'scheme': 'http'}])
+            #if es_api_key and es_cloud_id:
+            #    print("Connecting to Elasticsearch Cloud...")
+            #    es = Elasticsearch(cloud_id=es_cloud_id, api_key=es_api_key)
+            #else:
+            #    print(f"Connecting to Elasticsearch at {args.es_host}:{args.es_port}...")
+            #    es = Elasticsearch([{'host': args.es_host, 'port': args.es_port, 'scheme': 'http'}])
         
         # Load hotels to use in reservations
         hotels = load_hotels(es)
@@ -399,16 +423,23 @@ def main():
     # Load into Elasticsearch if requested
     if args.load_es:
         if 'es' not in locals():
-            load_dotenv()
-            es_api_key = os.getenv("ES_API_KEY")
-            es_cloud_id = os.getenv("ES_CLOUD_ID")
-            
-            if es_api_key and es_cloud_id:
-                print("Connecting to Elasticsearch Cloud...")
-                es = Elasticsearch(cloud_id=es_cloud_id, api_key=es_api_key)
-            else:
-                print(f"Connecting to Elasticsearch at {args.es_host}:{args.es_port}...")
-                es = Elasticsearch([{'host': args.es_host, 'port': args.es_port, 'scheme': 'http'}])
+            es = connect_to_elasticsearch(args)
+            #load_dotenv()
+            #es_api_key = os.getenv("ES_API_KEY")
+            #es_url = os.getenv("ES_URL")
+        
+            #not needed for serverless
+            #es_cloud_id = os.getenv("ES_CLOUD_ID")
+        
+            #if es_api_key and es_url:
+            #    print("Connecting to Elasticsearch Cloud...")
+            #    return Elasticsearch(hosts=[es_url],
+            #    api_key=es_api_key,
+            #    verify_certs=True,
+            #    request_timeout=30)
+            #else:
+            #    print(f"Connecting to Elasticsearch at {args.es_host}:{args.es_port}...")
+            #    es = Elasticsearch([{'host': args.es_host, 'port': args.es_port, 'scheme': 'http'}])
         
         # Create indices
         create_index(es, 'app_users', schemas['users'])
@@ -440,21 +471,3 @@ def delete_user_indices(es_client, indices=None):
 
 if __name__ == "__main__":
     main()
-
-def connect_to_elasticsearch(args):
-    """Connect to Elasticsearch using either local connection or cloud credentials."""
-    try:
-        # Try to load environment variables for cloud connection
-        load_dotenv()
-        es_api_key = os.getenv("ES_API_KEY")
-        es_cloud_id = os.getenv("ES_CLOUD_ID")
-        
-        if es_api_key and es_cloud_id:
-            print("Connecting to Elasticsearch Cloud...")
-            return Elasticsearch(cloud_id=es_cloud_id, api_key=es_api_key)
-        else:
-            print(f"Connecting to Elasticsearch at {args.es_host}:{args.es_port}...")
-            return Elasticsearch([{'host': args.es_host, 'port': args.es_port, 'scheme': 'http'}])
-    except Exception as e:
-        print(f"Error connecting to Elasticsearch: {e}")
-        return None

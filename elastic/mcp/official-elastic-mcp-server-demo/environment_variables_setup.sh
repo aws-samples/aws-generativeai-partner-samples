@@ -4,6 +4,7 @@
 # for the Multi-Server MCP Travel Analytics Application
 
 # Check if .env file exists, if not create from sample
+rm -rf .env
 if [ ! -f .env ]; then
     if [ -f .env.sample ]; then
         cp .env.sample .env
@@ -67,11 +68,11 @@ update_env_var "WEATHER_MCP_SERVER_SCRIPT_PATH" "$weather_mcp_server_script_path
 # Elasticsearch Configuration
 echo -e "\n=== Elasticsearch Configuration ==="
 read -p "Elasticsearch URL: " es_url
-read -p "Elasticsearch Cloud ID: " es_cloud_id
+#read -p "Elasticsearch Cloud ID: " es_cloud_id
 read -p "Elasticsearch API Key: " es_api_key
 
 update_env_var "ES_URL" "$es_url"
-update_env_var "ES_CLOUD_ID" "$es_cloud_id"
+#update_env_var "ES_CLOUD_ID" "$es_cloud_id"
 update_env_var "ES_API_KEY" "$es_api_key"
 
 
