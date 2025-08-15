@@ -1,0 +1,137 @@
+project:
+  key: "mp-webinar-test-1"
+  environment:
+    - key: production
+  segment:
+    - key: agent-general-assistant
+      rules:
+      - attribute: "role"
+        op: "in"
+        values:
+          - "general-assistant"
+        contextKind: "user"
+        negate: false
+    - key: agent-english-assistant
+      rules:
+      - attribute: "role"
+        op: "in"
+        values:
+          - "english-assistant"
+        contextKind: "user"
+        negate: false
+    - key: agent-language-assistant
+      rules:
+      - attribute: "role"
+        op: "in"
+        values:
+          - "language-assistant"
+        contextKind: "user"
+        negate: false
+    - key: agent-math-assistant
+      rules:
+      - attribute: "role"
+        op: "in"
+        values:
+          - "math-assistant"
+        contextKind: "user"
+        negate: false
+    - key: agent-computer-science-assistant
+      rules:
+      - attribute: "role"
+        op: "in"
+        values:
+          - "computer-science-assistant"
+        contextKind: "user"
+        negate: false
+    - key: agent-teacher-orchestrator
+      rules:
+      - attribute: "role"
+        op: "in"
+        values:
+          - "teacher-orchestrator"
+        contextKind: "user"
+        negate: false
+  ai-config:
+    key: "multi-agent-llm-prompt"
+    description: "Multi-agent LLM Prompt"
+    ai-model-configs:
+    - name: "us.anthropic.claude-3-7-sonnet-20250219-v1:0"
+      key: "Bedrock.us.anthropic.claude-3-7-sonnet-20250219-v1-0"
+      costPerInputToken: 0.000003
+      costPerOutputToken: 0.000015
+      id: "us.anthropic.claude-3-7-sonnet-20250219-v1:0"
+      provider: "Bedrock:Anthropic"
+    variations:
+    - key: teacher-orchestrator
+      system_prompt_source: fallback_prompts/teacher_orchestrator_fallback_prompt.txt
+      model_config_key: Bedrock.amazon.nova-pro-v1:0
+      parameters:
+        custom_parameters: '{"maxTokens":4096,"temperature":0.9,"topP":0.9}'
+    - key: computer-science-assistant
+      system_prompt_source: fallback_prompts/computer_science_assistant_fallback_prompt.txt
+      model_config_key: Bedrock.us.anthropic.claude-3-7-sonnet-20250219-v1-0
+      parameters:
+        custom_parameters: '{"maxTokens":4096,"temperature":0.9,"topP":0.9}'
+    - key: math-assistant
+      system_prompt_source: fallback_prompts/math_assistant_fallback_prompt.txt
+      model_config_key: Bedrock.us.anthropic.claude-3-7-sonnet-20250219-v1-0
+      parameters:
+        custom_parameters: '{"maxTokens":4096,"temperature":0.9,"topP":0.9}'
+    - key: language-assistant
+      system_prompt_source: fallback_prompts/language_assistant_fallback_prompt.txt
+      model_config_key: Bedrock.us.anthropic.claude-3-5-sonnet-20241022-v2:0
+      parameters:
+        custom_parameters: '{"maxTokens":4096,"temperature":0.9,"topP":0.9}'
+    - key: english-assistant
+      system_prompt_source: fallback_prompts/english_assistant_fallback_prompt.txt
+      model_config_key: Bedrock.us.anthropic.claude-3-5-sonnet-20241022-v2:0
+      parameters:
+        custom_parameters: '{"maxTokens":4096,"temperature":0.9,"topP":0.9}'
+    - key: general-assistant
+      system_prompt_source: fallback_prompts/general_assistant_fallback_prompt.txt
+      model_config_key: Bedrock.amazon.nova-pro-v1:0
+      parameters:
+        custom_parameters: '{"maxTokens":4096,"temperature":0.9,"topP":0.9}'
+    rules:
+    - clauses:
+      - attribute": "segmentMatch"
+        negate: false
+        op: "segmentMatch"
+        values:
+        - "agent-teacher-orchestrator"
+      trackEvents: false
+    - clauses:
+      - attribute": "segmentMatch"
+        negate: false
+        op: "segmentMatch"
+        values:
+        - "agent-computer-science-assistant"
+      trackEvents: false
+    - clauses:
+      - attribute": "segmentMatch"
+        negate: false
+        op: "segmentMatch"
+        values:
+        - "agent-math-assistant"
+      trackEvents: false
+    - clauses:
+      - attribute": "segmentMatch"
+        negate: false
+        op: "segmentMatch"
+        values:
+        - "agent-english-assistant"
+      trackEvents: false
+    - clauses:
+      - attribute": "segmentMatch"
+        negate: false
+        op: "segmentMatch"
+        values:
+        - "agent-language-assistant"
+      trackEvents: false
+    - clauses:
+      - attribute": "segmentMatch"
+        negate: false
+        op: "segmentMatch"
+        values:
+        - "agent-general-assistant"
+      trackEvents: false
