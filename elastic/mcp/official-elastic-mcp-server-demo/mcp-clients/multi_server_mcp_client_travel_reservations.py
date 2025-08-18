@@ -572,7 +572,8 @@ class MultiServerMCPClient:
     def __init__(self):
         self.sessions: Dict[str, ClientSession] = {}
         self.exit_stack = AsyncExitStack()
-        self.bedrock = boto3.client(service_name='bedrock-runtime', region_name='us-west-2')
+        self.aws_region = os.getenv("AWS_REGION", "us-west-2")
+        self.bedrock = boto3.client(service_name='bedrock-runtime', region_name=self.aws_region)
         self.all_tools = {}
         self.server_configs = {}
         
