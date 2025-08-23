@@ -1,0 +1,6 @@
+llama-index
+twelvelabs
+bedrock-agentcore
+elasticsearch==8.15.1
+boto3
+botocore
