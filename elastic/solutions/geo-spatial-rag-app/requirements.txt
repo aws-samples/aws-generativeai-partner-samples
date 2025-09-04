@@ -75,7 +75,7 @@ pdfminer.six==20240706
 pillow==10.4.0
 prettytable==3.11.0
 propcache==0.2.0
-protobuf==5.28.3
+protobuf==5.29.5
 pyarrow==18.0.0
 pycparser==2.22
 pydantic==2.9.2
