@@ -18,7 +18,7 @@ The simplest way to add Terraform actions context is through Q's built-in contex
    ```
 3. Verify the context was added:
    ```bash
-   /context list
+   /context show
    ```
 
 ### Benefits:
@@ -46,25 +46,27 @@ For persistent, automated context loading, create a custom agent:
 
 3. **Configure the agent** (opens in your default editor):
    ```json
-{
-    "name": "terraform-actions",
-    "description": "Terraform actions and Day 2 operations specialist",
-    "prompt": "You are a Terraform expert specializing in actions and Day 2 operations. Use the provided documentation to help with infrastructure lifecycle management.",
-    "tools": [
-        "fs_read",
-        "execute_bash",
-        "use_aws"
-    ],
-    "allowedTools": [
-        "fs_read"
-    ],
-    "resources": [
-        "./hashicorp/amazon-q-samples/terraform-actions/create_terraform_action.md"
-    ]
-}
+      {
+          "$schema": "https://raw.githubusercontent.com/aws/amazon-q-developer-cli/refs/heads/main/schemas/agent-v1.json",
+          "name": "terraform-actions",
+          "description": "Terraform actions and Day 2 operations specialist",
+          "prompt": "You are a Terraform expert specializing in actions and Day 2 operations. Use the provided documentation to help with infrastructure lifecycle management.",
+          "tools": [
+              "fs_read",
+              "execute_bash",
+              "use_aws"
+          ],
+          "allowedTools": [
+              "fs_read"
+          ],
+          "resources": [
+              "./hashicorp/amazon-q-samples/terraform-actions/create_terraform_action.md"
+          ]
+      }
    ```
 
 4. **Use the agent:**
+
    ```bash
    q chat --agent terraform-actions
    ```
