@@ -1,0 +1,11 @@
+launchdarkly-server-sdk-ai>=0.10.1
+strands-agents
+strands-agents-tools
+arize-otel
+arize-toolkit
+opentelemetry-api
+opentelemetry-sdk
+opentelemetry-exporter-otlp-proto-grpc
+boto3
+botocore
+pymongo>=4.6.0
