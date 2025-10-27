@@ -109,7 +109,7 @@ resource "aws_redshift_cluster" "redshift_cluster" {
   encrypted = true
   kms_key_id = aws_kms_key.redshift.arn
   enhanced_vpc_routing = true
-  publicly_accessible = false
+  publicly_accessible = true
   
   # Enable logging - requires S3 bucket (will be configured via aws_redshift_logging resource)
 
