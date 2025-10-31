@@ -18,11 +18,6 @@ output "all_passwords" {
       private_ip = aws_instance.oracle_instance.private_ip
       connection_string = "sqlplus system/${nonsensitive(random_password.oracle_db_password.result)}@${aws_instance.oracle_instance.private_ip}:1521/XEPDB1"
     }
-    kubernetes_admin = {
-      username = "admin"
-      email = "admin@admin.com"
-      password = nonsensitive(random_password.k8s_admin_password.result)
-    }
   }
   description = "All randomly generated passwords for the infrastructure"
 }
