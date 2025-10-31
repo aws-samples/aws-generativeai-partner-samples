@@ -9,12 +9,6 @@ output "all_passwords" {
       endpoint = aws_redshift_cluster.redshift_cluster.endpoint
       database = aws_redshift_cluster.redshift_cluster.database_name
     }
-    opensearch = {
-      username = var.opensearch_master_username
-      password = nonsensitive(random_password.opensearch_master_password.result)
-      endpoint = "https://${aws_opensearch_domain.OpenSearch.endpoint}"
-      dashboard = "https://${aws_opensearch_domain.OpenSearch.dashboard_endpoint}"
-    }
     oracle_db = {
       system_password = nonsensitive(random_password.oracle_db_password.result)
       sample_user = var.oracle_db_username
