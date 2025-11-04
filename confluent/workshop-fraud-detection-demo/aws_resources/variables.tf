@@ -88,15 +88,3 @@ variable "webapp_namespace" {
   default     = "frauddemo"
 }
 
-############# OpenSearch Variables
-variable "opensearch_master_username" {
-  description = "OpenSearch Username"
-  type        = string
-  default     = "admin"
-}
-
-variable "opensearch_master_password" {
-  description = "OpenSearch Password"
-  type        = string
-  default     = "Admin123456!"
-}
