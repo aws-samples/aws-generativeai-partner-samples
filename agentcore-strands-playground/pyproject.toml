@@ -1,0 +1,21 @@
+[project]
+name = "agentcore-strands-playground"
+version = "0.1.0"
+description = "Demo chatbot using Strands agent deployed to AgentCore runtime."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "boto3>=1.40.23",
+  "python-dotenv>=1.0.0",
+  "strands-agents>=1.7.1",
+  "strands-agents-tools",
+  "bedrock-agentcore>=0.1.3",
+  "bedrock-agentcore-starter-toolkit>=0.1.8",
+  "streamlit>=1.49.1",
+  "requests>=2.31.0",
+]
+
+[dependency-groups]
+dev = [
+    "uv>=0.8.15",
+]

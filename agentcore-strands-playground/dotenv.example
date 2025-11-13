@@ -1,0 +1,33 @@
+# Bedrock AgentCore Strands Playground environment
+# Copy this file to .env and populate with your actual values
+# Note: EVERY variable in this file is optional.
+# All have default values in code
+# if Cognito (or another provider) is not configured, the app defaults to not using authentication
+
+# AWS Region
+AWS_REGION=us-west-2
+
+# Cognito User Pool ID (from cognito_config['pool_id'])
+COGNITO_POOL_ID=your-pool-id-here
+
+# Cognito App Client ID (from cognito_config['client_id'])
+COGNITO_CLIENT_ID=your-client-id-here
+
+# Cognito Discovery URL (from cognito_config['discovery_url'])
+# Format: https://cognito-idp.{region}.amazonaws.com/{pool_id}/.well-known/openid-configuration
+COGNITO_DISCOVERY_URL=https://cognito-idp.{region}.amazonaws.com/{pool_id}/.well-known/openid-configuration
+# if not set, front-end will default to not using authentication
+
+DEFAULT_USERNAME=testuser1
+DEFAULT_PASSWORD=MyPassword123!
+
+# Strands Agent Configuration
+STRANDS_SYSTEM_PROMPT=You are a helpful assistant powered by Strands. Strands Agents is a simple-to-use, code-first framework for building agents - open source by AWS. The user has the ability to modify your set of built-in tools. Every time your tool set is changed, you can propose a new set of tasks that you can do.
+
+# Model Configuration
+STRANDS_MODEL_ID=us.amazon.nova-pro-v1:0
+STRANDS_MAX_TOKENS=1000
+STRANDS_TEMPERATURE=0.3
+STRANDS_TOP_P=0.9
+
+
