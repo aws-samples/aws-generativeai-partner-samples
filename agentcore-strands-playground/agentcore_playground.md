@@ -13,7 +13,7 @@ The original agent ran locally, using a FastAPI-based API to implement a Strands
 
 ## AgentCore Agent
 
-The new version takes advantage of several AgentCore features. 1/ runs in AgentCore Runtime, a secure, isolated, dynamic execution environment. 2/ uses AgentCore Identity to pass a JWT to the agent from the front-end. 3/ uses AgentCore Memory -- both short-term and long-term, to store user preferences and conversation history. 4/ uses AgentCore Observability to track token usage, latency, traces, and spans.
+The new version takes advantage of several AgentCore features. 1/ runs in AgentCore Runtime, a secure, isolated, dynamic execution environment. 2/ (optionally) uses AgentCore Identity to pass a JWT to the agent from the front-end. 3/ uses AgentCore Memory -- both short-term and long-term, to store user preferences and conversation history. 4/ uses AgentCore Observability to track token usage, latency, traces, and spans.
 
 ## Original Interface
 

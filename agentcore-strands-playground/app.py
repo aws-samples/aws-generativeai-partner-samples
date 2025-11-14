@@ -30,9 +30,18 @@ if not cognito_discovery_url:
         if os.path.exists(yaml_path):
             with open(yaml_path, 'r') as f:
                 config = yaml.safe_load(f)
-                cognito_discovery_url = jwt_config.get('discoveryUrl', '').strip()
-                if cognito_discovery_url:
-                    logger.info(f"Using COGNITO_DISCOVERY_URL from {yaml_path}: {cognito_discovery_url}")
+                # Navigate to the nested discoveryUrl in authorizer_configuration
+                agents = config.get('agents', {})
+                default_agent = config.get('default_agent', '')
+                if default_agent and default_agent in agents:
+                    agent_config = agents[default_agent]
+                    auth_config = agent_config.get('authorizer_configuration', {})
+                    jwt_config = auth_config.get('customJWTAuthorizer', {})
+                    cognito_discovery_url = jwt_config.get('discoveryUrl', '').strip()
+                    if cognito_discovery_url:
+                        logger.info(f"Using COGNITO_DISCOVERY_URL from {yaml_path}: {cognito_discovery_url}")
+                    else:
+                        logger.info("No Cognito discovery url found.")
     except Exception as e:
         logger.warning(f"Could not read COGNITO_DISCOVERY_URL from YAML: {e}")
 
@@ -44,7 +53,7 @@ if '--auth' in sys.argv:
 elif '--noauth' in sys.argv:
     ENABLE_AUTH = False
 
-# Import authentication module
+# Import authentication module OR set auth variables to None
 if ENABLE_AUTH:
     from auth_utils import require_authentication
     logger.info(F"Using authentication: {cognito_discovery_url}")
@@ -191,20 +200,20 @@ def fetch_memory(region: str) -> List[Dict]:
 
         # Sort by most recent update time (newest first)
         ready_memories.sort(key=lambda x: x.get("updatedAt", ""), reverse=True)
-
+        logger.debug(F"Fetched memories: {ready_memories}")
         return ready_memories
     except Exception as e:
         st.error(f"Error fetching memories: {e}")
         return []
 
-#@st.cache_data(ttl=300)  # Cache for 5 minutes
+@st.cache_data(ttl=300)  # Cache for 5 minutes
 def fetch_sessions(region: str, memory_id: str, actor_id: str) -> List[Dict]:
     """
     Fetch available sessions from bedrock-agentcore for a specific memory and actor.
     https://docs.aws.amazon.com/bedrock-agentcore/latest/APIReference/API_ListSessions.html
  """
     try:
-        logger.info("fetching sessions using boto3")
+        #logger.info("fetching sessions using boto3")
         client = boto3.client("bedrock-agentcore", region_name=region)
         
         # List sessions with pagination support
@@ -224,7 +233,7 @@ def fetch_sessions(region: str, memory_id: str, actor_id: str) -> List[Dict]:
             # Add sessions from this page
             session_summaries = response.get("sessionSummaries", [])
             sessions.extend(session_summaries)
-            logger.info(f"Page {iteration + 1}: Retrieved {len(session_summaries)} sessions (total: {len(sessions)})")
+            #logger.info(f"Page {iteration + 1}: Retrieved {len(session_summaries)} sessions (total: {len(sessions)})")
             # Check for more pages
             next_token = response.get("nextToken")
             if not next_token:
@@ -248,7 +257,7 @@ def fetch_sessions(region: str, memory_id: str, actor_id: str) -> List[Dict]:
                     if display_name:
                         session_name = display_name
                 
-                logger.info(f"Creating initialization event for new session: {st.session_state.runtime_session_id}")
+                #logger.info(f"Creating initialization event for new session: {st.session_state.runtime_session_id}")
                 
                 # Create minimal blob event to make session visible in list_sessions
                 init_response = client.create_event(
@@ -274,7 +283,8 @@ def fetch_sessions(region: str, memory_id: str, actor_id: str) -> List[Dict]:
         # Sort by most recent first (if lastUpdatedDateTime is available)
         sessions.sort(key=lambda x: x.get("lastUpdatedDateTime", ""), reverse=True)
         
-        logger.info(f"Total sessions retrieved for actor '{actor_id}': {len(sessions)}")
+        session_ids_log = [session.get("sessionId", "Unknown") for session in sessions]
+        logger.info(f"Sessions retrieved for actor '{actor_id}': {session_ids_log}")
         return sessions
         
     except client.exceptions.ResourceNotFoundException as e:
@@ -934,7 +944,8 @@ def show_settings_sidebar(auth):
         if 'available_memories' not in st.session_state or st.session_state.get('last_memory_region') != region:
             with st.spinner("Loading available memories..."):
                 available_memories = fetch_memory(region)
-                logger.info(f"available memory: {available_memories}")
+                memory_ids_log = [memory.get("id", "Unknown") for memory in available_memories]
+                logger.info(f"Available memory: {memory_ids_log}")
                 st.session_state.available_memories = available_memories
                 st.session_state.last_memory_region = region
         else:
@@ -943,7 +954,7 @@ def show_settings_sidebar(auth):
         memory_id = ""
         if available_memories:
             memory_ids = [memory.get("id", "Unknown") for memory in available_memories]
-            logger.info(f"found memory: {memory_ids}")
+            #logger.info(f"found memory: {memory_ids}")
             
             # Auto-select the first (most recent) memory if no memory is currently selected
             if not st.session_state.get('selected_memory_id') and memory_ids:

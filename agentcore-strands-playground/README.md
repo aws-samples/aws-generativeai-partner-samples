@@ -64,6 +64,7 @@ Select default options, except optionally configure your Cognito pool as OAuth a
 
 uv run agentcore launch
 cd ..
+
 ## Running the Application
 
 ### Using uv (recommended)
@@ -71,6 +72,7 @@ cd ..
 ```bash
 uv run streamlit run app.py [-- --auth | --noauth]
 ```
+
 The application will start and be available at `http://localhost:8501`.
 
 If you configured a Cognito pool for authentication, the app will automatically look in 1) .env file and 2) ./agentcore_agent/.bedrock_agentcore.yaml to find Cognito configuration variables. If it finds a Cognito configuration, or if you specify '--auth' on the command line, it will default to using authentication when invoking the agent. If it does not find Cognito configuration, or if you specify '--noauth' on the command line, it will not use any authentication when invoking the agent.
@@ -82,18 +84,21 @@ aws iam attach-role-policy \
     --role-name AmazonBedrockAgentCoreSDKRuntime-us-west-2-xxxxxx \
     --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
 ```
+
 ## Usage
 
 Note: all parameters have defaults, which typically pick the most recent agent/version/session. The simplest usage is to run the front-end application and start chatting with the agent.
 
 Optional:
 
-1. **Configure AWS Region**: Select your preferred AWS region from the sidebar
-2. **Select Agent**: Choose from automatically discovered agents in your account
-3. **Choose Version**: Select the specific version of your agent to use
-4. **Select Memory**: The front-end will discover configured AgentCore Memory resources and select the most recently created
-5. **Select Session:** Choose from a saved session or enter a new session name and click "New session"
-6. **Start Chatting**: Type your message in the chat input and press Enter
+1. **Configure Tools:** Click the Tools Configuration dropdown to select from available Strands Agents built-in tools
+2. **Configure AWS Region**: Select your preferred AWS region from the sidebar
+3. **Select Agent**: Choose from automatically discovered agents in your account
+4. **Choose Version**: Select the specific version of your agent to use
+5. **Select Memory**: The front-end will discover configured AgentCore Memory resources and select the most recently created
+6. **Select Session:** Choose from a saved session or enter a new session name and click "New session"
+7. **Select Tools:**
+8. **Start Chatting**: Type your message in the chat input and press Enter
 
 ## Project Structure
 
@@ -118,6 +123,7 @@ agentcore-strands-playground/
     ├── user-profile.svg
     └── ...
 ```
+
 ## Configuration Files
 
 - **`pyproject.toml`**: Defines project dependencies and metadata
