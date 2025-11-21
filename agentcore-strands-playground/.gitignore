@@ -7,3 +7,4 @@ uv.lock
 agentcore_agent/
 !agentcore_agent/runtime_agent.py
 !agentcore_agent/requirements.txt
+docs/

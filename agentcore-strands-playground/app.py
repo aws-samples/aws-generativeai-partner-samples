@@ -84,10 +84,10 @@ tool_descriptions = {
     'load_tool': 'Dynamically load Python tools at runtime',
     'memory': 'Store and retrieve data in Bedrock Knowledge Base',
     'nova_reels': 'Create high-quality videos using Amazon Nova Reel',
-    'python_repl': 'Execute Python code in a REPL environment with PTY support and state persistence',
+    # 'python_repl': 'Execute Python code in a REPL environment with PTY support and state persistence',  # Removed - not compatible with Lambda read-only filesystem
     'retrieve': 'Retrieves knowledge based on the provided text from Amazon Bedrock Knowledge Bases',
     'shell': 'Interactive shell with PTY support for real-time command execution and interaction',
-    'slack': 'Comprehensive Slack integration for messaging, events, and interactions',
+    # 'slack': 'Comprehensive Slack integration for messaging, events, and interactions',  # Removed - creates dirs at import
     'speak': 'Generate speech from text using say command or Amazon Polly',
     'stop': 'Stops the current event loop cycle by setting stop_event_loop flag',
     'swarm': 'Create and coordinate a swarm of AI agents for parallel processing and collective intelligence',
@@ -205,6 +205,64 @@ def fetch_memory(region: str) -> List[Dict]:
     except Exception as e:
         st.error(f"Error fetching memories: {e}")
         return []
+
+@st.cache_data(ttl=300)  # Cache for 5 minutes
+def fetch_gateways(region: str = "us-west-2") -> List[Dict]:
+    """Fetch available gateways from bedrock-agentcore-control"""
+    try:
+        client = boto3.client("bedrock-agentcore-control", region_name=region)
+        response = client.list_gateways(maxResults=100)
+        
+        # API returns gateways in 'items' field, not 'gateways'
+        gateways = response.get("items", [])
+        logger.info(f"Found {len(gateways)} gateways")
+        return gateways
+    except Exception as e:
+        st.error(f"Error fetching gateways: {e}")
+        logger.error(f"Error fetching gateways: {e}")
+        return []
+
+@st.cache_data(ttl=300)  # Cache for 5 minutes
+def fetch_gateway_details(gateway_id: str, region: str = "us-west-2") -> Dict:
+    """Fetch details for a specific gateway"""
+    try:
+        client = boto3.client("bedrock-agentcore-control", region_name=region)
+        response = client.get_gateway(gatewayIdentifier=gateway_id)
+        logger.debug(f"Gateway details: {response}")
+        return response
+    except Exception as e:
+        st.error(f"Error fetching gateway details: {e}")
+        logger.error(f"Error fetching gateway details: {e}")
+        return {}
+
+@st.cache_data(ttl=300)  # Cache for 5 minutes
+def fetch_gateway_targets(gateway_id: str, region: str = "us-west-2") -> List[Dict]:
+    """Fetch targets for a specific gateway"""
+    try:
+        client = boto3.client("bedrock-agentcore-control", region_name=region)
+        response = client.list_gateway_targets(gatewayIdentifier=gateway_id, maxResults=100)
+        
+        # API returns targets in 'items' field, not 'gatewayTargets'
+        targets = response.get("items", [])
+        logger.info(f"Found {len(targets)} targets for gateway {gateway_id}")
+        return targets
+    except Exception as e:
+        st.error(f"Error fetching gateway targets: {e}")
+        logger.error(f"Error fetching gateway targets: {e}")
+        return []
+
+@st.cache_data(ttl=300)  # Cache for 5 minutes
+def fetch_gateway_target_details(gateway_id: str, target_id: str, region: str = "us-west-2") -> Dict:
+    """Fetch details for a specific gateway target"""
+    try:
+        client = boto3.client("bedrock-agentcore-control", region_name=region)
+        response = client.get_gateway_target(gatewayIdentifier=gateway_id, targetId=target_id)
+        logger.debug(f"Target details: {response}")
+        return response
+    except Exception as e:
+        st.error(f"Error fetching gateway target details: {e}")
+        logger.error(f"Error fetching gateway target details: {e}")
+        return {}
 
 @st.cache_data(ttl=300)  # Cache for 5 minutes
 def fetch_sessions(region: str, memory_id: str, actor_id: str) -> List[Dict]:
@@ -337,7 +395,7 @@ def return_metrics(mode: str, usage_data=None, error_msg: str = None, **kwargs):
     
     return metrics
     
-def invoke_agentcore_runtime_auth(message: str, agent_arn: str, region: str, access_token: str, session_id: str, username: str = None, memory_id: str = None) -> Dict:
+def invoke_agentcore_runtime_auth(message: str, agent_arn: str, region: str, access_token: str, session_id: str, username: str = None, memory_id: str = None, gateway_url: str = None, gateway_target_id: str = None) -> Dict:
     """
     Invoke AgentCore runtime using HTTP requests with bearer token authentication
     We need to use 'requests' because boto3 can't handle auth tokens (yet)
@@ -374,6 +432,12 @@ def invoke_agentcore_runtime_auth(message: str, agent_arn: str, region: str, acc
         # Add memory_id to payload if provided
         if memory_id:
             payload_data["memory_id"] = memory_id
+        
+        # Add gateway configuration to payload if provided
+        if gateway_url:
+            payload_data["gateway_url"] = gateway_url
+        if gateway_target_id:
+            payload_data["gateway_target_id"] = gateway_target_id
         
         # Add selected tools to payload
         selected_tools = st.session_state.get('selected_tools', DEFAULT_TOOLS)
@@ -514,7 +578,7 @@ def invoke_agentcore_runtime_auth(message: str, agent_arn: str, region: str, acc
             )
         }
 
-def invoke_agentcore_runtime_no_auth(message: str, agent_arn: str, region: str, session_id: str, username: str = None, memory_id: str = None) -> Dict:
+def invoke_agentcore_runtime_no_auth(message: str, agent_arn: str, region: str, session_id: str, username: str = None, memory_id: str = None, gateway_url: str = None, gateway_target_id: str = None) -> Dict:
     """
     Invoke AgentCore runtime using boto3 without authentication token
     Uses standard AWS credentials (IAM role, profile, etc.)
@@ -538,6 +602,12 @@ def invoke_agentcore_runtime_no_auth(message: str, agent_arn: str, region: str, 
         # Add memory_id to payload if provided
         if memory_id:
             payload_data["memory_id"] = memory_id
+        
+        # Add gateway configuration to payload if provided
+        if gateway_url:
+            payload_data["gateway_url"] = gateway_url
+        if gateway_target_id:
+            payload_data["gateway_target_id"] = gateway_target_id
         
         # Add selected tools to payload
         selected_tools = st.session_state.get('selected_tools', DEFAULT_TOOLS)
@@ -690,7 +760,7 @@ def render_metrics_panel():
     else:
         st.info("Metrics will appear after your first interaction with the AgentCore runtime.")
 
-def render_tools_panel_content():
+def render_strands_tools_panel_content():
     """Render the tools panel content for use inside sidebar expander"""
     # Initialize selected tools in session state if not exists
     if 'selected_tools' not in st.session_state:
@@ -753,12 +823,119 @@ def render_tools_panel_content():
     else:
         st.caption("No tools selected")
 
+def render_gateway_tools_panel_content():
+    """Render the gateway tools panel content for use inside sidebar expander"""
+    region = st.session_state.get('selected_region', 'us-west-2')
+    
+    # Fetch available gateways
+    if 'available_gateways' not in st.session_state or st.session_state.get('last_gateway_region') != region:
+        available_gateways = fetch_gateways(region)
+        st.session_state.available_gateways = available_gateways
+        st.session_state.last_gateway_region = region
+    else:
+        available_gateways = st.session_state.available_gateways
+    
+    if not available_gateways:
+        st.caption("No gateways found")
+        # Clear gateway session state
+        st.session_state.selected_gateway_url = None
+        st.session_state.selected_gateway_target_id = None
+        return
+    
+    # Gateway selection
+    gateway_options = {f"{gw.get('name', gw.get('gatewayId'))}": gw.get('gatewayId') for gw in available_gateways}
+    
+    selected_gateway_display = st.selectbox(
+        "Gateway",
+        options=list(gateway_options.keys()),
+        key="selected_gateway_display",
+        label_visibility="collapsed"
+    )
+    
+    selected_gateway_id = gateway_options[selected_gateway_display]
+    gateway_details = fetch_gateway_details(selected_gateway_id, region)
+    
+    # Store gateway URL in session state
+    if gateway_details:
+        st.session_state.selected_gateway_url = gateway_details.get('gatewayUrl')
+    
+    if gateway_details:
+        # Compact gateway info
+        st.caption(f"**Status:** {gateway_details.get('status', 'N/A')}")
+        gw_url = gateway_details.get('gatewayUrl', 'N/A')
+        if len(gw_url) > 50:
+            gw_url = gw_url[:47] + "..."
+        st.caption(f"**URL:** {gw_url}")
+        
+        st.markdown("---")
+        
+        # Fetch and display targets
+        gateway_targets = fetch_gateway_targets(selected_gateway_id, region)
+        
+        if gateway_targets:
+            st.markdown("**Target**")
+            
+            # Create target options with display info
+            target_options = {}
+            for target in gateway_targets:
+                target_id = target.get('targetId')
+                target_name = target.get('name', target_id)
+                target_status = target.get('status', 'Unknown')
+                
+                # Determine target type
+                target_config = target.get('targetConfiguration', {})
+                mcp_config = target_config.get('mcp', {})
+                
+                if 'lambda' in mcp_config:
+                    target_type = "λ"
+                elif 'openApiSchema' in mcp_config:
+                    target_type = "API"
+                elif 'smithyModel' in mcp_config:
+                    target_type = "Smithy"
+                else:
+                    target_type = "?"
+                
+                # Show credential type
+                cred_configs = target.get('credentialProviderConfigurations', [])
+                auth_icon = "🔒" if cred_configs else "🔓"
+                
+                status_icon = "✓" if target_status == "READY" else "⚠"
+                display_name = f"{status_icon} {auth_icon} {target_name} ({target_type})"
+                target_options[display_name] = target_id
+            
+            # Target selector
+            if target_options:
+                selected_target_display = st.selectbox(
+                    "Target",
+                    options=list(target_options.keys()),
+                    key="selected_gateway_target_display",
+                    label_visibility="collapsed"
+                )
+                
+                # Store selected target ID in session state
+                st.session_state.selected_gateway_target_id = target_options[selected_target_display]
+            else:
+                st.session_state.selected_gateway_target_id = None
+        else:
+            st.caption("No targets")
+            st.session_state.selected_gateway_target_id = None
+    
+    # Compact refresh button
+    if st.button("🔄", use_container_width=True, key="refresh_gateways_btn", help="Refresh gateways"):
+        if 'available_gateways' in st.session_state:
+            del st.session_state.available_gateways
+        st.rerun()
+
 def show_settings_sidebar(auth):
     """Show Settings sidebar with authentication info and all configuration options"""
     
-    # Tools Configuration Section (collapsible)
-    with st.sidebar.expander("🔧 Tools Configuration", expanded=False):
-        render_tools_panel_content()
+    # Strands Tools Configuration Section (collapsible)
+    with st.sidebar.expander("🔧 Strands Tools Configuration", expanded=False):
+        render_strands_tools_panel_content()
+    
+    # Gateway Tools Configuration Section (collapsible)
+    with st.sidebar.expander("🌐 Gateway Tools Configuration", expanded=False):
+        render_gateway_tools_panel_content()
     
     st.sidebar.markdown("---")
     
@@ -1145,6 +1322,10 @@ def main():
                     # Get region from sidebar session state
                     region = st.session_state.get('selected_region', 'us-west-2')
                     
+                    # Get gateway configuration from session state
+                    gateway_url = st.session_state.get('selected_gateway_url')
+                    gateway_target_id = st.session_state.get('selected_gateway_target_id')
+                    
                     if ENABLE_AUTH:
                         agentcore_response = invoke_agentcore_runtime_auth(
                             message=prompt,
@@ -1153,7 +1334,9 @@ def main():
                             access_token=st.session_state.access_token,
                             session_id=st.session_state.runtime_session_id,
                             username=st.session_state.get('username'),
-                            memory_id=st.session_state.get('selected_memory_id')
+                            memory_id=st.session_state.get('selected_memory_id'),
+                            gateway_url=gateway_url,
+                            gateway_target_id=gateway_target_id
                         )
                     else:
                         agentcore_response = invoke_agentcore_runtime_no_auth(
@@ -1162,7 +1345,9 @@ def main():
                             region=region,
                             session_id=st.session_state.runtime_session_id,
                             username=st.session_state.get('username'),
-                            memory_id=st.session_state.get('selected_memory_id')
+                            memory_id=st.session_state.get('selected_memory_id'),
+                            gateway_url=gateway_url,
+                            gateway_target_id=gateway_target_id
                         )
                     logger.info(f"AgentCore Response - Success: {agentcore_response.get('success')}, Response Length: {len(agentcore_response.get('response', ''))}, Metrics: {agentcore_response.get('metrics')}")
                     logger.info(f"AgentCore Response Text: {agentcore_response.get('response', '')}")

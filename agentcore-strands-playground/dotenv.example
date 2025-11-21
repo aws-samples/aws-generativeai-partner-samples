@@ -30,4 +30,5 @@ STRANDS_MAX_TOKENS=1000
 STRANDS_TEMPERATURE=0.3
 STRANDS_TOP_P=0.9
 
-
+GATEWAY_LAMBDA_ROLE=arn:aws:iam::75396XXX3371:role/gateway_lambda_iamrole
+AGENTCORE_GATEWAY_ARN=arn:aws:iam::7539XXX53371:role/agentcore-gateway-role

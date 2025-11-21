@@ -7,9 +7,53 @@ from botocore.exceptions import ClientError
 import requests
 import time
 
+USER_POOL_NAME = "agentcore-strands-playground-pool"
+
+def add_cognito_user(username, user_pool_id, cognito_client, password='MyPassword123!', temp_password='Temp123!'):
+    """
+    Add a user to a Cognito user pool
+    
+    Args:
+        username: The username for the new user
+        user_pool_id: The Cognito user pool ID
+        cognito_client: Boto3 Cognito client
+        password: Permanent password for the user (default: 'MyPassword123!')
+        temp_password: Temporary password (default: 'Temp123!')
+    
+    Returns:
+        dict: User creation response or None if error
+    """
+    try:
+        # Create user
+        cognito_client.admin_create_user(
+            UserPoolId=user_pool_id,
+            Username=username,
+            TemporaryPassword=temp_password,
+            MessageAction='SUPPRESS'
+        )
+        print(f"Created user: {username}")
+        
+        # Set permanent password
+        cognito_client.admin_set_user_password(
+            UserPoolId=user_pool_id,
+            Username=username,
+            Password=password,
+            Permanent=True
+        )
+        print(f"Set permanent password for user: {username}")
+        
+        return {'username': username, 'status': 'created'}
+    except cognito_client.exceptions.UsernameExistsException:
+        print(f"User {username} already exists")
+        return {'username': username, 'status': 'exists'}
+    except Exception as e:
+        print(f"Error creating user {username}: {e}")
+        return None
+
 def setup_cognito_user_pool():
     boto_session = Session()
     region = boto_session.region_name
+    print(f"setting up cognito user pool in {region}")
     
     # Initialize Cognito client
     cognito_client = boto3.client('cognito-idp', region_name=region)
@@ -17,7 +61,7 @@ def setup_cognito_user_pool():
     try:
         # Create User Pool
         user_pool_response = cognito_client.create_user_pool(
-            PoolName='MCPServerPool',
+            PoolName=USER_POOL_NAME,
             Policies={
                 'PasswordPolicy': {
                     'MinimumLength': 8
@@ -29,7 +73,7 @@ def setup_cognito_user_pool():
         # Create App Client
         app_client_response = cognito_client.create_user_pool_client(
             UserPoolId=pool_id,
-            ClientName='MCPServerPoolClient',
+            ClientName=f"{USER_POOL_NAME}-client",
             GenerateSecret=False,
             ExplicitAuthFlows=[
                 'ALLOW_USER_PASSWORD_AUTH',
@@ -38,28 +82,16 @@ def setup_cognito_user_pool():
         )
         client_id = app_client_response['UserPoolClient']['ClientId']
         
-        # Create User
-        cognito_client.admin_create_user(
-            UserPoolId=pool_id,
-            Username='testuser',
-            TemporaryPassword='Temp123!',
-            MessageAction='SUPPRESS'
-        )
-        
-        # Set Permanent Password
-        cognito_client.admin_set_user_password(
-            UserPoolId=pool_id,
-            Username='testuser',
-            Password='MyPassword123!',
-            Permanent=True
-        )
+        # Add users using the helper function
+        add_cognito_user('testuser1', pool_id, cognito_client)
+        add_cognito_user('testuser2', pool_id, cognito_client)
         
         # Authenticate User and get Access Token
         auth_response = cognito_client.initiate_auth(
             ClientId=client_id,
             AuthFlow='USER_PASSWORD_AUTH',
             AuthParameters={
-                'USERNAME': 'testuser',
+                'USERNAME': 'testuser1',
                 'PASSWORD': 'MyPassword123!'
             }
         )
@@ -151,7 +183,7 @@ def get_or_create_m2m_client(cognito, user_pool_id, CLIENT_NAME, RESOURCE_SERVER
         AllowedOAuthScopes=SCOPES,
         AllowedOAuthFlowsUserPoolClient=True,
         SupportedIdentityProviders=["COGNITO"],
-        ExplicitAuthFlows=["ALLOW_REFRESH_TOKEN_AUTH"]
+        ExplicitAuthFlows=["ALLOW_USER_PASSWORD_AUTH", "ALLOW_REFRESH_TOKEN_AUTH"]
     )
     return created["UserPoolClient"]["ClientId"], created["UserPoolClient"]["ClientSecret"]
 
@@ -782,3 +814,51 @@ def create_gateway_invoke_tool_role(role_name, gateway_id, current_arn):
 
     print(f" Role '{role_name}' is ready and {current_arn} can invoke the Bedrock Agent Gateway.")
     return agentcoregw_iam_role
+
+def add_to_env(var_name, var_value, env_file='.env'):
+    """
+    Add or update an environment variable in the specified env file.
+    
+    Args:
+        var_name: The environment variable name
+        var_value: The value to assign
+        env_file: Path to the .env file (default: '.env')
+    """
+    import os
+    import re
+    
+    # Check if file exists
+    if not os.path.exists(env_file):
+        # Create new file with the variable
+        with open(env_file, 'w') as f:
+            f.write(f"{var_name}={var_value}\n")
+        print(f"Created {env_file} with {var_name}={var_value}")
+        return
+    
+    # Read existing file
+    with open(env_file, 'r') as f:
+        lines = f.readlines()
+    
+    # Pattern to match the variable assignment (handles quotes and spaces)
+    pattern = re.compile(rf'^{re.escape(var_name)}\s*=')
+    
+    # Check if variable exists and update it
+    found = False
+    for i, line in enumerate(lines):
+        if pattern.match(line):
+            lines[i] = f"{var_name}={var_value}\n"
+            found = True
+            print(f"Updated {var_name} in {env_file}")
+            break
+    
+    # If not found, append to end
+    if not found:
+        # Ensure file ends with newline before appending
+        if lines and not lines[-1].endswith('\n'):
+            lines[-1] += '\n'
+        lines.append(f"{var_name}={var_value}\n")
+        print(f"Added {var_name} to {env_file}")
+    
+    # Write back to file
+    with open(env_file, 'w') as f:
+        f.writelines(lines)
