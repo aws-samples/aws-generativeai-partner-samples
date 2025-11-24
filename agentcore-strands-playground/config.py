@@ -8,9 +8,9 @@ Usage:
     ./config.py --lambda                   # Create only Lambda function
     ./config.py --iam                      # Create only IAM roles
     ./config.py --cognito                  # Create only Cognito resources
-    ./config.py --gateway                  # Create only Gateway and targets
-    ./config.py --lambda --iam             # Create Lambda and IAM roles
-    ./config.py --add-gateway-permission   # Manually add InvokeGateway permission (auto-added with --all)
+    #./config.py --gateway                  # Create only Gateway and targets
+    #./config.py --lambda --iam             # Create Lambda and IAM roles
+    #./config.py --add-gateway-permission   # Manually add InvokeGateway permission (auto-added with --all)
     ./config.py --test                     # Test existing configuration
     ./config.py --help                     # Show this help message
 """
@@ -29,7 +29,7 @@ import boto3
 import time
 from botocore.exceptions import ClientError
 
-def create_resources(create_lambda=True, create_iam=True, create_cognito=True, create_gateway=True):
+def create_resources(create_lambda=False, create_iam=True, create_cognito=True, create_gateway=False):
     """Create AWS resources for AgentCore Strands Playground
     
     Args:
@@ -65,6 +65,8 @@ def create_resources(create_lambda=True, create_iam=True, create_cognito=True, c
     scopeString = None
 
     # Create Lambda function
+    # COMMENTED OUT: Lambda creation disabled by default
+    # Uncomment to enable Lambda function creation
     if create_lambda:
         print("\n--- Creating Lambda function ---")
         lambda_resp = utils.create_playground_lambda("lambda_function_code.zip")
@@ -87,7 +89,7 @@ def create_resources(create_lambda=True, create_iam=True, create_cognito=True, c
             print("Warning: No Lambda ARN found in .env. Gateway target creation may fail.")
 
     # Create IAM roles
-    if create_iam:
+    if create_gateway:
         print("\n--- Creating IAM role for Gateway ---")
         agentcore_gateway_iam_role = utils.create_agentcore_gateway_role("playground-lambdagateway")
         print("Agentcore gateway role ARN: ", agentcore_gateway_iam_role['Role']['Arn'])
@@ -201,6 +203,8 @@ def create_resources(create_lambda=True, create_iam=True, create_cognito=True, c
             print("Warning: No Cognito resources found in .env. Gateway creation may fail.")
 
     # Create Gateway with IAM authentication (always)
+    # COMMENTED OUT: Gateway creation disabled by default
+    # Uncomment to enable Gateway and target creation
     if create_gateway:
         print("\n--- Creating AgentCore Gateway ---")
         gateway_client = boto3.client('bedrock-agentcore-control', REGION)
@@ -352,6 +356,8 @@ def create_resources(create_lambda=True, create_iam=True, create_cognito=True, c
             print("Warning: No Gateway resources found in .env.")
     
     # Add Gateway invoke permission to Runtime execution roles if Gateway was created
+    # COMMENTED OUT: Gateway permission disabled by default
+    # Uncomment to enable automatic Gateway permission addition
     if create_gateway and gatewayID:
         print("\n--- Adding Gateway Invoke Permission to Runtime Execution Roles ---")
         try:
@@ -603,12 +609,12 @@ Note: When creating Gateway, dependent resources (IAM, Cognito, Lambda) must exi
                        help='Create IAM roles')
     parser.add_argument('--cognito', action='store_true',
                        help='Create Cognito user pool and related resources')
-    parser.add_argument('--gateway', action='store_true',
-                       help='Create Gateway and Gateway targets')
+    #parser.add_argument('--gateway', action='store_true',
+    #                   help='Create Gateway and Gateway targets')
     parser.add_argument('--test', '-t', action='store_true',
                        help='Test existing configuration (requires resources in .env)')
-    parser.add_argument('--add-gateway-permission', action='store_true',
-                       help='Add InvokeGateway permission to AgentCore Runtime execution role')
+    #parser.add_argument('--add-gateway-permission', action='store_true',
+    #                   help='Add InvokeGateway permission to AgentCore Runtime execution role')
     
     return parser.parse_args()
 
@@ -617,10 +623,10 @@ if __name__ == "__main__":
     args = parse_arguments()
     
     # Check if add-gateway-permission mode is requested
-    if args.add_gateway_permission:
-        print("Adding Gateway InvokeGateway permission to Runtime execution role...")
-        add_gateway_invoke_permission_to_runtime_role()
-        sys.exit(0)
+    #if args.add_gateway_permission:
+    #    print("Adding Gateway InvokeGateway permission to Runtime execution role...")
+    #    add_gateway_invoke_permission_to_runtime_role()
+    #    sys.exit(0)
     
     # Check if test mode is requested
     if args.test:
@@ -641,27 +647,31 @@ if __name__ == "__main__":
         test_configuration()
     else:
         # If no specific flags, default to --all
-        if not any([args.all, args.lambda_func, args.iam, args.cognito, args.gateway]):
+        #if not any([args.all, args.lambda_func, args.iam, args.cognito, args.gateway]):
+        if not any([args.all, args.iam, args.cognito]):
             args.all = True
         
         # Show what will be created
         print("\nResources to create:")
-        if args.all or args.lambda_func:
-            print("  ✓ Lambda function")
+        # Lambda and Gateway are commented out by default
+        # if args.all or args.lambda_func:
+        #     print("  ✓ Lambda function")
         if args.all or args.iam:
             print("  ✓ IAM roles")
         if args.all or args.cognito:
             print("  ✓ Cognito user pool, clients, and resource server")
-        if args.all or args.gateway:
-            print("  ✓ Gateway and Gateway targets")
+        # if args.all or args.gateway:
+        #     print("  ✓ Gateway and Gateway targets")
+        print("\nNote: Lambda and Gateway creation are disabled by default.")
+        print("      Edit config.py to enable these features.")
         print()
         
         # Create resources based on flags
         resources = create_resources(
-            create_lambda=args.all or args.lambda_func,
+            #create_lambda=args.all or args.lambda_func,
             create_iam=args.all or args.iam,
             create_cognito=args.all or args.cognito,
-            create_gateway=args.all or args.gateway
+            #create_gateway=args.all or args.gateway
         )
         
         print("\n" + "="*60)
@@ -669,9 +679,10 @@ if __name__ == "__main__":
         print("="*60)
         
         # Show additional info if Gateway was created
-        if args.all or args.gateway:
-            print("\n✓ Gateway invoke permissions have been added to Runtime execution roles")
-            print("  Your runtime agent can now access the Gateway!")
+        # COMMENTED OUT: Gateway disabled by default
+        # if args.all or args.gateway:
+        #     print("\n✓ Gateway invoke permissions have been added to Runtime execution roles")
+        #     print("  Your runtime agent can now access the Gateway!")
         
         print("\nTo test the configuration, run:")
         print("  ./config.py -t")

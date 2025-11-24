@@ -335,12 +335,13 @@ def main():
     
     # Show what will be deleted
     resources_to_delete = []
-    if args.all or args.gateway:
-        resources_to_delete.append(f"  ✓ Gateway: {GATEWAY_NAME} (ID: {GATEWAY_ID or 'will search'})")
-        resources_to_delete.append(f"    └─ Gateway Target: {GATEWAY_TARGET_NAME} (ID: {GATEWAY_TARGET_ID or 'N/A'})")
+    # Gateway and Lambda deletion are disabled by default
+    # if args.all or args.gateway:
+    #     resources_to_delete.append(f"  ✓ Gateway: {GATEWAY_NAME} (ID: {GATEWAY_ID or 'will search'})")
+    #     resources_to_delete.append(f"    └─ Gateway Target: {GATEWAY_TARGET_NAME} (ID: {GATEWAY_TARGET_ID or 'N/A'})")
     
-    if args.all or args.lambda_func:
-        resources_to_delete.append(f"  ✓ Lambda function: {LAMBDA_FUNCTION_NAME}")
+    # if args.all or args.lambda_func:
+    #     resources_to_delete.append(f"  ✓ Lambda function: {LAMBDA_FUNCTION_NAME}")
     
     if args.all or args.iam:
         resources_to_delete.append(f"  ✓ IAM roles:")
@@ -351,6 +352,9 @@ def main():
         resources_to_delete.append(f"  ✓ Cognito user pool: {COGNITO_POOL_NAME} (ID: {COGNITO_POOL_ID or 'will search'})")
         resources_to_delete.append(f"    └─ App client: {CLIENT_NAME} (ID: {CLIENT_ID or 'N/A'})")
         resources_to_delete.append(f"    └─ Resource server: {RESOURCE_SERVER_ID}")
+    
+    if args.gateway or args.lambda_func:
+        resources_to_delete.append(f"\n  ⚠️  Note: Gateway and Lambda deletion are disabled by default")
     
     if not resources_to_delete:
         print("  (none)")
@@ -373,11 +377,13 @@ def main():
     print("\nStarting cleanup...")
     
     # Delete in reverse order of creation
-    if args.all or args.gateway:
-        delete_gateway_and_targets()
+    # COMMENTED OUT: Gateway and Lambda deletion disabled by default
+    # Uncomment to enable deletion of these resources
+    # if args.all or args.gateway:
+    #     delete_gateway_and_targets()
     
-    if args.all or args.lambda_func:
-        delete_lambda_function()
+    # if args.all or args.lambda_func:
+    #     delete_lambda_function()
     
     if args.all or args.iam:
         delete_iam_roles()
@@ -385,20 +391,29 @@ def main():
     if args.all or args.cognito:
         delete_cognito_resources()
     
+    # Show warning if Gateway/Lambda flags were used
+    if args.gateway or args.lambda_func:
+        print("\n⚠️  Gateway and Lambda deletion are disabled by default.")
+        print("    Edit cleanup.py to enable deletion of these resources.")
+    
     print("\n" + "=" * 60)
     print("Cleanup completed!")
     print("=" * 60)
     
     # Show summary
     print("\nDeleted resources:")
-    if args.all or args.gateway:
-        print("  ✓ Gateway and targets")
-    if args.all or args.lambda_func:
-        print("  ✓ Lambda function")
+    # Gateway and Lambda deletion are disabled by default
+    # if args.all or args.gateway:
+    #     print("  ✓ Gateway and targets")
+    # if args.all or args.lambda_func:
+    #     print("  ✓ Lambda function")
     if args.all or args.iam:
         print("  ✓ IAM roles")
     if args.all or args.cognito:
         print("  ✓ Cognito resources")
+    
+    print("\nNote: Gateway and Lambda deletion are disabled by default.")
+    print("      Edit cleanup.py to enable deletion of these resources.")
 
 if __name__ == "__main__":
     main()
