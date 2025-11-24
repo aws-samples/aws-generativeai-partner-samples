@@ -51,35 +51,35 @@ Your AWS credentials need the following permissions:
 
 ## Deploy the Example Agent
 
-1. **Configure the agent**:
+1. **Optional: Set up Cognito pool**
 
+  run 'config.py' to configure a Cognito pool automatically. The discovery URL and client ID will be saved in .env file
+
+2. **Configure the agent**:
 ```bash
 cd agentcore_agent
 uv run agentcore configure -e runtime_agent.py
 ```
-
-Select default options, except optionally configure your Cognito pool as OAuth authorizer (or other OAuth provider), and configure Long Term Memory under Memory Configuration.
+Select default options; optionally configure your Cognito pool as OAuth authorizer (or other OAuth provider), and configure Long Term Memory under Memory Configuration.
 
 2. **Deploy to AgentCore Runtime:**
-
+```bash
 uv run agentcore launch
 cd ..
-
+```
 ## Running the Application
 
 ### Using uv (recommended)
-
 ```bash
 uv run streamlit run app.py [-- --auth | --noauth]
 ```
-
 The application will start and be available at `http://localhost:8501`.
 
 If you configured a Cognito pool for authentication, the app will automatically look in 1) .env file and 2) ./agentcore_agent/.bedrock_agentcore.yaml to find Cognito configuration variables. If it finds a Cognito configuration, or if you specify '--auth' on the command line, it will default to using authentication when invoking the agent. If it does not find Cognito configuration, or if you specify '--noauth' on the command line, it will not use any authentication when invoking the agent.
 
 Note: many of the Strands built-in tools require permissions that are not automatically granted to the execution role, because the AgentCore Starter Toolkit follows security best practices and grants least privilege access. For example, the prompt "use aws to list s3 buckets" will fail even if the 'use_aws' tool is configured in the Tool Selection panel because the AgentCore runtime role does not have appropriate permissions. To grant permissions, determine the role name (available in ./agentcore_agent/.bedrock_agentcore.yaml) and attach relevant policies to the role. For example:
 
-```
+```bash
 aws iam attach-role-policy \
     --role-name AmazonBedrockAgentCoreSDKRuntime-us-west-2-xxxxxx \
     --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
