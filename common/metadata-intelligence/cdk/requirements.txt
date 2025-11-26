@@ -1,0 +1,12 @@
+bedrock-agentcore
+strands-agents
+fastapi>=0.104.0
+uvicorn>=0.24.0
+streamlit>=1.28.0
+psycopg2-binary>=2.9.0
+asyncpg>=0.28.0
+sqlalchemy>=2.0.0
+pydantic>=2.0.0
+boto3>=1.34.0
+typing-extensions
+opensearch-py>=2.0.0
