@@ -40,6 +40,10 @@ The TiDB MCP server provides the following tools for database interaction:
 - **list_tables** - List all tables in the database
 - **describe_table** - Get table schema and structure information
 - **get_table_data** - Retrieve data from specific tables
+- **do_create_user** - Create new db user
+- **db_remove_user** - Remove existing db user
+- **show_databases** - Show all databases
+- **switch_database** - Change database to another one, equals to "use another_db"
 
 #### Example Questions You Can Ask:
 
