@@ -48,7 +48,7 @@ pillow==11.3.0
 plotly==6.3.0
 prance==25.4.8.0
 prompt_toolkit==3.0.52
-protobuf==6.32.1
+protobuf==6.33.5
 py-openapi-schema-to-json-schema==0.0.3
 pyarrow==21.0.0
 pycodestyle==2.14.0
