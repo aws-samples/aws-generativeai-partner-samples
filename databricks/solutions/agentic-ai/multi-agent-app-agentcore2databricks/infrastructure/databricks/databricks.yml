@@ -1,0 +1,49 @@
+# Databricks Asset Bundle configuration for agent deployment.
+# Deploy with: databricks bundle deploy --target dev
+
+bundle:
+  name: finserv-multi-agent
+
+variables:
+  catalog:
+    default: finserv_catalog
+  warehouse_id:
+    description: "SQL Warehouse ID for agent queries"
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: ${DATABRICKS_HOST}
+
+  prod:
+    mode: production
+    workspace:
+      host: ${DATABRICKS_HOST}
+
+resources:
+  serving_endpoints:
+    finserv-data-analyst:
+      name: finserv-data-analyst
+      config:
+        served_entities:
+          - entity_name: ${var.catalog}.agents.data_analyst
+            entity_version: "1"
+            scale_to_zero_enabled: true
+        auto_capture_config:
+          catalog_name: ${var.catalog}
+          schema_name: agents
+          enabled: true
+
+    finserv-validator:
+      name: finserv-validator
+      config:
+        served_entities:
+          - entity_name: ${var.catalog}.agents.validator
+            entity_version: "1"
+            scale_to_zero_enabled: true
+        auto_capture_config:
+          catalog_name: ${var.catalog}
+          schema_name: agents
+          enabled: true

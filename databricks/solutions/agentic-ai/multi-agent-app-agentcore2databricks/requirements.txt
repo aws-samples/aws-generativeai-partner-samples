@@ -1,0 +1,34 @@
+# ─── Core Dependencies ───
+boto3>=1.43.0
+pydantic>=2.12.0
+pydantic-settings>=2.14.0
+python-dotenv>=1.2.0
+requests>=2.34.0
+
+# ─── Databricks ───
+databricks-sdk>=0.94.0
+databricks-sql-connector>=4.2.0
+databricks-mcp>=0.9.0
+databricks-agents>=1.10.0
+databricks-openai>=0.15.0
+mlflow>=3.12.0
+
+# ─── AWS / Bedrock ───
+# boto3 (listed above) covers bedrock-runtime and bedrock-agentcore-control
+
+# ─── Agent Frameworks ───
+strands-agents>=1.40.0
+strands-agents-tools>=0.5.0
+
+# ─── Data Generation ───
+faker>=40.0
+pandas>=2.3.0
+
+# ─── Web UI Backend ───
+fastapi>=0.136.0
+uvicorn>=0.47.0
+websockets>=16.0
+
+# ─── Dev / Testing ───
+pytest>=9.0.0
+httpx>=0.28.0
