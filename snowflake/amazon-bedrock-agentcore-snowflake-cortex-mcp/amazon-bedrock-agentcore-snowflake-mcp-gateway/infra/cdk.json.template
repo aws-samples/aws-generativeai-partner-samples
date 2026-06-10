@@ -1,0 +1,14 @@
+{
+  "app": "python3 app.py",
+  "context": {
+    "project_prefix": "CreditRisk2LO",
+    "okta_secret_name": "credit-risk/okta-client-secret",
+    "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
+
+    "snowflake_mcp_endpoint": "PLACEHOLDER — set after running scripts/setup_snowflake_mcp.py (e.g., https://<account>.snowflakecomputing.com/api/v2/databases/<db>/schemas/<schema>/mcp-servers/<server>)",
+
+    "cognito_pool_id": "PLACEHOLDER — set after cdk deploy CreditRisk2LO-Cognito (from stack output CognitoUserPoolId)",
+    "cognito_client_id": "PLACEHOLDER — set after cdk deploy CreditRisk2LO-Cognito (from stack output CognitoWebAppClientId)",
+    "agent_runtime_arn": "PLACEHOLDER — set after agentcore deploy (from deploy output)"
+  }
+}
