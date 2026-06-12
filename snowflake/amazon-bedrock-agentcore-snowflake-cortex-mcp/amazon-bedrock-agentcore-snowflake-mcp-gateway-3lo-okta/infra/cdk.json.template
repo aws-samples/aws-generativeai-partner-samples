@@ -1,0 +1,14 @@
+{
+  "app": "python3 app.py",
+  "context": {
+    "project_prefix": "CreditRisk3LOOkta",
+    "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
+
+    "snowflake_mcp_endpoint": "PLACEHOLDER — set after running scripts/setup_snowflake_mcp.py",
+
+    "cognito_pool_id": "PLACEHOLDER — set after cdk deploy CreditRisk3LOOkta-Cognito",
+    "cognito_client_id": "PLACEHOLDER — set after cdk deploy CreditRisk3LOOkta-Cognito",
+    "agent_runtime_arn": "PLACEHOLDER — set after agentcore deploy",
+    "gateway_url": "PLACEHOLDER — set after cdk deploy CreditRisk3LOOkta-Gateway"
+  }
+}
