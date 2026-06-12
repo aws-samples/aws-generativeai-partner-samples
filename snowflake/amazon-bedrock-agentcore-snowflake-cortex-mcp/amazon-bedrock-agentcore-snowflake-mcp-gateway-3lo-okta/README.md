@@ -24,8 +24,11 @@ The result is a fully auditable, enterprise-ready system: Snowflake's `QUERY_HIS
 ## Getting Started
 
 ```bash
-git clone https://github.com/aws-samples/amazon-bedrock-agentcore-snowflake-mcp-gateway-3lo-okta.git
-cd amazon-bedrock-agentcore-snowflake-mcp-gateway-3lo-okta
+git clone --depth 1 --no-checkout https://github.com/aws-samples/aws-generativeai-partner-samples
+cd aws-generativeai-partner-samples/
+git sparse-checkout set snowflake/amazon-bedrock-agentcore-snowflake-cortex-mcp/amazon-bedrock-agentcore-snowflake-mcp-gateway-3lo-okta
+git checkout
+cd snowflake/amazon-bedrock-agentcore-snowflake-cortex-mcp/amazon-bedrock-agentcore-snowflake-mcp-gateway-3lo-okta
 ```
 
 > No manual install needed — `deploy.sh` handles everything: Python virtual environment, pip dependencies, CDK bootstrap, Snowflake setup, infrastructure deployment, agent deployment, and webapp deployment.
