@@ -24,8 +24,11 @@ The result is a server-to-server integration pattern (2LO) with no end-user cons
 ## Getting Started
 
 ```bash
-git clone https://github.com/aws-samples/amazon-bedrock-agentcore-snowflake-mcp-gateway.git
-cd amazon-bedrock-agentcore-snowflake-mcp-gateway
+git clone --depth 1 --no-checkout https://github.com/aws-samples/aws-generativeai-partner-samples
+cd aws-generativeai-partner-samples/
+git sparse-checkout set snowflake/amazon-bedrock-agentcore-snowflake-cortex-mcp/amazon-bedrock-agentcore-snowflake-mcp-gateway
+git checkout
+cd snowflake/amazon-bedrock-agentcore-snowflake-cortex-mcp/amazon-bedrock-agentcore-snowflake-mcp-gateway
 ```
 
 > No manual install needed — `deploy.sh` handles everything: Python virtual environment, pip dependencies, CDK bootstrap, Snowflake setup, infrastructure deployment, agent deployment, and webapp deployment.
