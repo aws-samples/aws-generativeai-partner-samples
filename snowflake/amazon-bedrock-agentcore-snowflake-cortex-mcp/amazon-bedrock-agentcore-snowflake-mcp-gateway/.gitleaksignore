@@ -1,0 +1,3 @@
+# False positive: okta_secret_name is a Secrets Manager secret NAME, not an actual secret value.
+# The value "credit-risk/okta-client-secret" is a resource identifier, not a credential.
+ed71422043be581a883d1c339c352ea1bcabeb3f:infra/cdk.json:generic-api-key:9
