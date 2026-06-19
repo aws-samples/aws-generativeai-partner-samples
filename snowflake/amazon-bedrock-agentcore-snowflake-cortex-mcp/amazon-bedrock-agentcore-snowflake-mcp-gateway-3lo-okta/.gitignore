@@ -1,0 +1,69 @@
+# Kiro steering (contains user-specific account IDs, profile names)
+.kiro/
+
+# Gitleaks
+.gitleaksignore
+
+# Config files with secrets (generated at runtime or contain IdP secrets)
+gateway_config.json
+snowflake_config.json
+snowflake_mcp_config.json
+snowflake_openapi_config.json
+snowflake_oauth_config.json
+ext_oauth_config.json
+agents_config.json
+okta_config.json
+.env
+
+# Agent deployment config (contains account ARNs)
+agent/gateway_config.json
+agent/runtime_config.json
+agent/.bedrock_agentcore/
+agent/.bedrock_agentcore.yaml
+agent/__pycache__/
+
+# Script output configs
+scripts/cognito_config.json
+scripts/guardrail_config.json
+scripts/kb_config.json
+
+# Agent deployment configs (generated per deployment, contain account-specific values)
+agent/kb_config.json
+agent/guardrail_config.json
+
+# Generated Cedar policies (contain account ARNs)
+cedar_policies/
+
+# Internal planning docs (not relevant to new users)
+APPROACH_DECISION_LOG.md
+BLOG_PROPOSAL_REVISED.md
+CHECKPOINT.md
+P2_DECISIONS.md
+P3_V3_FUTURE.md
+RESOURCE_PLAN.md
+GATEWAY_TARGET_CHEATSHEET.md
+INTEGRATION_PATTERNS.md
+INTEGRATION_PATTERNS_REFERENCE.md
+*_IMPLEMENTATION_GUIDE.md
+
+# Python
+*.pyc
+__pycache__/
+.venv/
+
+# Node
+node_modules/
+build/
+package-lock.json
+
+# Other
+DEVIATIONS_TODO.md
+
+# CDK
+infra/cdk.out/
+infra/cdk.context.json
+infra/cdk.json.bak
+infra/cdk.json
+.env.local
+cdk.out/
+cdk.context.json
