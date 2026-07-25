@@ -44,7 +44,7 @@ opentelemetry-semantic-conventions==0.58b0
 packaging==25.0
 pandas==2.3.2
 pathable==0.4.4
-pillow==11.3.0
+pillow==12.1.1
 plotly==6.3.0
 prance==25.4.8.0
 prompt_toolkit==3.0.52
