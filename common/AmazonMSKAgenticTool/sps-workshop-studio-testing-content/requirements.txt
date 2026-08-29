@@ -27,7 +27,7 @@ jsonschema-specifications==2025.9.1
 kafka-python==2.0.1
 kafka-python3==3.0.0
 MarkupSafe==3.0.2
-mcp==1.14.1
+mcp==1.23.0
 narwhals==2.5.0
 numpy==2.3.3
 opentelemetry-api==1.37.0
