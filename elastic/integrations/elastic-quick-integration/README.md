@@ -8,7 +8,7 @@ A portfolio analyst uses [Amazon Quick](https://aws.amazon.com/quick/) to invest
 
 ## Architecture
 
-![Architecture](static/architecture.png)
+![Architecture: a business analyst uses Amazon Quick, which connects over MCP to Elastic Cloud](static/architecture.png)
 
 1. The analyst asks a question in Amazon Quick chat.
 2. Amazon Quick selects tools from the Elastic MCP server connector. The connector runs [`mcp-remote`](https://www.npmjs.com/package/mcp-remote) on the analyst's machine, which signs in to Elastic with OAuth 2.1 and forwards MCP requests over HTTPS to the Agent Builder MCP endpoint in Kibana.
