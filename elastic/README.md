@@ -21,6 +21,7 @@ Follow these [steps](https://docs.aws.amazon.com/sagemaker/latest/dg/gs-setup-wo
 This directory is subdivided into two sub directories samples and solutions. 
 - **samples** sub directory contains small code samples and snippets which can be used to complete small sets of actions and can be integrated into the user code. 
 - **solutions** sub directory contains solutions for some use cases and industry scenarios, which can be easily customized and built into full scale production systems.
+- **integrations** sub directory contains end-to-end integrations between Elastic and AWS applications.
 
 ### Samples
 
@@ -35,3 +36,9 @@ This directory is subdivided into two sub directories samples and solutions.
 | [RAG with sparse retrieval using Elastic and Amazon Bedrock](./samples/elastic-bedrock-claude-langchain-rag-sparse.ipynb) | Python |
 | [RAG with Evaluation using Elastic and Amazon Bedrock](./samples/elastic-bedrock-claude-langchain-rag-eval.ipynb) | Python |
 | [Hybrid Geospatial RAG using Elastic and Amazon Bedrock](./stream-lit-app/README.md) | Streamlit App using Python |
+
+### Integrations
+
+| Integration | Language |
+| --- | --- |
+| [Market intelligence for business users with Amazon Quick and the Elastic MCP server](./integrations/elastic-quick-integration/README.md) | Python |
