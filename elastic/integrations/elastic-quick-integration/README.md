@@ -56,7 +56,7 @@ The month also shows a defensive sector rotation.
 ## Prerequisites
 
 - An [AWS account](https://docs.aws.amazon.com/accounts/latest/reference/welcome-first-time-user.html)
-- Amazon Quick with an Author Pro subscription, and the Amazon Quick desktop app
+- Amazon Quick with an Author Pro subscription, and the Amazon Quick desktop app for macOS (Apple Silicon) or Windows (x64). See [Getting started with Amazon Quick on desktop](https://docs.aws.amazon.com/quick/latest/userguide/getting-started-desktop.html) for download and installation steps.
 - An [Elastic Cloud Serverless](https://www.elastic.co/cloud/serverless) project (Elasticsearch). OAuth for the MCP server is available on Serverless projects only; Elastic Cloud Hosted deployments on version 9.2 or later can use an API key instead.
 - Python 3.11 or later, Git, and Node.js 18 or later (for `npx mcp-remote`)
 
