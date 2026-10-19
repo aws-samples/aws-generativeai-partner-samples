@@ -11,6 +11,14 @@ import json
 import time
 from pathlib import Path
 
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    load_dotenv(Path(__file__).parent.parent / '.env')
+except ImportError:
+    print("⚠️  python-dotenv not installed. Install with: pip install python-dotenv")
+    print("⚠️  Or set LD_API_KEY environment variable manually")
+
 class LaunchDarklyAIConfigCreator:
     def __init__(self, api_key, base_url="https://app.launchdarkly.com"):
         self.api_key = api_key
@@ -41,7 +49,7 @@ class LaunchDarklyAIConfigCreator:
             print(f"✅ AI Model Config '{model_config_data['key']}' created successfully")
             time.sleep(0.5)  # Rate limiting delay
             return response.json()
-        elif response.status_code == 409:
+        elif response.status_code == 409 or (response.status_code == 400 and "already exists" in response.text.lower()):
             print(f"⚠️  AI Model Config '{model_config_data['key']}' already exists")
             return None
         elif response.status_code == 429:
@@ -54,6 +62,12 @@ class LaunchDarklyAIConfigCreator:
 
     def create_ai_config(self, project_key, config_data):
         """Create AI Config using direct API call"""
+        # First check if it already exists
+        existing_config = self.get_ai_config(project_key, config_data["key"])
+        if existing_config:
+            print(f"⚠️  AI Config '{config_data['key']}' already exists")
+            return existing_config
+            
         url = f"{self.base_url}/api/v2/projects/{project_key}/ai-configs"
         
         payload = {
@@ -70,9 +84,13 @@ class LaunchDarklyAIConfigCreator:
         if response.status_code == 201:
             print(f"✅ AI Config '{config_data['key']}' created successfully")
             return response.json()
-        elif response.status_code == 409 or (response.status_code == 400 and "enabled" in response.text):
+        elif response.status_code == 409 or (response.status_code == 400 and "already exists" in response.text.lower()):
             print(f"⚠️  AI Config '{config_data['key']}' already exists")
             return self.get_ai_config(project_key, config_data["key"])
+        elif response.status_code == 429:
+            print(f"⏳ Rate limited, waiting 2 seconds...")
+            time.sleep(2)
+            return self.create_ai_config(project_key, config_data)
         else:
             print(f"❌ Failed to create AI Config: {response.status_code} - {response.text}")
             return None
@@ -204,12 +222,37 @@ class LaunchDarklyAIConfigCreator:
             print(f"  ❌ Failed to add rules to segment '{segment_key}': {response.status_code} - {response.text}")
             return None
 
-    def update_ai_config_targeting(self, project_key, config_key, environment_key, targeting_rules):
+    def get_ai_config_targeting(self, project_key, config_key):
+        """Get existing AI Config targeting"""
+        url = f"{self.base_url}/api/v2/projects/{project_key}/ai-configs/{config_key}/targeting"
+        response = requests.get(url, headers=self.headers, timeout=self.REQUEST_TIMEOUT)
+        return response.json() if response.status_code == 200 else None
+
+    def update_ai_config_targeting(self, project_key, config_key, environment_key, targeting_rules, force_targeting=False):
         """Update AI Config targeting using direct API call"""
+        # First check existing targeting to avoid duplicates
+        existing_targeting = self.get_ai_config_targeting(project_key, config_key)
+        existing_rules = []
+        
+        if existing_targeting and "environments" in existing_targeting:
+            env_data = existing_targeting["environments"].get(environment_key, {})
+            existing_rules = env_data.get("rules", [])
+            print(f"🔍 Found {len(existing_rules)} existing targeting rules")
+        else:
+            print(f"🔍 No existing targeting found")
+        
         url = f"{self.base_url}/api/v2/projects/{project_key}/ai-configs/{config_key}/targeting"
         
-        # Build targeting instructions from rules
+        # Build targeting instructions from rules, avoiding duplicates
         instructions = []
+        
+        # If there are existing rules, we need to be careful about conflicts
+        if existing_rules and not force_targeting:
+            print(f"⚠️  Found existing targeting rules. To avoid conflicts, skipping targeting setup.")
+            print(f"   Use --force-targeting flag to override existing rules, or update manually in LaunchDarkly UI.")
+            return existing_targeting
+        elif existing_rules and force_targeting:
+            print(f"⚠️  Found existing targeting rules, but --force-targeting specified. Proceeding anyway.")
         
         for rule in targeting_rules:
             instruction = {
@@ -219,6 +262,14 @@ class LaunchDarklyAIConfigCreator:
                 "trackEvents": rule.get("trackEvents", False)
             }
             instructions.append(instruction)
+            print(f"  ➕ Adding new targeting rule for variation {rule.get('variationId')}")
+        
+        if not instructions:
+            if existing_rules:
+                print(f"✅ Targeting rules already exist for environment '{environment_key}' (skipping to avoid conflicts)")
+            else:
+                print(f"✅ All targeting rules already exist for environment '{environment_key}'")
+            return existing_targeting
         
         payload = {
             "environmentKey": environment_key,
@@ -229,7 +280,7 @@ class LaunchDarklyAIConfigCreator:
         response = requests.patch(url, headers=self.headers, json=payload, timeout=self.REQUEST_TIMEOUT)
         
         if response.status_code == 200:
-            print(f"✅ AI Config targeting updated for environment '{environment_key}'")
+            print(f"✅ AI Config targeting updated for environment '{environment_key}' ({len(instructions)} new rules)")
             time.sleep(0.5)  # Rate limiting delay
             return response.json()
         elif response.status_code == 429:
@@ -258,6 +309,27 @@ class LaunchDarklyAIConfigCreator:
         return variation_map
 
 def main():
+    import sys
+    
+    # Check for help
+    if "--help" in sys.argv or "-h" in sys.argv:
+        print("LaunchDarkly AI Config Creator")
+        print("Usage: python create_ai_config.py [options]")
+        print("")
+        print("Options:")
+        print("  -s, --skip-existing    Skip creating resources that already exist")
+        print("                         Only update targeting rules")
+        print("  -f, --force-targeting  Force update targeting rules even if they exist")
+        print("  -h, --help            Show this help message")
+        print("")
+        print("Environment variables:")
+        print("  LD_API_KEY            LaunchDarkly API key (required)")
+        return
+    
+    # Check for command line arguments
+    skip_existing = "--skip-existing" in sys.argv or "-s" in sys.argv
+    force_targeting = "--force-targeting" in sys.argv or "-f" in sys.argv
+    
     # Get API key from environment
     api_key = os.getenv("LD_API_KEY")
     if not api_key:
@@ -277,36 +349,46 @@ def main():
     
     project_key = manifest["project"]["key"]
     
+    if skip_existing:
+        print("⚡ Running in skip-existing mode - will only update targeting rules")
+    
     # Create segments if defined
-    if "segment" in manifest["project"]:
+    if "segment" in manifest["project"] and not skip_existing:
         print(f"🎯 Creating segments in project: {project_key}")
-        environment_key = "production"  # Default environment
+        environment_key = "test"  # Default environment
         
         for segment in manifest["project"]["segment"]:
             creator.create_segment(project_key, environment_key, segment)
     
     # Create AI Model Configs
     ai_config = manifest["project"]["ai-config"]
-    if "ai-model-configs" in ai_config:
+    if "ai-model-configs" in ai_config and not skip_existing:
         print(f"\n🤖 Creating {len(ai_config['ai-model-configs'])} AI Model Configs...")
         for model_config in ai_config["ai-model-configs"]:
             creator.create_ai_model_config(project_key, model_config)
     
     # Create AI Config
     ai_config = manifest["project"]["ai-config"]
-    print(f"\n🚀 Creating AI Config in project: {project_key}")
+    if not skip_existing:
+        print(f"\n🚀 Creating AI Config in project: {project_key}")
+    else:
+        print(f"\n🔍 Getting existing AI Config in project: {project_key}")
     
     config_result = creator.create_ai_config(project_key, ai_config)
     if not config_result:
+        print("❌ Could not get AI Config - cannot proceed with targeting setup")
         return
     
     # Create variations
-    print(f"\n📝 Creating {len(ai_config['variations'])} variations...")
-    variation_map = {}
-    for variation in ai_config["variations"]:
-        result = creator.create_variation(project_key, ai_config["key"], variation)
-        if result and "_id" in result:
-            variation_map[variation["key"]] = result["_id"]  # Store variation ID
+    if not skip_existing:
+        print(f"\n📝 Creating {len(ai_config['variations'])} variations...")
+        variation_map = {}
+        for variation in ai_config["variations"]:
+            result = creator.create_variation(project_key, ai_config["key"], variation)
+            if result and "_id" in result:
+                variation_map[variation["key"]] = result["_id"]  # Store variation ID
+    else:
+        variation_map = {}
     
     # If no variations were created (already exist), get fresh AI Config data
     if not variation_map:
@@ -323,7 +405,7 @@ def main():
     if "rules" in ai_config and variation_map:
         print(f"\n🎯 Setting up AI Config targeting rules...")
         print(f"📊 Available variations: {list(variation_map.keys())}")
-        environment_key = "production"  # Default environment
+        environment_key = "test"  # Default environment
         
         # Build targeting rules with variation indices
         targeting_rules = []
@@ -351,7 +433,7 @@ def main():
         print(f"📋 Total targeting rules created: {len(targeting_rules)}")
         
         if targeting_rules:
-            creator.update_ai_config_targeting(project_key, ai_config["key"], environment_key, targeting_rules)
+            creator.update_ai_config_targeting(project_key, ai_config["key"], environment_key, targeting_rules, force_targeting)
     
     print(f"\n✨ Setup complete!")
 
