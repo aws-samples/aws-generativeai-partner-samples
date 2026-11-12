@@ -38,7 +38,7 @@ Resources:
       FunctionName: QIndexMongoDBIntegration
       CodeUri: ./lambda/
       Handler: lambda_function.lambda_handler
-      Runtime: python3.9
+      Runtime: python3.12
       Timeout: 60
       MemorySize: 256
       Environment:
