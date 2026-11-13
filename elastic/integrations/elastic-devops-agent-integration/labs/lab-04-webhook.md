@@ -29,6 +29,10 @@ The console shows the token once. If you lose it, choose **Actions** > **Edit** 
 **Rotate webhook**. The URL stays the same and you get new credentials, which you can download as
 a `.csv` file. Then update `.env` and re-run the script in step 2.
 
+![Screenshot 6: The Rotate agent space webhook credentials page showing the webhook URL with its ID hidden](images/screenshot-06-aws-webhook.png)
+
+*Screenshot 6. Rotating the webhook. The URL has the form `https://event-ai.<region>.api.aws/webhook/generic/<id>` and does not change; the new credentials can be downloaded once.*
+
 > The webhook is created in the console, not by CloudFormation, so Lab 6 removes it by hand.
 
 ## 2. Create the Elastic objects
@@ -45,6 +49,9 @@ investigation does not start, this is where you look first.
 
 **HTTP connector** `AWS DevOps Agent HTTP` holds the webhook URL and token. Kibana encrypts the
 `Authorization` header as a secret header, so the token never appears in the workflow.
+
+> **Screenshot 7 pending.** Kibana **Stack Management** > **Connectors** showing the `AWS DevOps Agent HTTP` connector of type HTTP, opened to show the secret header field without its value.  
+> When captured, save it as `images/screenshot-07-kibana-connector.png` and replace this note with `![Screenshot 7](images/screenshot-07-kibana-connector.png)`.
 
 ```json
 {
@@ -134,6 +141,9 @@ This prints the rule status, recent cases, workflow executions, and audit record
 **Workflows** > `AWS DevOps Agent - Case Notification` > **Executions** shows the run with all
 seven steps completed, and the case has a comment beginning
 `Forwarded to AWS DevOps Agent by workflow execution`.
+
+> **Screenshot 8 pending.** Kibana **Workflows** > `AWS DevOps Agent - Case Notification` > **Executions**, latest run, with all seven steps completed and their durations.  
+> When captured, save it as `images/screenshot-08-kibana-workflow-execution.png` and replace this note with `![Screenshot 8](images/screenshot-08-kibana-workflow-execution.png)`.
 
 5. In the operator web app, open **Incidents**. A HIGH priority incident carries your case title,
    and **Triggered By** reads `Event Channel`, meaning it arrived through the webhook.

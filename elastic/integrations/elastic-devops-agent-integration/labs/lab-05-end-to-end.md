@@ -47,6 +47,9 @@ Then watch each hop:
 | The case | A comment starting `Forwarded to AWS DevOps Agent` |
 | Operator web app > **Incidents** | A HIGH priority incident, **Triggered By: Event Channel** |
 
+> **Screenshot 9 pending.** Kibana **Observability** > **Cases**, the auto-created case: title `payment-service error spike (...) (Auto-created)`, severity High, and the comment `Forwarded to AWS DevOps Agent by workflow execution ...`.  
+> When captured, save it as `images/screenshot-09-kibana-case.png` and replace this note with `![Screenshot 9](images/screenshot-09-kibana-case.png)`.
+
 Our run, with nobody touching anything after the script started:
 
 | Time (UTC) | What happened | Since the failure |
@@ -61,11 +64,19 @@ Our run, with nobody touching anything after the script started:
 If an investigation of the same problem is still open when a new incident arrives, AWS DevOps Agent
 links the new one to it (status **Linked**) rather than starting again.
 
+![Screenshot 10: Operator web app Incidents page listing investigations triggered by Event Channel, one Completed and one Linked](images/screenshot-10-operator-incident.png)
+
+*Screenshot 10. The **Incidents** page. **Triggered By: Event Channel** means the incident arrived through the webhook. The **Linked** row was attached to an open investigation of the same problem.*
+
 ## 4. Read the findings
 
 Open the incident in the operator web app. The summary tabs hold the incident description, the
 investigation timeline with every Elastic query, the root cause, the mitigation plan, and a review
 page.
+
+![Screenshot 11: Investigation summary with the incident description, a confirmed root cause, a recommended mitigation, and the proposed mitigation plan](images/screenshot-11-operator-findings.png)
+
+*Screenshot 11. The investigation summary: root cause **Confirmed**, mitigation **Recommended** and marked for engineer review.*
 
 Our investigation used 7 of its 12 Elastic tools with no errors, `platform_core_execute_esql` most
 often, and reported:

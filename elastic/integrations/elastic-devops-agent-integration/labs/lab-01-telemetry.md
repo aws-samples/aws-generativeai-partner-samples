@@ -55,7 +55,12 @@ FROM logs-* | WHERE service.name == "payment-service"
 | STATS count = COUNT(*) BY host.name, severity_text
 ```
 
-You should see INFO rows for both hosts. Try the traces too:
+You should see INFO rows for both hosts.
+
+> **Screenshot 3 pending.** Kibana **Discover** in ES|QL mode showing the query above and INFO rows for both `payments-host-a` and `payments-host-b`.  
+> When captured, save it as `images/screenshot-03-kibana-discover-healthy.png` and replace this note with `![Screenshot 3](images/screenshot-03-kibana-discover-healthy.png)`.
+
+Try the traces too:
 
 ```
 FROM traces-* | WHERE service.name == "payment-service" AND span.name == "POST /payments"

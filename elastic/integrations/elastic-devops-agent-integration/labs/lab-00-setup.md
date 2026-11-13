@@ -127,6 +127,9 @@ POST /_security/api_key
 }
 ```
 
+> **Screenshot 1 pending.** Kibana **Developer Tools** > **Console** after running the request: the request on the left, the response on the right with `name: aws-devops-agent-mcp-readonly` and the `encoded` value blurred.  
+> When captured, save it as `images/screenshot-01-kibana-devtools-api-key.png` and replace this note with `![Screenshot 1](images/screenshot-01-kibana-devtools-api-key.png)`.
+
 Copy the `encoded` value into `.env` as `ELASTIC_MCP_API_KEY`. This key reads telemetry and alerts
 and can call Agent Builder tools. It cannot write or delete anything, and it expires in 30 days.
 

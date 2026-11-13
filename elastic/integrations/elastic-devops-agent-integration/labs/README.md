@@ -19,6 +19,14 @@ payment-service (2 hosts)                Elastic Cloud Serverless            AWS
                                               └────── MCP tool calls ◀───────────────┘
 ```
 
+![High-level architecture: AWS telemetry flows into Elastic Cloud Serverless; AWS DevOps Agent queries Elastic through the Elastic managed MCP server and produces findings](images/architecture-draft.png)
+
+*Figure 1. The big picture: telemetry lands in Elastic, and AWS DevOps Agent queries it over MCP.*
+
+![Detailed reference architecture from Elastic: Kibana rules raise alerts, an Elastic workflow and HTTP connector post the incident to the AWS DevOps Agent webhook, which opens an investigation](images/architecture-elastic-partner.png)
+
+*Figure 2. The detailed flow from alert to investigation. The Region shown is an example. Boxes 3 (machine learning) and 10 (automated remediation), and the Amazon EC2 and AWS CloudTrail sources, are optional and not built in these labs; the labs use a local sample service instead.*
+
 Two paths, each with its own lab:
 
 - **Push:** Elastic tells AWS DevOps Agent that something is wrong (Labs 4 and 5).

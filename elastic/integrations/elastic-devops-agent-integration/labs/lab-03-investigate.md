@@ -50,6 +50,10 @@ The agent first states its plan, then runs Elastic queries. A collapsed line suc
 **18 tools · 1 agent used** lists the calls it made; expand it to see each query and its result.
 Tool names start with `elastic_`, the MCP server name from Lab 2.
 
+![Screenshot 5: Operator web app chat: the prompt, the agent's plan, the collapsed tool list, and a table of errors by host](images/screenshot-05-operator-chat.png)
+
+*Screenshot 5. The investigation in the operator web app. The table shows every error on `payments-host-a` and none on `payments-host-b`.*
+
 In our run, the agent reported:
 
 - Every error came from `payments-host-a`. Host-a logged 6,846 errors in the window, which was 100%
