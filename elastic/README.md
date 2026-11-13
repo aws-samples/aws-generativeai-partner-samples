@@ -42,3 +42,4 @@ This directory is subdivided into two sub directories samples and solutions.
 | Integration | Language |
 | --- | --- |
 | [Market intelligence for business users with Amazon Quick and the Elastic MCP server](./integrations/elastic-quick-integration/README.md) | Python |
+| [Automated incident triage with Elastic Observability and AWS DevOps Agent](./integrations/elastic-devops-agent-integration/README.md) | Python, CloudFormation, Bash |

@@ -1,0 +1,99 @@
+name: AWS DevOps Agent - Case Notification
+description: >
+  When an Observability case is created, gather Elastic evidence with ES|QL, record an
+  audit copy, and forward the incident to the AWS DevOps Agent generic webhook.
+enabled: true
+tags: [aws-devops-agent, observability]
+
+triggers:
+  - type: cases.caseCreated
+    on:
+      condition: 'event.owner: "observability"'
+
+steps:
+  # 1. The trigger carries only the case ID; fetch the full case.
+  - name: fetch_case
+    type: cases.getCase
+    with:
+      case_id: "{{ event.caseId }}"
+
+  # 2. Evidence for the agent. AWS DevOps Agent ignores the webhook `data` field
+  #    for investigation context, so the evidence goes into `description`.
+  - name: errors_by_host
+    type: elasticsearch.esql.query
+    with:
+      query: >
+        FROM logs-* | WHERE @timestamp >= NOW() - 15 minutes AND severity_text == "ERROR"
+        | STATS errors = COUNT(*) BY service.name, host.name
+        | SORT errors DESC | LIMIT 5
+
+  - name: top_error_messages
+    type: elasticsearch.esql.query
+    with:
+      query: >
+        FROM logs-* | WHERE @timestamp >= NOW() - 15 minutes AND severity_text == "ERROR"
+        | EVAL message = SUBSTRING(REPLACE(body.text, "payment_id=[^ :]+", "payment_id=<id>"), 0, 160)
+        | STATS occurrences = COUNT(*) BY service.name, message
+        | SORT occurrences DESC | LIMIT 3
+
+  # 3. Build the AWS DevOps Agent payload once; it is both audited and sent.
+  #    Required fields: eventType, incidentId, action, priority, title. An invalid
+  #    enum value still returns HTTP 200 but no investigation starts.
+  - name: build_payload
+    type: data.set
+    with:
+      payload:
+        eventType: incident
+        incidentId: "{{ event.caseId }}"
+        action: created
+        priority: "{% case steps.fetch_case.output.case.severity %}{% when 'critical' %}CRITICAL{% when 'high' %}HIGH{% when 'medium' %}MEDIUM{% else %}LOW{% endcase %}"
+        title: "{{ steps.fetch_case.output.case.title }}"
+        description: |-
+          Elastic Observability case {{ event.caseId }} ({{ steps.fetch_case.output.case.severity }} severity).
+          {{ steps.fetch_case.output.case.description }}
+
+          Evidence from Elastic (last 15 minutes):
+          Errors by service and host:
+          {% for r in steps.errors_by_host.output.values %}- {{ r[1] }} on {{ r[2] }}: {{ r[0] }} errors
+          {% endfor %}
+          Most frequent error messages:
+          {% for r in steps.top_error_messages.output.values %}- [{{ r[0] }}x] {{ r[1] }}: {{ r[2] }}
+          {% endfor %}
+          Investigate with the Elastic Observability MCP tools (logs-*, traces-*, metrics-*): confirm which
+          hosts are affected, compare host CPU/memory and DB span latency for the same window, and
+          recommend the next diagnostic step.
+        timestamp: "{{ steps.fetch_case.output.case.created_at }}"
+        service: Elastic Observability
+        data:
+          caseStatus: "{{ steps.fetch_case.output.case.status }}"
+          caseSeverity: "{{ steps.fetch_case.output.case.severity }}"
+          workflowExecutionId: "{{ execution.id }}"
+
+  # 4. Audit trail: exactly what was sent, per case.
+  - name: audit_notification
+    type: elasticsearch.index
+    with:
+      index: devops-agent-notifications
+      document:
+        "@timestamp": "{{ 'now' | date: '%Y-%m-%dT%H:%M:%S.%LZ' }}"
+        case_id: "{{ event.caseId }}"
+        workflow_execution_id: "{{ execution.id }}"
+        payload: "${{ steps.build_payload.output.payload }}"
+
+  # 5. Send it. URL and the secret Authorization header live in the HTTP
+  #    connector, not in this YAML.
+  - name: send_to_aws_devops_agent
+    type: http
+    connector-id: aws-devops-agent-http
+    with:
+      method: POST
+      headers:
+        Content-Type: application/json
+      body: "${{ steps.build_payload.output.payload }}"
+
+  # 6. Leave a breadcrumb on the case for responders working in Kibana.
+  - name: comment_on_case
+    type: cases.addComment
+    with:
+      case_id: "{{ event.caseId }}"
+      comment: "Forwarded to AWS DevOps Agent by workflow execution {{ execution.id }}."

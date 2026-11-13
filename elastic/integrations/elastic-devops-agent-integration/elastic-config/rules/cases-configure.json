@@ -1,0 +1,14 @@
+{
+  "owner": "observability",
+  "connector": { "id": "none", "name": "none", "type": ".none", "fields": null },
+  "closure_type": "close-by-user",
+  "templates": [
+    {
+      "key": "aws-devops-agent-high",
+      "name": "AWS DevOps Agent - high severity",
+      "description": "Cases opened by payment-service alert rules; forwarded to AWS DevOps Agent as HIGH priority.",
+      "tags": ["aws-devops-agent"],
+      "caseFields": { "severity": "high", "tags": ["aws-devops-agent", "payment-service"] }
+    }
+  ]
+}

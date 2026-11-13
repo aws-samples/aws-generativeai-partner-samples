@@ -1,0 +1,89 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Elastic Observability + AWS DevOps Agent sample. Creates an AWS DevOps Agent Space,
+  its IAM roles, the operator web app (IAM auth), and associates this AWS account
+  as the monitored account.
+
+Parameters:
+  AgentSpaceName:
+    Type: String
+    Default: 2026-11-10-elastic-aws-devops-agent-space
+  Project:
+    Type: String
+    Default: elastic-aws-devops-agent
+  RoleSuffix:
+    Type: String
+    Description: Keeps the (global) IAM role names unique per region/date
+    Default: workshop
+
+Resources:
+  # Role the agent assumes to investigate resources in this account.
+  AgentSpaceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "DevOpsAgentRole-AgentSpace-${AWS::Region}-${RoleSuffix}"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: { Service: aidevops.amazonaws.com }
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals: { "aws:SourceAccount": !Ref AWS::AccountId }
+              ArnLike: { "aws:SourceArn": !Sub "arn:aws:aidevops:${AWS::Region}:${AWS::AccountId}:agentspace/*" }
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AIDevOpsAgentAccessPolicy
+      Tags:
+        - { Key: project, Value: !Ref Project }
+
+  # Role used by the operator web app (IAM auth flow).
+  OperatorAppRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "DevOpsAgentRole-WebappAdmin-${AWS::Region}-${RoleSuffix}"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: { Service: aidevops.amazonaws.com }
+            Action: [sts:AssumeRole, sts:TagSession]
+            Condition:
+              StringEquals: { "aws:SourceAccount": !Ref AWS::AccountId }
+              ArnLike: { "aws:SourceArn": !Sub "arn:aws:aidevops:${AWS::Region}:${AWS::AccountId}:agentspace/*" }
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AIDevOpsOperatorAppAccessPolicy
+      Tags:
+        - { Key: project, Value: !Ref Project }
+
+  AgentSpace:
+    Type: AWS::DevOpsAgent::AgentSpace
+    Properties:
+      Name: !Ref AgentSpaceName
+      Description: Elastic Observability + AWS DevOps Agent hands-on workshop
+      OperatorApp:
+        Iam:
+          OperatorAppRoleArn: !GetAtt OperatorAppRole.Arn
+      Tags:
+        - { Key: project, Value: !Ref Project }
+
+  # Associate this account as the primary (monitor) account.
+  AwsAccountAssociation:
+    Type: AWS::DevOpsAgent::Association
+    Properties:
+      AgentSpaceId: !GetAtt AgentSpace.AgentSpaceId
+      ServiceId: aws
+      Configuration:
+        Aws:
+          AccountId: !Ref AWS::AccountId
+          AccountType: monitor
+          AssumableRoleArn: !GetAtt AgentSpaceRole.Arn
+
+Outputs:
+  AgentSpaceId:
+    Value: !GetAtt AgentSpace.AgentSpaceId
+  AgentSpaceArn:
+    Value: !GetAtt AgentSpace.Arn
+  AgentSpaceRoleArn:
+    Value: !GetAtt AgentSpaceRole.Arn
+  OperatorAppRoleArn:
+    Value: !GetAtt OperatorAppRole.Arn

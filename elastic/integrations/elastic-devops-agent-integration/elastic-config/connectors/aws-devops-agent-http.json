@@ -1,0 +1,13 @@
+{
+  "name": "AWS DevOps Agent HTTP",
+  "connector_type_id": ".http",
+  "config": {
+    "url": "${DEVOPS_AGENT_WEBHOOK_URL}",
+    "headers": { "Content-Type": "application/json" },
+    "hasAuth": false,
+    "authType": null
+  },
+  "secrets": {
+    "secretHeaders": { "Authorization": "Bearer ${DEVOPS_AGENT_WEBHOOK_TOKEN}" }
+  }
+}
