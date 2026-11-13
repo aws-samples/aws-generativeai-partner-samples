@@ -65,7 +65,7 @@ DELETE /_security/api_key
 { "name": "aws-devops-agent-setup" }
 ```
 
-Delete the ingest key in **Stack Management** > **API keys**. Then delete the local file that held
+Delete the ingest key in **Admin and settings** > **API keys**. Then delete the local file that held
 all three:
 
 ```bash
@@ -85,7 +85,7 @@ lsof -nP -iTCP:8001 -iTCP:8002 -sTCP:LISTEN
 ```
 
 Both should return nothing. In the AWS DevOps Agent console, **Agent spaces** no longer lists your
-Agent Space. In Kibana, **Stack Management** > **API keys** no longer lists the workshop keys.
+Agent Space. In Kibana, **Admin and settings** > **API keys** no longer lists the workshop keys.
 
 ## Troubleshooting
 

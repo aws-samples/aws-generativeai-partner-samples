@@ -42,7 +42,7 @@ depend on them.
 
 In Kibana, confirm you can open:
 
-- **Stack Management** > **API keys**
+- **Admin and settings** > **API keys**
 - **Observability** > **Alerts** > **Manage rules**
 - **Workflows**
 
@@ -95,7 +95,7 @@ only do a little damage.
 Create all three while signed in to Kibana as a user. Elasticsearch does not let one API key
 create another key that has privileges, so no script can do this step for you.
 
-**Setup key.** **Stack Management** > **API keys** > **Create API key**. Name it
+**Setup key.** **Admin and settings** > **API keys** > **Create API key**. Name it
 `aws-devops-agent-setup`, set a 1-day expiration, and leave privileges unrestricted so it inherits
 yours. Copy the encoded value into `.env` as `ELASTIC_ADMIN_API_KEY`.
 
@@ -127,8 +127,9 @@ POST /_security/api_key
 }
 ```
 
-> **Screenshot 1 pending.** Kibana **Developer Tools** > **Console** after running the request: the request on the left, the response on the right with `name: aws-devops-agent-mcp-readonly` and the `encoded` value blurred.  
-> When captured, save it as `images/screenshot-01-kibana-devtools-api-key.png` and replace this note with `![Screenshot 1](images/screenshot-01-kibana-devtools-api-key.png)`.
+![Screenshot 1: Kibana Developer Tools console with the POST _security/api_key request for the read-only key](images/screenshot-01-kibana-devtools-api-key.png)
+
+*Screenshot 1. The read-only key request in Kibana **Developer Tools** > **Console**. Run it, and the response on the right contains the `encoded` value.*
 
 Copy the `encoded` value into `.env` as `ELASTIC_MCP_API_KEY`. This key reads telemetry and alerts
 and can call Agent Builder tools. It cannot write or delete anything, and it expires in 30 days.

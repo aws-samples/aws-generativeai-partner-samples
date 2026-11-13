@@ -57,8 +57,9 @@ FROM logs-* | WHERE service.name == "payment-service"
 
 You should see INFO rows for both hosts.
 
-> **Screenshot 3 pending.** Kibana **Discover** in ES|QL mode showing the query above and INFO rows for both `payments-host-a` and `payments-host-b`.  
-> When captured, save it as `images/screenshot-03-kibana-discover-healthy.png` and replace this note with `![Screenshot 3](images/screenshot-03-kibana-discover-healthy.png)`.
+![Screenshot 3: Kibana Discover in ES|QL mode showing about 5,200 INFO log lines for each of payments-host-a and payments-host-b](images/screenshot-03-kibana-discover-healthy.png)
+
+*Screenshot 3. Healthy traffic in Kibana **Discover**: roughly equal INFO counts on both hosts and no errors.*
 
 Try the traces too:
 

@@ -47,8 +47,9 @@ Then watch each hop:
 | The case | A comment starting `Forwarded to AWS DevOps Agent` |
 | Operator web app > **Incidents** | A HIGH priority incident, **Triggered By: Event Channel** |
 
-> **Screenshot 9 pending.** Kibana **Observability** > **Cases**, the auto-created case: title `payment-service error spike (...) (Auto-created)`, severity High, and the comment `Forwarded to AWS DevOps Agent by workflow execution ...`.  
-> When captured, save it as `images/screenshot-09-kibana-case.png` and replace this note with `![Screenshot 9](images/screenshot-09-kibana-case.png)`.
+![Screenshot 9: Kibana Cases list with the auto-created high-severity case, and the case detail showing the workflow's Forwarded to AWS DevOps Agent comment](images/screenshot-09-kibana-case.png)
+
+*Screenshot 9. The case the rule opened: severity **High**, status **Open**. In the case activity, the workflow's comment `Forwarded to AWS DevOps Agent by workflow execution ...` confirms the hand-off.*
 
 Our run, with nobody touching anything after the script started:
 

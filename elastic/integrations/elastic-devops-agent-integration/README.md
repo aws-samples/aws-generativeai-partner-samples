@@ -246,7 +246,7 @@ script on a machine only you use.
    ./scripts/99-teardown.sh --yes --purge-telemetry
    ```
    Narrow the scope with `--aws`, `--elastic`, or `--local`.
-3. Revoke the Elastic API keys in Kibana (**Developer Tools** or **Stack Management** >
+3. Revoke the Elastic API keys in Kibana (**Developer Tools** or **Admin and settings** >
    **API keys**): `aws-devops-agent-mcp-readonly`, `aws-devops-agent-setup`, and the ingest key.
 4. Delete `.env`.
 

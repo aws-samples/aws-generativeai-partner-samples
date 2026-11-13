@@ -50,8 +50,9 @@ investigation does not start, this is where you look first.
 **HTTP connector** `AWS DevOps Agent HTTP` holds the webhook URL and token. Kibana encrypts the
 `Authorization` header as a secret header, so the token never appears in the workflow.
 
-> **Screenshot 7 pending.** Kibana **Stack Management** > **Connectors** showing the `AWS DevOps Agent HTTP` connector of type HTTP, opened to show the secret header field without its value.  
-> When captured, save it as `images/screenshot-07-kibana-connector.png` and replace this note with `![Screenshot 7](images/screenshot-07-kibana-connector.png)`.
+![Screenshot 7: Kibana Connectors page listing the AWS DevOps Agent HTTP connector of type HTTP, compatible with Workflows and Agent Builder](images/screenshot-07-kibana-connector.png)
+
+*Screenshot 7. The `AWS DevOps Agent HTTP` connector in **Admin and settings** > **Connectors**. Its type is **HTTP**, and Workflows can use it.*
 
 ```json
 {
@@ -142,8 +143,9 @@ This prints the rule status, recent cases, workflow executions, and audit record
 seven steps completed, and the case has a comment beginning
 `Forwarded to AWS DevOps Agent by workflow execution`.
 
-> **Screenshot 8 pending.** Kibana **Workflows** > `AWS DevOps Agent - Case Notification` > **Executions**, latest run, with all seven steps completed and their durations.  
-> When captured, save it as `images/screenshot-08-kibana-workflow-execution.png` and replace this note with `![Screenshot 8](images/screenshot-08-kibana-workflow-execution.png)`.
+![Screenshot 8: Kibana workflow editor with execution history and a successful run showing all seven steps and their durations](images/screenshot-08-kibana-workflow-execution.png)
+
+*Screenshot 8. A successful workflow run. **Executions** lists each run; the details panel shows every step with its duration. This run is the alert-driven one from Lab 5: 3 seconds in total, with `send_to_aws_devops_agent` taking 967 ms. The earlier **Failed** runs were made before the webhook URL was configured.*
 
 5. In the operator web app, open **Incidents**. A HIGH priority incident carries your case title,
    and **Triggered By** reads `Event Channel`, meaning it arrived through the webhook.
