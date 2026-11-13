@@ -1,0 +1,42 @@
+{
+  "name": "payment-service error spike",
+  "rule_type_id": ".es-query",
+  "consumer": "observability",
+  "schedule": {
+    "interval": "1m"
+  },
+  "tags": [
+    "aws-devops-agent",
+    "payment-service"
+  ],
+  "params": {
+    "searchType": "esqlQuery",
+    "esqlQuery": {
+      "esql": "FROM logs-* | WHERE service.name == \"payment-service\" AND severity_text == \"ERROR\" | STATS errors = COUNT(*) BY host.name | WHERE errors > 50"
+    },
+    "timeField": "@timestamp",
+    "timeWindowSize": 5,
+    "timeWindowUnit": "m",
+    "size": 0,
+    "thresholdComparator": ">",
+    "threshold": [
+      0
+    ]
+  },
+  "actions": [
+    {
+      "id": "system-connector-.cases",
+      "params": {
+        "subAction": "run",
+        "subActionParams": {
+          "groupingBy": [],
+          "timeWindow": "7d",
+          "reopenClosedCases": false,
+          "templateId": "aws-devops-agent-high",
+          "maximumCasesToOpen": 5,
+          "autoPushCase": false
+        }
+      }
+    }
+  ]
+}

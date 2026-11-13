@@ -1,0 +1,23 @@
+{
+  "name": "aws-devops-agent-mcp-readonly",
+  "expiration": "30d",
+  "role_descriptors": {
+    "devops_agent_mcp_readonly": {
+      "cluster": ["monitor_inference"],
+      "indices": [
+        {
+          "names": ["logs-*", "metrics-*", "traces-*", ".alerts-*"],
+          "privileges": ["read", "view_index_metadata"]
+        }
+      ],
+      "applications": [
+        {
+          "application": "kibana-.kibana",
+          "privileges": ["feature_agentBuilder.read", "feature_actions.read"],
+          "resources": ["space:default"]
+        }
+      ]
+    }
+  },
+  "metadata": { "purpose": "AWS DevOps Agent MCP access to Elastic Agent Builder", "project": "elastic-aws-devops-agent" }
+}

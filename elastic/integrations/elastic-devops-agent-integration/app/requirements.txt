@@ -1,0 +1,7 @@
+# Tested versions (2026-11-11, Python 3.13)
+fastapi==0.162.4
+uvicorn==0.54.0
+sqlalchemy==2.0.57          # OTel SQLAlchemy instrumentation supports <2.1
+elastic-opentelemetry==1.19.0
+# Optional PostgreSQL driver (only needed when DB_URL points at PostgreSQL, e.g. on Amazon RDS)
+psycopg[binary]==3.3.8

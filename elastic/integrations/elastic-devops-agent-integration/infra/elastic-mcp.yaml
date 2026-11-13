@@ -1,0 +1,58 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Elastic Observability + AWS DevOps Agent sample. Registers the Elastic Agent Builder
+  MCP server with AWS DevOps Agent (API key auth) and attaches it to the Agent Space.
+
+Parameters:
+  AgentSpaceId:
+    Type: String
+  McpEndpoint:
+    Type: String
+    Description: https://<project>.kb.<region>.aws.elastic.cloud/api/agent_builder/mcp
+  ElasticApiKey:
+    Type: String
+    NoEcho: true
+    Description: "Base64 Elastic API key, sent as Authorization: ApiKey <key>"
+  Tools:
+    Type: CommaDelimitedList
+    Description: MCP tool names the Agent Space may call
+  Project:
+    Type: String
+    Default: elastic-aws-devops-agent
+
+Resources:
+  ElasticMcpServer:
+    Type: AWS::DevOpsAgent::Service
+    Properties:
+      ServiceType: mcpserver
+      Name: elastic
+      ServiceDetails:
+        MCPServer:
+          Name: elastic
+          Endpoint: !Ref McpEndpoint
+          Description: Elastic Agent Builder MCP server (Elastic Cloud Serverless Observability)
+          AuthorizationConfig:
+            ApiKey:
+              ApiKeyName: elastic-api-key
+              ApiKeyHeader: Authorization
+              ApiKeyValue: !Sub "ApiKey ${ElasticApiKey}"
+      Tags:
+        - { Key: project, Value: !Ref Project }
+
+  ElasticMcpAssociation:
+    Type: AWS::DevOpsAgent::Association
+    Properties:
+      AgentSpaceId: !Ref AgentSpaceId
+      ServiceId: !GetAtt ElasticMcpServer.ServiceId
+      Configuration:
+        MCPServer:
+          Name: elastic
+          Endpoint: !Ref McpEndpoint
+          Description: Elastic Observability telemetry via Agent Builder MCP
+          Tools: !Ref Tools
+
+Outputs:
+  ServiceId:
+    Value: !GetAtt ElasticMcpServer.ServiceId
+  AssociationId:
+    Value: !GetAtt ElasticMcpAssociation.AssociationId
