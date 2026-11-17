@@ -1,20 +1,22 @@
-# Define IAM policy for CloudWatch Logs
+data "aws_caller_identity" "logs_current" {}
+
+# Define IAM policy for CloudWatch Logs, scoped to Lambda log groups
 resource "aws_iam_policy" "confluent_mongo_aws_cloudwatch_logs_policy" {
   name        = "lambda-cloudwatch-logs-policy"
   description = "Allows Lambda functions to write logs to CloudWatch Logs"
-  
+
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
-        Effect    = "Allow",
-        Action    = [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents",
-          "logs:DescribeLogStreams"
-        ],
-        Resource  = "*"
+        Effect   = "Allow",
+        Action   = ["logs:CreateLogGroup", "logs:DescribeLogStreams"],
+        Resource = "arn:aws:logs:${var.region}:${data.aws_caller_identity.logs_current.account_id}:log-group:/aws/lambda/*"
+      },
+      {
+        Effect   = "Allow",
+        Action   = ["logs:CreateLogStream", "logs:PutLogEvents"],
+        Resource = "arn:aws:logs:${var.region}:${data.aws_caller_identity.logs_current.account_id}:log-group:/aws/lambda/*:log-stream:*"
       }
     ]
   })

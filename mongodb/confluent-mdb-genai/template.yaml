@@ -17,7 +17,7 @@ Resources:
     Properties:
       CodeUri: semantic_filter/
       Handler: app.lambda_handler
-      Runtime: python3.9
+      Runtime: python3.12
       Timeout: 360
       Architectures:
         - x86_64
@@ -30,7 +30,7 @@ Resources:
     Properties:
       CodeUri: review_summarizer/
       Handler: app.lambda_handler
-      Runtime: python3.9
+      Runtime: python3.12
       Timeout: 360
       Architectures:
         - x86_64
