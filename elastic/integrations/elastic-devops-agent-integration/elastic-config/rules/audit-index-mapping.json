@@ -1,0 +1,11 @@
+{
+  "mappings": {
+    "dynamic_templates": [{ "strings": { "match_mapping_type": "string", "mapping": { "type": "keyword", "ignore_above": 1024 } } }],
+    "properties": {
+      "@timestamp": { "type": "date" },
+      "case_id": { "type": "keyword" },
+      "workflow_execution_id": { "type": "keyword" },
+      "payload": { "properties": { "description": { "type": "text" }, "title": { "type": "text", "fields": { "keyword": { "type": "keyword" } } } } }
+    }
+  }
+}
