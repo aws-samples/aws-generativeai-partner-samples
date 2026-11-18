@@ -26,26 +26,26 @@ connection pool, and a mitigation plan for an engineer to review.
 
 ## Architecture
 
-```
-┌──────────────────────────────┐        ┌────────────────────────────┐      ┌──────────────────────┐
-│ payment-service (2 hosts)    │        │ Elastic Cloud Serverless   │      │ AWS DevOps Agent     │
-│ FastAPI + EDOT Python        │ OTLP   │                            │      │                      │
-│ /admin/fault switch          ├───────▶│ logs- metrics- traces-*    │      │ Agent Space          │
-└──────────────────────────────┘        │          │                 │      │        │             │
-                                        │   alert rule (ES|QL)       │      │        │             │
-                                        │          │                 │      │        │             │
-                                        │   case (high severity)     │      │        │             │
-                                        │          │                 │      │        │             │
-                                        │   Elastic Workflow         │      │        │             │
-                                        │   ├ fetch case             │      │        │             │
-                                        │   ├ 2 ES|QL evidence       │      │        │             │
-                                        │   ├ audit index            │      │        ▼             │
-                                        │   └ HTTP connector ────────┼─────▶│  investigation       │
-                                        │                            │      │        │             │
-                                        │   Agent Builder MCP ◀──────┼──────┼────────┘             │
-                                        │   (12 read-only tools)     │ MCP  │  findings + plan     │
-                                        └────────────────────────────┘      └──────────────────────┘
-```
+![Reference architecture: AWS telemetry flows into Elasticsearch; Kibana alerting rules raise alerts; an Elastic workflow and HTTP connector post the incident to the AWS DevOps Agent webhook, which creates an incident and starts an investigation](labs/images/architecture-elastic-partner.png)
+
+1. Workloads send telemetry to Elastic. The diagram shows Amazon EC2 metrics and AWS CloudTrail
+   logs; this sample uses a local `payment-service` instrumented with EDOT Python instead.
+2. Elasticsearch stores logs, metrics, and traces.
+3. *Optional, not built here:* Elastic machine learning anomaly detection.
+4. A Kibana alerting rule evaluates the data every minute. This sample uses one ES|QL rule:
+   `payment-service` errors by host.
+5. The rule raises an alert and opens a high-severity case.
+6. An Elastic workflow runs on the new case, gathers evidence with two ES|QL queries, writes an
+   audit copy, and builds the incident payload.
+7. A Kibana HTTP connector holds the webhook URL and the bearer token as an encrypted secret.
+8. The connector posts the incident to the AWS DevOps Agent webhook over HTTPS.
+9. AWS DevOps Agent creates an incident and starts an investigation. While it investigates, it
+   queries Elastic through the Elastic Agent Builder MCP server with a read-only key and a 12-tool
+   allowlist. This pull path is not drawn in the diagram.
+10. *Optional, not built here:* automated remediation. In this sample, the agent proposes a
+    mitigation plan for an engineer to review.
+
+The Region in the diagram is an example; any Region where AWS DevOps Agent is available works.
 
 ## What's in this sample
 
