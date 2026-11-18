@@ -19,8 +19,22 @@ export LD_PROJECT_KEY="your-project-key"
 ```
 
 ### 3. Run the Script
+
+#### Recommended: Skip Existing Resources
 ```bash
+python create_ai_config.py --skip-existing
+```
+
+#### Other Options
+```bash
+# Normal mode (may encounter conflicts)
 python create_ai_config.py
+
+# Force targeting updates (use with caution)
+python create_ai_config.py --skip-existing --force-targeting
+
+# Show help
+python create_ai_config.py --help
 ```
 
 ## 📋 What the Script Does
@@ -70,13 +84,28 @@ Example:
 
 ## 🔧 Troubleshooting
 
-### Common Issues
+### Fixed Issues (Latest Version)
+
+The script has been updated to handle common errors:
+
+1. **Resources already exist**: Gracefully handles existing segments, AI model configs, AI configs, and variations
+2. **YAML syntax error**: Fixed malformed YAML in the manifest file
+3. **Targeting rule conflicts**: Smart conflict detection to avoid duplicate targeting rules
+4. **Internal service errors**: Improved error handling and resource existence checking
+
+### Common Issues & Solutions
 
 **Missing Environment Variables**
 ```
 ❌ LD_API_KEY environment variable not set
 ```
-Solution: Set your LaunchDarkly API key
+Solution: Set your LaunchDarkly API key or add to `.env` file
+
+**"Already exists" errors**
+```
+❌ Segment already exists
+```
+Solution: Use `--skip-existing` flag
 
 **Variation Key Mismatch**
 ```
@@ -84,11 +113,17 @@ Solution: Set your LaunchDarkly API key
 ```
 Solution: Check that segment names match variation keys (use hyphens, not underscores)
 
-**Duplicate Rules**
+**Duplicate Targeting Rules**
 ```
 ❌ Failed to update targeting: 400 - new rule is exact duplicate
 ```
-Solution: Delete existing AI Config or modify targeting rules
+Solution: Script now automatically detects and skips duplicate rules
+
+**Internal Service Errors**
+```
+❌ 500 Internal Server Error
+```
+Solution: Usually resolved by improved error handling in latest version
 
 ### Debug Mode
 Add detailed logging by modifying the script or checking the console output for step-by-step progress.
@@ -103,11 +138,17 @@ The `ai_config_manifest.yaml` defines:
 
 ## 🔄 Re-running the Script
 
-The script handles existing resources:
-- **Segments**: Skips if already exist
+The script intelligently handles existing resources:
+- **Segments**: Skips if already exist (with `--skip-existing`)
 - **AI Config**: Skips if already exists  
 - **Variations**: Skips if already exist
-- **Targeting**: Updates existing rules
+- **Targeting**: Detects and avoids duplicate rules
+
+### Command Line Options
+
+- `--skip-existing`: Skip creating resources that already exist (recommended)
+- `--force-targeting`: Force targeting rule updates even if rules exist (use with caution)
+- `--help`: Show all available options
 
 ## 🛡️ Security
 

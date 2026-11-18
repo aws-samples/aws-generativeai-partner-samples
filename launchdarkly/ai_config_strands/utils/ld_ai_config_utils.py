@@ -177,7 +177,7 @@ def load_ai_config_prompt(agent_role, ai_config_id=None, fallback_file_path=None
         fallback_config = AIConfig(
             enabled=True,
             model=ModelConfig(
-                name="anthropic.claude-v2:1",
+                name="us.anthropic.claude-3-5-sonnet-20241022-v2:0",
                 parameters={"temperature": 0.7, "max_tokens": 2000},
             ),
             messages=[LDMessage(role="system", content=fallback_prompt)],
