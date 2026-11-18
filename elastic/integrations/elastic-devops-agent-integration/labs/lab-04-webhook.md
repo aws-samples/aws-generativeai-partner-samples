@@ -130,8 +130,9 @@ Disable the rule first, so it does not open its own case while you are testing.
    `payment-service error spike`.
 2. Inject the fault and wait 5 minutes: `./scripts/run-local.sh fault`
 3. Open **Observability** > **Cases** > **Create case**. Title it
-   `payment-service errors on payments-host-a`, set **Severity** to **High**, add the tag
-   `e2e-test` so Lab 6 cleans it up, and create it.
+   `payment-service errors on payments-host-a`, set **Severity** to **High**, add the tags
+   `aws-devops-agent` and `e2e-test`, and create it. The workflow forwards only cases tagged
+   `aws-devops-agent`; `e2e-test` lets Lab 6 clean the case up.
 4. Check each hop:
 
 ```bash

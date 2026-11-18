@@ -10,7 +10,7 @@ set -a; source .env; set +a
 : "${MCP_URL:?}" "${ELASTIC_MCP_API_KEY:?}" "${AGENT_SPACE_ID:?}"
 REGION="${AWS_REGION:?set AWS_REGION in .env}"
 export AWS_DEFAULT_OUTPUT=json
-STACK="${MCP_STACK_NAME:-elastic-devops-agent-mcp-$(date +%Y%m%d)}"
+STACK="${MCP_STACK_NAME:-elastic-devops-agent-mcp-stack}"
 
 READONLY_TOOLS="observability_get_logs,observability_get_hosts,observability_get_services,observability_get_alerts,observability_get_traces,observability_get_log_change_points,observability_get_metric_change_points,platform_core_execute_esql,platform_core_generate_esql,platform_core_list_indices,platform_core_get_index_mapping,platform_core_search"
 TOOLS="${TOOLS:-$READONLY_TOOLS}"
@@ -23,7 +23,7 @@ if [[ "$TOOLS" == "all" ]]; then
 fi
 echo "Allowing $(tr ',' '\n' <<<"$TOOLS" | wc -l | tr -d ' ') tools"
 
-aws cloudformation deploy --region "$REGION" --stack-name "$STACK" \
+aws cloudformation deploy --region "$REGION" --stack-name "$STACK" --no-fail-on-empty-changeset \
   --template-file infra/elastic-mcp.yaml \
   --parameter-overrides AgentSpaceId="$AGENT_SPACE_ID" McpEndpoint="$MCP_URL" \
     ElasticApiKey="$ELASTIC_MCP_API_KEY" Tools="$TOOLS" \

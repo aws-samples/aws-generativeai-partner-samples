@@ -1,7 +1,8 @@
 # Lab screenshots
 
 Images used by the lab guides. Redact before adding: AWS account IDs, Agent Space IDs, IAM role
-ARNs, user names and emails, Elastic project hostnames, API key values, webhook IDs and tokens.
+ARNs, emails, other people's names, Elastic user IDs and project hostnames, API key values, webhook
+IDs and tokens. The sample author's own name may appear (for example, "Reported by" in screenshot 9).
 
 | # | File | Used in | Status |
 |---|---|---|---|

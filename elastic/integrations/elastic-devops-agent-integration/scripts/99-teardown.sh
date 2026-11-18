@@ -5,7 +5,7 @@
 #   ./scripts/99-teardown.sh [--aws] [--elastic] [--local] [--purge-telemetry] [--yes]
 #   (no component flags = --aws --elastic --local)
 #
-#   --aws              CloudFormation stacks tagged project=elastic-aws-devops-agent in AWS_REGION
+#   --aws              The CloudFormation stacks named by MCP_STACK_NAME and STACK_NAME in AWS_REGION
 #                      (MCP registration stacks first, then Agent Space stacks; deleting the Agent
 #                      Space also removes its webhook, associations and IAM roles).
 #   --elastic          Workflow, alert rule, HTTP connector, case template, audit index, and
@@ -32,7 +32,6 @@ for a in "$@"; do case "$a" in
   *) echo "unknown option: $a" >&2; exit 2 ;; esac; done
 (( DO_AWS + DO_ELASTIC + DO_LOCAL == 0 )) && DO_AWS=1 DO_ELASTIC=1 DO_LOCAL=1
 
-PROJECT_TAG=elastic-aws-devops-agent
 WORKFLOW_NAME="AWS DevOps Agent - Case Notification"
 RULE_ID=payment-service-errors
 CONNECTOR_ID=aws-devops-agent-http
@@ -40,8 +39,11 @@ CASE_TEMPLATE_KEY=aws-devops-agent-high
 AUDIT_INDEX=devops-agent-notifications
 CASE_TAGS='["aws-devops-agent","e2e-test","workflow-test"]'
 
+FAILED=0
 run() {  # execute with --yes; otherwise print the command with credentials redacted
-  if (( YES )); then "$@" >/dev/null; else printf '  [dry-run] %s\n' "$*" | sed -E 's/(Authorization: ApiKey )[^ ]+/\1***/g'; fi
+  if (( YES )); then
+    "$@" >/dev/null || { echo "  FAILED: $(printf '%s' "$*" | sed -E 's/(Authorization: ApiKey )[^ ]+/\1***/g' | cut -c1-120)" >&2; FAILED=1; }
+  else printf '  [dry-run] %s\n' "$*" | sed -E 's/(Authorization: ApiKey )[^ ]+/\1***/g'; fi
 }
 hdr() { printf '\n== %s\n' "$1"; }
 
@@ -49,15 +51,15 @@ hdr() { printf '\n== %s\n' "$1"; }
 if (( DO_AWS )); then
   REGION="${AWS_REGION:?set AWS_REGION}"
   hdr "AWS: account $(aws sts get-caller-identity --query Account --output text), region $REGION"
-  STACKS=$(aws cloudformation describe-stacks --region "$REGION" --output json | python3 -I -c '
-import json, sys
-tag = sys.argv[1]
-stacks = [s for s in json.load(sys.stdin)["Stacks"]
-          if {"Key": "project", "Value": tag} in s.get("Tags", []) or s["StackName"].startswith("elastic-devops-agent-")]
-# MCP registrations depend on the Agent Space: delete them first.
-for s in sorted(stacks, key=lambda s: 0 if "-mcp-" in s["StackName"] else 1):
-    print(s["StackName"], s["StackStatus"])' "$PROJECT_TAG")
-  if [[ -z $STACKS ]]; then echo "  no workshop stacks"; fi
+  # Only the stacks this copy of the sample created, by exact name (never by prefix or tag), so a
+  # shared account is safe. MCP registration first: it depends on the Agent Space.
+  STACKS=""
+  for name in "${MCP_STACK_NAME:-elastic-devops-agent-mcp-stack}" "${STACK_NAME:-elastic-devops-agent-space}"; do
+    status=$(aws cloudformation describe-stacks --region "$REGION" --stack-name "$name" \
+      --query "Stacks[0].StackStatus" --output text 2>/dev/null) || continue
+    STACKS+="$name $status"$'\n'
+  done
+  if [[ -z $STACKS ]]; then echo "  no stacks named ${MCP_STACK_NAME:-elastic-devops-agent-mcp-stack} or ${STACK_NAME:-elastic-devops-agent-space}"; fi
   while read -r name status; do
     [[ -z ${name:-} ]] && continue
     echo "  stack $name ($status)"
@@ -128,5 +130,8 @@ if (( DO_LOCAL )); then
 fi
 
 echo
-if (( YES )); then echo "Teardown complete."; else echo "Dry run only. Re-run with --yes to apply."; fi
+if (( YES )); then
+  if (( FAILED )); then echo "Teardown finished with errors; see FAILED lines above." >&2; exit 1; fi
+  echo "Teardown complete."
+else echo "Dry run only. Re-run with --yes to apply."; fi
 echo "Manual follow-ups: revoke the Elastic API key(s) used here; delete AWS CLI profiles if no longer needed."

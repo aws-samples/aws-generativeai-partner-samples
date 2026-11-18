@@ -7,21 +7,16 @@ Description: >
 Parameters:
   AgentSpaceName:
     Type: String
-    Default: 2026-11-10-elastic-aws-devops-agent-space
+    Default: elastic-devops-agent-space
   Project:
     Type: String
     Default: elastic-aws-devops-agent
-  RoleSuffix:
-    Type: String
-    Description: Keeps the (global) IAM role names unique per region/date
-    Default: workshop
 
 Resources:
   # Role the agent assumes to investigate resources in this account.
   AgentSpaceRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub "DevOpsAgentRole-AgentSpace-${AWS::Region}-${RoleSuffix}"
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -40,7 +35,6 @@ Resources:
   OperatorAppRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub "DevOpsAgentRole-WebappAdmin-${AWS::Region}-${RoleSuffix}"
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:

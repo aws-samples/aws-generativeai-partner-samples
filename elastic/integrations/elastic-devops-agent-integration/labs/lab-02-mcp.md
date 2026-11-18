@@ -141,6 +141,6 @@ replace it: create a new key with the Lab 0 request, update `ELASTIC_MCP_API_KEY
 | `AccessDenied` on `AWS::DevOpsAgent::Service` | Your identity cannot register MCP servers, or your account is not permitted to register third-party MCP servers. Check with your account administrator |
 | The MCP Server section shows 0 connected | The endpoint or key is wrong. Re-run the `tools/list` check from Lab 0, then re-run the script |
 | `set AWS_REGION in .env` | `AWS_REGION` is missing from `.env` |
-| Role name already exists | A previous stack in another Region used the same role name. The template includes the Region in role names; re-deploy with a different `STACK_NAME` |
+| Stack is in `ROLLBACK_COMPLETE` | A previous deploy failed. Delete the stack, fix the cause shown in the stack events, and deploy again |
 
 **Next:** [Lab 3: Investigate a failure by hand](lab-03-investigate.md)

@@ -51,13 +51,13 @@ If **Workflows** is missing, your project is on the wrong tier.
 ## 3. Get the code
 
 ```bash
-git clone <repository-url>
-cd <repository-directory>
+git clone https://github.com/aws-samples/aws-generativeai-partner-samples.git
+cd aws-generativeai-partner-samples/elastic/integrations/elastic-devops-agent-integration
 cp .env.example .env
 chmod 600 .env
 ```
 
-`.env` holds every setting the scripts read. It is excluded from git, and `chmod 600` stops other
+Run every command in these labs from this folder. `.env` holds every setting the scripts read. It is excluded from git, and `chmod 600` stops other
 users on the machine from reading it.
 
 ## 4. Fill in the addresses

@@ -101,6 +101,8 @@ For a guided path with checkpoints and troubleshooting at every step, start with
 ### 1. Configure
 
 ```bash
+git clone https://github.com/aws-samples/aws-generativeai-partner-samples.git
+cd aws-generativeai-partner-samples/elastic/integrations/elastic-devops-agent-integration
 cp .env.example .env
 chmod 600 .env
 ```
@@ -173,6 +175,14 @@ pressure.
 
 ## Notes
 
+**Only workshop cases are forwarded.** The workflow runs on every new Observability case but sends
+only cases tagged `aws-devops-agent` to AWS DevOps Agent. The rule's case template adds the tag;
+add it yourself to any case you create by hand. Other cases in the project are left alone.
+
+**Case settings are merged, not replaced.** The setup script adds one case template
+(`aws-devops-agent-high`) to your Observability case settings and leaves existing templates, the
+case connector, and the closure setting unchanged. Teardown removes only that template.
+
 **Why the workflow triggers on a case, not on every alert.** A case groups repeated alerts, so AWS
 DevOps Agent receives one incident per problem, and responders in Kibana get a record of what was
 sent. To trigger on alerts instead, change the workflow trigger to `type: alert` and attach the
@@ -204,7 +214,7 @@ distinct from the Webhook connector (`.webhook`). Kibana rejects the connector u
 | Control | How this sample applies it |
 |---|---|
 | Least privilege for Elastic | AWS DevOps Agent authenticates with an API key scoped to `read` and `view_index_metadata` on `logs-*`, `metrics-*`, `traces-*`, `.alerts-*`, plus read-only Agent Builder access. A write attempt returns HTTP 403 |
-| Least privilege for AWS | The Agent Space role uses the AWS managed policy `AIDevOpsAgentAccessPolicy`; both roles trust only `aidevops.amazonaws.com`, restricted by account and Agent Space ARN |
+| Least privilege for AWS | The Agent Space role uses the AWS managed policy `AIDevOpsAgentAccessPolicy`; both roles trust only `aidevops.amazonaws.com`, restricted to your account and to Agent Space ARNs in your Region (`agentspace/*`) |
 | Tool allowlist | The Agent Space may call 12 read-only Elastic tools out of the 54 the MCP server offers. Tools that change state are excluded |
 | Secrets at rest | Kibana stores the webhook token as an encrypted secret header, so it never appears in the workflow. The Elastic key is a `NoEcho` CloudFormation parameter |
 | Secrets in the repo | All credentials live in `.env`, which is excluded from git. `.env.example` holds placeholders only |
@@ -240,8 +250,8 @@ script on a machine only you use.
    ```bash
    ./scripts/99-teardown.sh
    ```
-   It selects stacks tagged `project=elastic-aws-devops-agent` or named `elastic-devops-agent-*`.
-   Confirm every stack listed is yours, then delete:
+   It deletes only the two stacks named by `MCP_STACK_NAME` and `STACK_NAME` in `.env`, never
+   stacks matched by prefix or tag. Confirm the plan, then delete:
    ```bash
    ./scripts/99-teardown.sh --yes --purge-telemetry
    ```

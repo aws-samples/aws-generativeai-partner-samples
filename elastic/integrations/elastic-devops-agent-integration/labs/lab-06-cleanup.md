@@ -22,9 +22,9 @@ The script is a dry run by default. It changes nothing and prints a plan:
 ./scripts/99-teardown.sh
 ```
 
-Read the list. It selects CloudFormation stacks tagged `project=elastic-aws-devops-agent` or named
-`elastic-devops-agent-*`, so confirm every stack it lists is yours and not a colleague's in a
-shared account.
+Read the list. It deletes only the two CloudFormation stacks named by `MCP_STACK_NAME` and
+`STACK_NAME` in your `.env`, by exact name. Stacks that merely share a prefix or tag, such as a
+colleague's in a shared account, are never touched.
 
 The dry run masks credentials in the commands it prints, so it is safe to share the output when you
 need help.
