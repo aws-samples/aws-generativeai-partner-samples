@@ -57,7 +57,7 @@ FROM logs-* | WHERE service.name == "payment-service"
 
 You should see INFO rows for both hosts.
 
-![Screenshot 3: Kibana Discover in ES|QL mode showing about 5,200 INFO log lines for each of payments-host-a and payments-host-b](images/screenshot-03-kibana-discover-healthy.png)
+![Screenshot 3: Kibana Discover ES|QL query counting payment-service logs by host for payments-host-a and payments-host-b](images/screenshot-03-kibana-discover-healthy.png)
 
 *Screenshot 3. Healthy traffic in Kibana **Discover**: roughly equal INFO counts on both hosts and no errors.*
 
@@ -93,8 +93,9 @@ Host-a now reports errors and failed requests; host-b stays clean. Two numbers m
 of the workshop:
 
 - **DB span latency** on host-a jumps to roughly 1,500 ms at p95, against tens of milliseconds on host-b.
-- **CPU and memory stay flat on both hosts.** The service is not short of resources. It is short of
-  connections. An investigation that only looks at CPU and memory will find nothing.
+- **Process CPU and memory stay flat on both hosts.** The service process is not short of resources.
+  It is short of connections. An investigation that only looks at CPU and memory will find nothing.
+  The sample sends process metrics only, not host metrics.
 
 Clear the fault before moving on:
 
