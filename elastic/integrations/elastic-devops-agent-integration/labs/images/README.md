@@ -15,9 +15,10 @@ IDs and tokens. The sample author's own name may appear (for example, "Reported 
 | 5 | `screenshot-05-operator-chat.png` | [Lab 3](../lab-03-investigate.md) | Included |
 | 6 | `screenshot-06-aws-webhook.png` | [Lab 4](../lab-04-webhook.md) | Included (Agent Space ID removed) |
 | 7 | `screenshot-07-kibana-connector.png` | [Lab 4](../lab-04-webhook.md) | Included |
-| 8 | `screenshot-08-kibana-workflow-execution.png` | [Lab 4](../lab-04-webhook.md) | Included (Elastic user ID removed) |
-| 9 | `screenshot-09-kibana-case.png` | [Lab 5](../lab-05-end-to-end.md) | Included |
+| 8 | `screenshot-08-kibana-workflow-execution.png` | [Lab 4](../lab-04-webhook.md) | Included (cropped for readability; Elastic user ID removed) |
+| 9 | `screenshot-09-kibana-case.png` | [Lab 5](../lab-05-end-to-end.md) | Included (cropped for readability) |
 | 10 | `screenshot-10-operator-incident.png` | [Lab 5](../lab-05-end-to-end.md) | Included |
 | 11 | `screenshot-11-operator-findings.png` | [Lab 5](../lab-05-end-to-end.md) | Included |
+| - | `capability-providers-elastic.png` | [Lab 2](../lab-02-mcp.md) | Included |
 
 To replace a screenshot, save the new image here under the same file name. Redact it first.

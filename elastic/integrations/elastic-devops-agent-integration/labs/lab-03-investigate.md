@@ -50,7 +50,7 @@ The agent first states its plan, then runs Elastic queries. A collapsed line suc
 **18 tools · 1 agent used** lists the calls it made; expand it to see each query and its result.
 Tool names start with `elastic_`, the MCP server name from Lab 2.
 
-![Screenshot 5: Operator web app chat: the prompt, the agent's plan, the collapsed tool list, and a table of errors by host](images/screenshot-05-operator-chat.png)
+![Screenshot 5: AWS DevOps Agent chat showing payments-host-a with 6,846 Elastic error logs and payments-host-b with none](images/screenshot-05-operator-chat.png)
 
 *Screenshot 5. The investigation in the operator web app. The table shows every error on `payments-host-a` and none on `payments-host-b`.*
 
@@ -60,7 +60,8 @@ In our run, the agent reported:
   of all errors and 77% of its own log lines. `payments-host-b` logged none.
 - All errors were the same failure: `QueuePool limit of size 2 overflow 0 reached, connection timed
   out, timeout 2.00`.
-- CPU and memory were not elevated on host-a.
+- Process-level CPU and memory were not elevated on host-a. The agent could check only the service
+  process, because the sample sends no host metrics.
 - Leading hypothesis: host-a's connection pool is too small or configured differently from host-b.
   Suggested next step: compare the pool settings on both hosts and find when the errors began.
 

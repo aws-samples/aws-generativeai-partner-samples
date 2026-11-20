@@ -39,7 +39,7 @@ Copy the `AgentSpaceId` from the output table into `.env` as `AGENT_SPACE_ID`.
 Open the AWS DevOps Agent console in your Region and go to **Agent spaces**. Your Agent Space is
 listed with a **Launch via IAM** button, which opens the operator web app. You use that in Lab 3.
 
-![Screenshot 2: The Agent spaces page listing the new Agent Space with a Launch via IAM button](images/screenshot-02-aws-agent-space.png)
+![Screenshot 2: AWS DevOps Agent console showing the Elastic Observability Agent Space and the Launch via IAM action](images/screenshot-02-aws-agent-space.png)
 
 *Screenshot 2. Your Agent Space in the AWS DevOps Agent console.*
 
@@ -66,6 +66,30 @@ AuthorizationConfig:
 
 `ElasticApiKey` is a `NoEcho` parameter, so CloudFormation masks it in the console and in stack
 events. The script does pass it on the command line, so run this on a machine only you use.
+
+> **Prefer the console?** Elastic publishes a partner-managed connector for AWS DevOps Agent, so
+> you can do this step without the script:
+>
+> 1. In the AWS DevOps Agent console, choose **Capability Providers**, find **Elastic**, and choose
+>    **Register**.
+> 2. Enter a short name (12 characters or fewer, and not `elastic` if the script already registered
+>    one), your Kibana project alias and Region, and the `ELASTIC_MCP_API_KEY` value. The console
+>    adds the `ApiKey` prefix.
+> 3. In your Agent Space, open **Capabilities**, choose **Add** in the **Telemetry** section, and
+>    add the server. Select the 12 tools in the table below and mark them **Read only**. You can
+>    also install Elastic's recommended skills.
+> 4. The console then shows **Set up alert webhook**. Save the URL and token now; you'll use them in
+>    Lab 4 instead of creating a webhook there.
+>
+> Use either the console or the script, not both. The rest of the labs work the same either way,
+> except that `99-teardown.sh` can't remove a console registration ([Lab 6](lab-06-cleanup.md)
+> covers that). Details:
+> [Using partner-managed connectors](https://docs.aws.amazon.com/devopsagent/latest/userguide/configuring-integrations-and-knowledge-using-partner-managed-connectors.html)
+> and the [Elastic connector](https://aws.github.io/tools-for-devops-agent/connectors/elastic/).
+
+![Elastic partner-managed connector card on the AWS DevOps Agent Capability Providers page, with a Register button](images/capability-providers-elastic.png)
+
+*The Elastic connector on the **Capability Providers** page. **Partner-managed** means Elastic publishes and maintains it; **Register** starts the console setup.*
 
 ## 3. Understand the allowlist
 
@@ -104,9 +128,9 @@ to comma-separated tool names.
 
 In the console, open your Agent Space and choose the **Capabilities** tab. The **MCP Server**
 section lists `elastic` with **54 available / 12 connected**: the server offers 54 tools, and this
-Agent Space may use 12.
+Agent Space may use 12. If you used the console connector, look in the **Telemetry** section instead.
 
-![Screenshot 4: Agent Space Capabilities tab, MCP Server section, listing the elastic source with 54 available and 12 connected tools](images/screenshot-04-aws-mcp-server.png)
+![Screenshot 4: Elastic Agent Builder MCP server attached to the AWS DevOps Agent Space with 12 of 54 tools connected](images/screenshot-04-aws-mcp-server.png)
 
 *Screenshot 4. The Elastic MCP server attached to the Agent Space, with 12 of its 54 tools allowed.*
 

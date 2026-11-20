@@ -19,11 +19,11 @@ payment-service (2 hosts)                Elastic Cloud Serverless            AWS
                                               └────── MCP tool calls ◀───────────────┘
 ```
 
-![High-level architecture: AWS telemetry flows into Elastic Cloud Serverless; AWS DevOps Agent queries Elastic through the Elastic managed MCP server and produces findings](images/architecture-draft.png)
+![Architecture diagram: AWS telemetry flows to Elastic Cloud Serverless, queried by AWS DevOps Agent over MCP](images/architecture-draft.png)
 
 *Figure 1. The big picture: telemetry lands in Elastic, and AWS DevOps Agent queries it over MCP.*
 
-![Detailed reference architecture from Elastic: Kibana rules raise alerts, an Elastic workflow and HTTP connector post the incident to the AWS DevOps Agent webhook, which opens an investigation](images/architecture-elastic-partner.png)
+![Elastic alert rule to Elastic Workflow to the AWS DevOps Agent webhook, with incident and remediation steps](images/architecture-elastic-partner.png)
 
 *Figure 2. The detailed flow from alert to investigation. The Region shown is an example. Boxes 3 (machine learning) and 10 (automated remediation), and the Amazon EC2 and AWS CloudTrail sources, are optional and not built in these labs; the labs use a local sample service instead.*
 
@@ -58,7 +58,8 @@ shared versus per-participant resources, timing, cost, and the failure modes tha
 ## Cost
 
 AWS DevOps Agent bills for each second an agent actively works; each investigation in these labs
-runs 5 to 8 minutes. Elastic Cloud Serverless bills for ingest and retention. The CloudFormation
+took about 4 to 8 minutes of wall-clock time; billing counts only active agent time, which can be
+lower. Elastic Cloud Serverless bills for ingest and retention. The CloudFormation
 stacks and IAM roles are free. Lab 6 removes everything. See
 [AWS DevOps Agent pricing](https://aws.amazon.com/devops-agent/pricing/) and
 [Elastic Cloud Serverless pricing](https://www.elastic.co/pricing).

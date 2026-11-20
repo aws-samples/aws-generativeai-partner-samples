@@ -37,6 +37,19 @@ Have participants check with their account administrator in advance.
 Also confirm their Elastic project is Serverless Observability on the **Complete** tier. If
 **Workflows** is missing from the Kibana menu, Labs 4 and 5 cannot run.
 
+## Choosing a registration path
+
+Lab 2 offers two ways to register Elastic with AWS DevOps Agent. Pick one for the whole group, so
+everyone's later labs match.
+
+| Path | Good for | Watch for |
+|---|---|---|
+| **Script** (`05-register-elastic-mcp.sh`) | Groups comfortable at a terminal; repeatable runs | Lab 4 creates the webhook by hand |
+| **Console** (Elastic partner connector in **Capability Providers**) | Participants who prefer not to use the AWS CLI; also shows Elastic's recommended skills | The webhook comes from **Set up alert webhook**; Lab 6 step 1b removes the registration by hand |
+
+Don't mix them in one Agent Space. MCP server names must be unique in an account, and an Agent
+Space has only one API key webhook.
+
 ## Shared versus per-participant resources
 
 | Resource | Recommendation |
@@ -46,13 +59,14 @@ Also confirm their Elastic project is Serverless Observability on the **Complete
 | Agent Space | One per participant. An Agent Space allows only one API key webhook |
 
 If you must share an Elastic project, have participants use separate Kibana spaces and adjust the
-object names in `elastic/` and the MCP path (`/s/<space>/api/agent_builder/mcp`).
+object names in `elastic-config/` and the MCP path (`/s/<space>/api/agent_builder/mcp`).
 
 ## Cost
 
 AWS DevOps Agent bills per agent-second of active work. Each participant runs two investigations of
-5 to 8 minutes, plus some chat. Elastic Cloud Serverless bills for ingest and retention; the sample
-sends 12 requests per second per participant. CloudFormation and IAM are free. Check current rates
+about 4 to 8 minutes of wall-clock time, plus some chat. Billing counts only active agent time,
+which can be lower; the operator web app's **Incidents** page shows the total used. Elastic Cloud
+Serverless bills for ingest and retention; the sample sends 12 requests per second per participant. CloudFormation and IAM are free. Check current rates
 at [AWS DevOps Agent pricing](https://aws.amazon.com/devops-agent/pricing/) and
 [Elastic Cloud Serverless pricing](https://www.elastic.co/pricing), and tell participants what they
 are spending before Lab 3.
@@ -82,6 +96,7 @@ The difference is evidence in the incident description, not a better model.
 | `syntax error near unexpected token` | Angle brackets left in `.env` | Replace with real values |
 | Creating the read-only key fails | Request ran with an API key, not a signed-in user | Use Kibana Dev Tools as a user |
 | `AccessDenied` on `AWS::DevOpsAgent::Service` | Account not permitted to register third-party MCP servers | Account administrator. Participants can still do Labs 1, 4, and part of 5 |
+| Registration fails: name already in use | The script and the console both registered `elastic` in the same account | Use one path, or give the console registration a different name |
 | Stack already exists or is owned by someone else | Two participants using the same `STACK_NAME` in one account and Region | Unique `STACK_NAME` and `MCP_STACK_NAME` per participant |
 | No data in Elastic | Wrong `OTLP_ENDPOINT` or `OTLP_API_KEY` | Check `.run/payments-host-a.log` |
 | No new case on a repeat run | Open case from a previous lab | Close it; the rule groups for 7 days |

@@ -10,6 +10,12 @@ This is the push path: Elastic tells AWS DevOps Agent that something is wrong.
 
 ## 1. Create the webhook in AWS DevOps Agent
 
+> **Used the console connector in Lab 2?** Skip the rest of this section. You already have a
+> webhook from **Set up alert webhook**. Put the URL in `.env` as `DEVOPS_AGENT_WEBHOOK_URL`, and
+> only the token that follows `Bearer ` as `DEVOPS_AGENT_WEBHOOK_TOKEN`, because the Kibana HTTP
+> connector adds the `Bearer ` prefix itself. Then continue with step 2. If you lose the token,
+> rotate the webhook as described below; the URL stays the same.
+
 A webhook is an address another system can post events to. An Agent Space supports one API key
 webhook and one hash-based message authentication code (HMAC) webhook. This lab uses the API key
 type.
@@ -29,7 +35,7 @@ The console shows the token once. If you lose it, choose **Actions** > **Edit** 
 **Rotate webhook**. The URL stays the same and you get new credentials, which you can download as
 a `.csv` file. Then update `.env` and re-run the script in step 2.
 
-![Screenshot 6: The Rotate agent space webhook credentials page showing the webhook URL with its ID hidden](images/screenshot-06-aws-webhook.png)
+![Screenshot 6: Rotating the AWS DevOps Agent generic webhook credentials; the webhook URL stays the same](images/screenshot-06-aws-webhook.png)
 
 *Screenshot 6. Rotating the webhook. The URL has the form `https://event-ai.<region>.api.aws/webhook/generic/<id>` and does not change; the new credentials can be downloaded once.*
 
@@ -50,7 +56,7 @@ investigation does not start, this is where you look first.
 **HTTP connector** `AWS DevOps Agent HTTP` holds the webhook URL and token. Kibana encrypts the
 `Authorization` header as a secret header, so the token never appears in the workflow.
 
-![Screenshot 7: Kibana Connectors page listing the AWS DevOps Agent HTTP connector of type HTTP, compatible with Workflows and Agent Builder](images/screenshot-07-kibana-connector.png)
+![Screenshot 7: Kibana Connectors page showing the AWS DevOps Agent HTTP connector used by Elastic Workflows](images/screenshot-07-kibana-connector.png)
 
 *Screenshot 7. The `AWS DevOps Agent HTTP` connector in **Admin and settings** > **Connectors**. Its type is **HTTP**, and Workflows can use it.*
 
@@ -100,11 +106,12 @@ triggers:
       condition: 'event.owner: "observability"'
 ```
 
-Its seven steps, in order:
+Its eight steps, in order:
 
 | Step | What it does |
 |---|---|
 | `fetch_case` | The trigger carries only a case ID, so the workflow fetches the full case |
+| `only_tagged_cases` | Continues only if the case has the `aws-devops-agent` tag; other Observability cases stop here |
 | `errors_by_host` | ES\|QL: which services and hosts are producing errors |
 | `top_error_messages` | ES\|QL: the most frequent error messages, with payment IDs masked so identical errors group together |
 | `build_payload` | Builds the incident, mapping Elastic case severity to AWS DevOps Agent priority |
@@ -141,19 +148,19 @@ Disable the rule first, so it does not open its own case while you are testing.
 
 This prints the rule status, recent cases, workflow executions, and audit records. In Kibana,
 **Workflows** > `AWS DevOps Agent - Case Notification` > **Executions** shows the run with all
-seven steps completed, and the case has a comment beginning
+eight steps completed, and the case has a comment beginning
 `Forwarded to AWS DevOps Agent by workflow execution`.
 
-![Screenshot 8: Kibana workflow editor with execution history and a successful run showing all seven steps and their durations](images/screenshot-08-kibana-workflow-execution.png)
+![Screenshot 8: Elastic Workflows execution history: seven green steps forwarding a case to the AWS DevOps Agent webhook](images/screenshot-08-kibana-workflow-execution.png)
 
-*Screenshot 8. A successful workflow run. **Executions** lists each run; the details panel shows every step with its duration. This run is the alert-driven one from Lab 5: 3 seconds in total, with `send_to_aws_devops_agent` taking 967 ms. The earlier **Failed** runs were made before the webhook URL was configured.*
+*Screenshot 8. A successful workflow run. **Executions** lists each run; the details panel shows every step with its duration. This run is the alert-driven one from Lab 5: 3 seconds in total, with `send_to_aws_devops_agent` taking 967 ms. The earlier **Failed** runs were made before the webhook URL was configured. This screenshot was taken before the `only_tagged_cases` gate was added, so it shows seven steps; current runs show eight.*
 
 5. In the operator web app, open **Incidents**. A HIGH priority incident carries your case title,
    and **Triggered By** reads `Event Channel`, meaning it arrived through the webhook.
 
-For reference, our run: case created at 19:05:27.7 UTC, workflow started 2 seconds later, all seven
-steps done in about 2 seconds (the HTTP call took 923 ms), incident created at 19:05:31.4, about 4
-seconds after the case.
+For reference, our run (before the gate step was added): case created at 19:05:27.7 UTC, workflow
+started 2 seconds later, all seven steps done in about 2 seconds (the HTTP call took 923 ms),
+incident created at 19:05:31.4, about 4 seconds after the case.
 
 ## 4. Reset
 
@@ -174,6 +181,7 @@ tells you to enable it.
 
 | What you see | What to check |
 |---|---|
+| **Add webhook** says the Agent Space already has an API key webhook | The console connector already created it. Use its URL and token instead of creating another |
 | Connector creation fails with `authType must be null` | Set `"authType": null` when `hasAuth` is `false` |
 | The `http` step returns HTTP 401 | The webhook token is wrong or was rotated. Update `.env` and re-run the script |
 | The `http` step reports a `webhookId` pattern error | `DEVOPS_AGENT_WEBHOOK_URL` is still a placeholder |

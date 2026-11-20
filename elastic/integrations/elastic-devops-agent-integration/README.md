@@ -18,7 +18,8 @@ investigation about 5 minutes after the failure began, naming the failing host, 
 connection pool, and a mitigation plan for an engineer to review.
 
 > **Cost:** AWS DevOps Agent bills for each second an agent actively works on an investigation or
-> chat; each investigation here runs 5 to 8 minutes. Elastic Cloud Serverless bills for ingest and
+> chat; each investigation here took about 4 to 8 minutes of wall-clock time, and billing counts
+> only active agent time, which can be lower. Elastic Cloud Serverless bills for ingest and
 > retention. The AWS CloudFormation stacks and AWS Identity and Access Management (IAM) roles are
 > free. See [AWS DevOps Agent pricing](https://aws.amazon.com/devops-agent/pricing/) and
 > [Elastic Cloud Serverless pricing](https://www.elastic.co/pricing). [Clean up](#clean-up) removes
@@ -26,7 +27,7 @@ connection pool, and a mitigation plan for an engineer to review.
 
 ## Architecture
 
-![Reference architecture: AWS telemetry flows into Elasticsearch; Kibana alerting rules raise alerts; an Elastic workflow and HTTP connector post the incident to the AWS DevOps Agent webhook, which creates an incident and starts an investigation](labs/images/architecture-elastic-partner.png)
+![Elastic alert rule to Elastic Workflow to the AWS DevOps Agent webhook, with incident and remediation steps](labs/images/architecture-elastic-partner.png)
 
 1. Workloads send telemetry to Elastic. The diagram shows Amazon EC2 metrics and AWS CloudTrail
    logs; this sample uses a local `payment-service` instrumented with EDOT Python instead.
@@ -35,8 +36,9 @@ connection pool, and a mitigation plan for an engineer to review.
 4. A Kibana alerting rule evaluates the data every minute. This sample uses one ES|QL rule:
    `payment-service` errors by host.
 5. The rule raises an alert and opens a high-severity case.
-6. An Elastic workflow runs on the new case, gathers evidence with two ES|QL queries, writes an
-   audit copy, and builds the incident payload.
+6. An Elastic workflow runs on the new case. It forwards only cases tagged `aws-devops-agent`: for
+   those, it gathers evidence with two ES|QL queries, writes an audit copy, and builds the incident
+   payload.
 7. A Kibana HTTP connector holds the webhook URL and the bearer token as an encrypted secret.
 8. The connector posts the incident to the AWS DevOps Agent webhook over HTTPS.
 9. AWS DevOps Agent creates an incident and starts an investigation. While it investigates, it
@@ -136,7 +138,23 @@ in Kibana **Developer Tools** > **Console** and copy the `encoded` value into `.
 ./scripts/verify-telemetry.sh 15        # confirm logs, metrics, traces in Elastic
 ```
 
+**Alternative: register Elastic from the console.** Elastic publishes a partner-managed connector
+for AWS DevOps Agent. Instead of running `05-register-elastic-mcp.sh`, you can open the AWS DevOps
+Agent console, choose **Capability Providers**, find **Elastic**, and choose **Register**. You enter
+your Kibana project alias, its Region, and the read-only API key, then add the server to your Agent
+Space and select the same 12 tools as **Read only**. The console can also install Elastic's
+recommended skills. See
+[Using partner-managed connectors](https://docs.aws.amazon.com/devopsagent/latest/userguide/configuring-integrations-and-knowledge-using-partner-managed-connectors.html)
+and the [Elastic connector](https://aws.github.io/tools-for-devops-agent/connectors/elastic/). Use
+either the script or the console, not both (see [Notes](#notes)).
+
 ### 4. Create the webhook
+
+If you registered Elastic from the console, skip this step: when you add the connector to the Agent
+Space, the console shows a webhook URL and an `Authorization: Bearer` header in
+**Set up alert webhook**. Put the URL in `.env` as `DEVOPS_AGENT_WEBHOOK_URL`, and only the token
+that follows `Bearer ` as `DEVOPS_AGENT_WEBHOOK_TOKEN`, because the Kibana HTTP connector adds the
+`Bearer ` prefix itself.
 
 In the AWS DevOps Agent console, open your Agent Space, then **Capabilities** > **Webhook** >
 **Configure** > **Add webhook**, and choose **API key**. Copy the URL and token into `.env` as
@@ -170,10 +188,19 @@ To drive the service by hand instead:
 
 `fault` shrinks the connection pool on `payments-host-a` from 10 connections (5 overflow, 5-second
 timeout) to 2 (no overflow, 2-second timeout) and holds each connection for 1.5 seconds. Requests
-fail with HTTP 503 while CPU and memory stay flat, so the failure cannot be explained by resource
-pressure.
+fail with HTTP 503 while the service's process CPU and memory stay flat, so the service shows no
+resource pressure. The sample sends process metrics, not host metrics, so the host itself is not
+measured.
 
 ## Notes
+
+**Script or console, not both.** The two registration paths conflict in three ways. MCP server names
+must be unique in an AWS account, so a console registration can't also be named `elastic`. An Agent
+Space has one API key webhook, which the console connector creates for you and step 4 creates by
+hand. And `99-teardown.sh` removes only the CloudFormation stacks: remove a console registration
+yourself from the Agent Space's **Capabilities** tab, then deregister it under
+**Capability Providers**. Everything on the Elastic side, from the connector to the workflow and
+rule, is the same either way.
 
 **Only workshop cases are forwarded.** The workflow runs on every new Observability case but sends
 only cases tagged `aws-devops-agent` to AWS DevOps Agent. The rule's case template adds the tag;
@@ -241,12 +268,18 @@ script on a machine only you use.
 | The workflow does not run for new cases | The trigger condition must be `event.owner: "observability"`. `O11Y Solution` and `securitySolution` do not match Observability cases |
 | No new case on a repeated test | The rule groups alerts into an open case for 7 days; close open cases |
 | A second incident shows status **Linked** | AWS DevOps Agent attached it to an open investigation of the same problem |
+| Console registration fails because the name is in use | MCP server names are unique per account; the script already registered `elastic`. Use one path, or another name of 12 characters or fewer |
+| **Add webhook** says the Agent Space already has an API key webhook | The console connector created it. Use its URL and token, and skip creating another |
 
 ## Clean up
 
 1. Remove the webhook: Agent Space **Capabilities** tab > **Webhook** > **Actions** > **Remove**.
    CloudFormation does not manage this console-created resource.
-2. Review what the teardown script will delete. It is a dry run by default:
+2. If you registered Elastic from the console, remove it from the Agent Space's **Capabilities**
+   tab, then deregister it under **Capability Providers** > **Currently registered** >
+   **View all** > **Actions** > **Deregister**. The teardown script doesn't manage console
+   registrations.
+3. Review what the teardown script will delete. It is a dry run by default:
    ```bash
    ./scripts/99-teardown.sh
    ```
@@ -256,9 +289,9 @@ script on a machine only you use.
    ./scripts/99-teardown.sh --yes --purge-telemetry
    ```
    Narrow the scope with `--aws`, `--elastic`, or `--local`.
-3. Revoke the Elastic API keys in Kibana (**Developer Tools** or **Admin and settings** >
+4. Revoke the Elastic API keys in Kibana (**Developer Tools** or **Admin and settings** >
    **API keys**): `aws-devops-agent-mcp-readonly`, `aws-devops-agent-setup`, and the ingest key.
-4. Delete `.env`.
+5. Delete `.env`.
 
 ## Resources
 

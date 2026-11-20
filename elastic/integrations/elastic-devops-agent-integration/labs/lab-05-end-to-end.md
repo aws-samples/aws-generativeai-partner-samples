@@ -43,11 +43,11 @@ Then watch each hop:
 |---|---|
 | Kibana > **Observability** > **Alerts** | `payment-service error spike` active |
 | Kibana > **Observability** > **Cases** | A new `high` severity case, `payment-service error spike (...) (Auto-created)` |
-| Kibana > **Workflows** > **Executions** | A run with all seven steps completed |
+| Kibana > **Workflows** > **Executions** | A run with all eight steps completed |
 | The case | A comment starting `Forwarded to AWS DevOps Agent` |
 | Operator web app > **Incidents** | A HIGH priority incident, **Triggered By: Event Channel** |
 
-![Screenshot 9: Kibana Cases list with the auto-created high-severity case, and the case detail showing the workflow's Forwarded to AWS DevOps Agent comment](images/screenshot-09-kibana-case.png)
+![Screenshot 9: Elastic Observability case auto-created by the alert rule with a Forwarded to AWS DevOps Agent comment](images/screenshot-09-kibana-case.png)
 
 *Screenshot 9. The case the rule opened: severity **High**, status **Open**. In the case activity, the workflow's comment `Forwarded to AWS DevOps Agent by workflow execution ...` confirms the hand-off.*
 
@@ -65,7 +65,7 @@ Our run, with nobody touching anything after the script started:
 If an investigation of the same problem is still open when a new incident arrives, AWS DevOps Agent
 links the new one to it (status **Linked**) rather than starting again.
 
-![Screenshot 10: Operator web app Incidents page listing investigations triggered by Event Channel, one Completed and one Linked](images/screenshot-10-operator-incident.png)
+![Screenshot 10: AWS DevOps Agent Incidents dashboard with completed and linked investigations triggered by Event Channel](images/screenshot-10-operator-incident.png)
 
 *Screenshot 10. The **Incidents** page. **Triggered By: Event Channel** means the incident arrived through the webhook. The **Linked** row was attached to an open investigation of the same problem.*
 
@@ -75,7 +75,7 @@ Open the incident in the operator web app. The summary tabs hold the incident de
 investigation timeline with every Elastic query, the root cause, the mitigation plan, and a review
 page.
 
-![Screenshot 11: Investigation summary with the incident description, a confirmed root cause, a recommended mitigation, and the proposed mitigation plan](images/screenshot-11-operator-findings.png)
+![Screenshot 11: AWS DevOps Agent investigation summary confirming connection pool exhaustion on payments-host-a](images/screenshot-11-operator-findings.png)
 
 *Screenshot 11. The investigation summary: root cause **Confirmed**, mitigation **Recommended** and marked for engineer review.*
 

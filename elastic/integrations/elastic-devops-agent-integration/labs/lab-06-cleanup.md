@@ -14,6 +14,16 @@ You created this in the console, so CloudFormation does not know about it.
 1. In the AWS DevOps Agent console, open your Agent Space.
 2. On the **Capabilities** tab, in the **Webhook** section, choose **Actions** > **Remove**.
 
+## 1b. Remove the console connector (only if you used it in Lab 2)
+
+The teardown script doesn't know about a registration made in the console. Remove it in two steps,
+before you run the script:
+
+1. In your Agent Space, on the **Capabilities** tab, select the Elastic server in the **Telemetry**
+   section and choose **Remove**. This also removes the recommended skills you installed with it.
+2. In **Capability Providers**, under **Currently registered**, find the Elastic card and choose
+   **View all**. Select your registration, then choose **Actions** > **Deregister**.
+
 ## 2. See what the teardown script will delete
 
 The script is a dry run by default. It changes nothing and prints a plan:
