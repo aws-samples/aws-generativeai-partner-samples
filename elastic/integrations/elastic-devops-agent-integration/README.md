@@ -49,6 +49,26 @@ connection pool, and a mitigation plan for an engineer to review.
 
 The Region in the diagram is an example; any Region where AWS DevOps Agent is available works.
 
+### End-to-end observability with Elastic Nightshift AI SRE
+
+![End-to-end architecture: AWS services send logs and metrics through Elastic Fleet Agent, Elastic Serverless Forwarder, and Amazon Data Firehose into Elasticsearch Serverless. Elastic Nightshift AI SRE provides Detection, Investigation, and Remediation engines backed by a Context Engine. Elastic managed MCP observability tools connect to AWS DevOps Agent over Private Link for 24/7 incident investigation, release readiness review, and change-specific testing.](labs/images/architecture-elastic-nightshift-devops-agent.png)
+
+This diagram shows the broader integration surface between Elastic Cloud Serverless
+(Observability) and AWS DevOps Agent:
+
+- **Data ingestion.** AWS services (CloudTrail, EC2, VPC flow logs, WAF, S3 access logs, EBS, and
+  60+ others) send logs and metrics through three paths: Elastic Fleet Agent, Elastic Serverless
+  Forwarder, and Amazon CloudWatch Metric Streams via Amazon Data Firehose.
+- **Elastic Nightshift AI SRE.** Elasticsearch Serverless feeds the Elastic Nightshift AI SRE,
+  which orchestrates a Detection Engine, an Investigation Engine, and a Remediation Engine. A
+  Context Engine provides long-term memory over entities, relationships, runbooks, code, and past
+  incidents.
+- **MCP over Private Link.** Elastic managed MCP observability tools and skills connect to AWS
+  DevOps Agent over Private Link, enabling 24/7 automated incident investigation, code review for
+  release readiness (preview), and change-specific test execution (preview).
+- **Where you work.** Remediation actions surface in Kibana, Elastic CLI, Slack, coding agents,
+  and other cloud-agnostic interfaces.
+
 ## What's in this sample
 
 | Path | Contents |
@@ -292,6 +312,11 @@ script on a machine only you use.
 4. Revoke the Elastic API keys in Kibana (**Developer Tools** or **Admin and settings** >
    **API keys**): `aws-devops-agent-mcp-readonly`, `aws-devops-agent-setup`, and the ingest key.
 5. Delete `.env`.
+
+## Contributors
+
+- [@spendyaala](https://github.com/spendyaala) — Srinivas Pendyala (AWS)
+- [@Udayel](https://github.com/Udayel) — Udayasimha (Uday) Theepireddy (Elastic), Director, Cloud Ecosystem Architect
 
 ## Resources
 
