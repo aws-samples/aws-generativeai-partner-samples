@@ -1,2 +1,5 @@
 requests>=2.31.0
 PyYAML>=6.0
+python-dotenv>=1.0.0
+strands-agents
+strands-agents-tools
